@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction,) => {
     const authHeader = req.headers["authorization"];
@@ -10,7 +10,7 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction,) => {
     const token = authHeader.split(" ")[1];
     jwt.verify(
         token,
-        accessSecret,
+        accessSecret as Secret,
         (err, decodedUser: any) => {
             if (err) return res.sendStatus(403); //invalid token
             res.locals.user = decodedUser;

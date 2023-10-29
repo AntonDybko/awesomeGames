@@ -1,5 +1,5 @@
 import express from "express";
-import verifyJWT from "../middleware/verifyJWT";
+import verifyJWT from "../middleware/verifyJwt";
 import authController from "../controllers/user/authController";
 import userController from "../controllers/user/userController";
 import handleAsync from "../helpers/handleAsync";

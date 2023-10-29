@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { User } from "../../models/User";
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 import dotenv from 'dotenv';
 import { Request, Response } from "express";
 import loginHelper from "../../helpers/loginHelper"
@@ -29,12 +29,12 @@ const authController  = {
                 //tokens
                 const accessToken = jwt.sign(
                     {_id: user._id, email: user.email, username: user.username},
-                    accessSecret,
+                    accessSecret as Secret,
                     { expiresIn: "1h" },
                 );
                 const refreshToken = jwt.sign(
                     { _id: user._id,  email: user.email, username: user.username}, 
-                    refreshSecret, 
+                    refreshSecret as Secret,
                     { expiresIn: "7d" }
                 );
                 //save refresh token into database
@@ -97,8 +97,14 @@ const authController  = {
                 username: email
             })
             //creating tokens
-            const accessToken = jwt.sign({ _id: user._id,  email: email, username: email}, jwtSecret, {expiresIn: '1h'})
-            const refreshToken = jwt.sign({ _id: user._id,  email: email, username: email}, refreshSecret, { expiresIn: "7d" });
+            const accessToken = jwt.sign({ _id: user._id,  email: email, username: email}, 
+                jwtSecret as Secret, 
+                {expiresIn: '1h'}
+            )
+            const refreshToken = jwt.sign({ _id: user._id,  email: email, username: email}, 
+                refreshSecret as Secret, 
+                { expiresIn: "7d" }
+            );
             //response
             res.cookie('refreshToken', refreshToken, { 
                 httpOnly: true, 
@@ -126,28 +132,30 @@ const authController  = {
         //find user, if no user send error status code 404
         const user = await User.findOne({ refreshToken });
         if (!user) res.sendStatus(404);
+        else{ 
         //verify refreshToken
-        jwt.verify(
-            refreshToken,
-            refreshSecret,
-            (err: any, decodedUser: any) => {
-                if (err) res.sendStatus(403); //handle error
-                //create access token and send response
-                const accessToken = jwt.sign(
-                    { _id: decodedUser._id, username: decodedUser.username },
-                    accessSecret,
-                    { expiresIn: "1h" },
-                );
-                res.json({
-                    accessToken,
-                    user: {
-                        _id: user._id,
-                        email: user.email,
-                        username: user.username
-                    }
-                });
-            }
-        )
+            jwt.verify(
+                refreshToken,
+                refreshSecret as Secret,
+                (err: any, decodedUser: any) => {
+                    if (err) res.sendStatus(403); //handle error
+                    //create access token and send response
+                    const accessToken = jwt.sign(
+                        { _id: decodedUser._id, username: decodedUser.username },
+                        accessSecret as Secret,
+                        { expiresIn: "1h" },
+                    );
+                    res.json({
+                        accessToken,
+                        user: {
+                            _id: user._id,
+                            email: user.email,
+                            username: user.username
+                        }
+                    });
+                }
+            )
+        }
     }
 
 }
