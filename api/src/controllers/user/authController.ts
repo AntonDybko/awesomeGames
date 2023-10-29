@@ -9,10 +9,10 @@ dotenv.config();
 
 const authController  = {
     handleLogin: async (req: Request, res: Response) => {
-        //getting secrets from .env
+
         const accessSecret = process.env.ACCESS_TOKEN_SECRET;
         const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
-        //extracting user's data from request
+
         const {emailOrUsername, password} = req.body;
         //find user in db
         const checker = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -37,7 +37,7 @@ const authController  = {
                     refreshSecret as Secret,
                     { expiresIn: "7d" }
                 );
-                //save refresh token into database
+
                 user.refreshToken = refreshToken;
                 await user.save();
                 //response
@@ -65,7 +65,6 @@ const authController  = {
     },
 
     handleLogout: async (req: Request, res: Response) => {
-        //get cookies from request
         const cookies = req.cookies;
         //if refreshToken doesn't exist in cookies send status code 204 (because user is not logged in)
         if (!cookies.refreshToken) res.sendStatus(204);
@@ -76,16 +75,13 @@ const authController  = {
             user.refreshToken = "";
             await user.save();
         }
-        //clear token in cookies
         res.clearCookie("refreshToken", { httpOnly: true });
         res.sendStatus(204);
     },
 
     handleRegister: async (req: Request, res: Response) => {
-        //getting secrets from .env
         const jwtSecret = process.env.ACCESS_TOKEN_SECRET;
         const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
-        //extracting user's data from request
         const {email, password, username} = req.body;
 
         try {
@@ -120,16 +116,15 @@ const authController  = {
     },
 
     handleRefreshToken: async (req: Request, res: Response) => {
-        //get cookies
         const cookies = req.cookies;
-        //secrets
+
         const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
         const accessSecret = process.env.ACCESS_TOKEN_SECRET;
-        //return status 401 if no refreshToken in cookies
+
         if (!cookies?.refreshToken) res.sendStatus(401);
-        //write down refreshToken
+
         const refreshToken = cookies.refreshToken
-        //find user, if no user send error status code 404
+
         const user = await User.findOne({ refreshToken });
         if (!user) res.sendStatus(404);
         else{ 
@@ -138,7 +133,7 @@ const authController  = {
                 refreshToken,
                 refreshSecret as Secret,
                 (err: any, decodedUser: any) => {
-                    if (err) res.sendStatus(403); //handle error
+                    if (err) res.sendStatus(403); 
                     //create access token and send response
                     const accessToken = jwt.sign(
                         { _id: decodedUser._id, username: decodedUser.username },
