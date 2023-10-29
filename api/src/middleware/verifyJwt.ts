@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { Secret } from "jsonwebtoken";
+import { AuthenticatedRequest } from "../types/authenticatedRequest"
 
-const verifyJWT = (req: Request, res: Response, next: NextFunction,) => {
+const verifyJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction,) => {
     const authHeader = req.headers["authorization"];
     const accessSecret = process.env.ACCESS_TOKEN_SECRET;
 
@@ -13,7 +14,7 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction,) => {
         accessSecret as Secret,
         (err, decodedUser: any) => {
             if (err) return res.sendStatus(403); //invalid token
-            res.locals.user = decodedUser;
+            req.user = decodedUser;
             return next();
         },
     );

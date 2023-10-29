@@ -19,6 +19,7 @@ const userSchema = new Schema<IUser>({
       match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
     username: {
+      unique: true,
       required: true,
       type: String,
       minLength: 2,
