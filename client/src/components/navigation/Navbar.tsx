@@ -1,6 +1,6 @@
 import { Outlet, Link } from "react-router-dom";
 
-const Layout = () => {
+const Navbar: React.FC = () => {
     return (
       <div>
         <nav>
@@ -27,4 +27,4 @@ const Layout = () => {
     );
 }
 
-export default Layout;
+export default Navbar;
