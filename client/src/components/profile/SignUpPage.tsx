@@ -5,7 +5,9 @@ const SignUpPage: React.FC = () => {
     const [formData, setFormData] = useState({
         login: '',
         password: '',
-        passwordAgain: ''
+        passwordAgain: '',
+        ok: true,
+        errorMessage: ''
     });
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,9 +20,19 @@ const SignUpPage: React.FC = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('Logged', formData.login);
+        // console.log(formData); // DEV!
 
-        // here goes axios for example
+        if (formData.password === formData.passwordAgain) {
+            console.log('Logged', formData.login);
+            // send to API
+        } else {
+            setFormData({
+                ...formData,
+                passwordAgain: '',
+                ok: false,
+                errorMessage: 'Invalid password!'
+            });
+        }
     };
 
     return (
@@ -51,16 +63,21 @@ const SignUpPage: React.FC = () => {
                     <input
                         type="password"
                         name="passwordAgain"
-                        value={formData.password}
+                        value={formData.passwordAgain}
                         onChange={handleInputChange}
                     />
                 </label>
                 <button type="submit">Sign up!</button>
             </form>
-            <p>
-                Already have an account?
-                <Link to="/login">Sign In</Link>
-            </p>
+            <div className='error-message'>
+                {!formData.ok ? <p>{formData.errorMessage}</p> : <p></p>}
+            </div>
+            <div className='alt'>
+                <p>
+                    Already have an account?
+                    <Link to="/login">Sign In</Link>
+                </p>
+            </div>
         </div>
     );
 };

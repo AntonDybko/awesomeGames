@@ -46,10 +46,12 @@ const LoginForm: React.FC = () => {
                 </label>
                 <button type="submit">Login</button>
             </form>
-            <p>
-                Don't have an account?
-                <Link to="/register">Sign Up Now!</Link>
-            </p>
+            <div className='alt'>
+                <p>
+                    Don't have an account?
+                    <Link to="/register">Sign Up Now!</Link>
+                </p>
+            </div>
         </div>
     );
 };
