@@ -21,19 +21,19 @@ app.use((req, res, next) => {
 
 const server = http.createServer(app);
 
-const mongoConnectionString = `mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
+const mongoConnectionURL = `mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
 
 mongoose
-.connect(mongoConnectionString, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-} as ConnectOptions)
-.then(() => {
-    console.log("Successfull connection to database.",
-);
-const port = process.env.PORT || 5000;
-server.listen(port, () => {
-    console.log(`API server is up and running`);
-});
-})
-.catch(error => console.error("Error connecting to database", error));
+    .connect(mongoConnectionURL, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    } as ConnectOptions)
+    .then(() => {
+        console.log("Successfull connection to database.",
+        );
+        const port = process.env.PORT || 5000;
+        server.listen(port, () => {
+            console.log(`API server is up and running`);
+        });
+    })
+    .catch(error => console.error("Error connecting to database", error));
