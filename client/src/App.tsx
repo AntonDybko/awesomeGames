@@ -6,8 +6,8 @@ import { Routing } from './Routing';
 const App: React.FC = () => {
   return (
     <div className="App">
-      <Navbar/>
-      <Routing/>
+      <Navbar />
+      <Routing />
     </div>
   );
 }

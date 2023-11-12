@@ -7,24 +7,29 @@ import MastermindPage from 'components/mastermind-page/MastermindPage';
 import Mastermind from 'components/mastermind/Mastermind';
 import TicTacToePage from 'components/tictactoe-page/TicTacToePage';
 import TicTacToe from 'components/tictactoe/TicTacToe';
+import LoginPage from "components/profile/LoginPage";
+import SignUpPage from "components/profile/SignUpPage";
 
 
 export const Routing: React.FC = () => {
   return (
     <Routes>
-    <Route >
-      <Route path="/" element={<Home />}/>
       <Route >
-        <Route path="/games" element={<Games />} />
-        <Route path="/games/mastermind" element={<MastermindPage />} />
-        <Route path="/games/mastermind/:id" element={<Mastermind />} />
-        <Route path="/games/tictactoe" element={<TicTacToePage />} />
-        <Route path="/games/tictactoe/:id" element={<TicTacToe />} />
-        <Route path="/ranking" element={<Ranking />} />
-        <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/" element={<Home />} />
+        <Route >
+          <Route path="/games" element={<Games />} />
+          <Route path="/games/mastermind" element={<MastermindPage />} />
+          <Route path="/games/mastermind/:id" element={<Mastermind />} />
+          <Route path="/games/tictactoe" element={<TicTacToePage />} />
+          <Route path="/games/tictactoe/:id" element={<TicTacToe />} />
+          <Route path="/ranking" element={<Ranking />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<SignUpPage />} />
+          <Route path="/profile/:userId" element={<Profile />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Route>
-  </Routes>
+    </Routes>
   );
 };
+

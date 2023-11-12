@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
               <Link to="/ranking">Ranking</Link>
             </li>
             <li>
-              <Link to="/profile">Profile</Link>
+              <Link to="/login">Login</Link>
             </li>
           </ul>
         </nav>
