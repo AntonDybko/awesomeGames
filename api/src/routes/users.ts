@@ -13,12 +13,34 @@ router.delete("/logout", verifyJWT, handleAsync(authController.handleLogout));
 router.get("/refresh-token", handleAsync(authController.handleRefreshToken),
 );
 
+/*POST {
+    token?: string;
+    username?: string;
+    email?: string;
+}*/
 router.post("/login", handleAsync(authController.handleLogin));
 
+/*POST {
+  username: string;
+  email: string;
+  password: string; //password po stronie fronta porównany z confirmPassword
+}*/
 router.post("/register", handleAsync(authController.handleRegister));
 
+//zwykły get
 router.get("/profile/:username", handleAsync(userController.getUser));
 
+/*PUT {
+    email: string;
+    username: string;
+    refreshToken: string;
+    password: string;
+    picture_url?: string;
+    birthday?: Date;
+}*/ 
+//zwykły model usera
 router.put("/profile", verifyJWT, handleAsync(userController.editUser));
+//ogólnie można jescze wymyślić jakiś patch (np picture_url zmieniać okremo), 
+//wtedy poprzednia metoda też będzie raczej patchem.
 
 export default router;
