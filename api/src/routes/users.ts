@@ -21,9 +21,9 @@ router.get("/refresh-token", handleAsync(authController.handleRefreshToken),
 router.post("/login", handleAsync(authController.handleLogin));
 
 /*POST {
-  username: string;
+  username: string; <min_length=2>
   email: string;
-  password: string;
+  password: string; <min_length=8>
 }*/
 router.post("/register", handleAsync(authController.handleRegister));
 

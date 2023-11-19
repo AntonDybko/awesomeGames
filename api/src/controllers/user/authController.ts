@@ -80,8 +80,8 @@ const authController  = {
     },
 
     handleRegister: async (req: Request, res: Response) => {
-        const jwtSecret = process.env.ACCESS_TOKEN_SECRET;
-        const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
+        const jwtSecret = process.env.ACCESS_TOKEN_SECRET || 'AccessTokenSecret';
+        const refreshSecret = process.env.REFRESH_TOKEN_SECRET || 'RefreshTokenSecret';
         const {email, password, username} = req.body;
 
         try {
@@ -90,7 +90,7 @@ const authController  = {
             const user = await User.create({
                 email: email,
                 password: encryptedPass,
-                username: email
+                username: email // Why is this an email???
             })
             //creating tokens
             const accessToken = jwt.sign({ _id: user._id,  email: email, username: email}, 
@@ -108,6 +108,9 @@ const authController  = {
             }); 
             res.json({ message: 'Login successful', accessToken });
         } catch (err: any){
+            // console.log('Cought an error:')
+            // console.error(err); // DEV
+            
             if(err instanceof Error.ValidationError){
                 res.status(400).json({ message: 'Validation failed', details: err.errors});
             }
