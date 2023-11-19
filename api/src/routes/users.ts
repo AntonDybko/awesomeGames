@@ -23,7 +23,7 @@ router.post("/login", handleAsync(authController.handleLogin));
 /*POST {
   username: string;
   email: string;
-  password: string; //password po stronie fronta porównany z confirmPassword
+  password: string;
 }*/
 router.post("/register", handleAsync(authController.handleRegister));
 

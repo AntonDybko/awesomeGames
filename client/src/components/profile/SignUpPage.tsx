@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUpPage: React.FC = () => {
     const [formData, setFormData] = useState({
         login: '',
+        email: '',
         password: '',
         passwordAgain: '',
         ok: true,
@@ -18,13 +20,37 @@ const SignUpPage: React.FC = () => {
         });
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const postData = async () => {
+        const url = 'http://localhost:5000/users/register'; // Move to .env
+        const data = {
+            username: formData.login,
+            email: formData.email,
+            password: formData.password
+        };
+
+        try {
+            const response = await axios.post<FormData>(url, data);
+            console.log('POSTED:', response);
+        } catch (error: any) {
+            if (error.response.data.details.password) {
+                setFormData({
+                    ...formData,
+                    password: '',
+                    passwordAgain: '',
+                    ok: false,
+                    errorMessage: 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character'
+                });
+            }
+        }
+    }
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // console.log(formData); // DEV!
 
         if (formData.password === formData.passwordAgain) {
-            console.log('Logged', formData.login);
-            // send to API
+            console.log('Sending request to API...'); // DEV
+            postData();
         } else {
             setFormData({
                 ...formData,
@@ -44,6 +70,16 @@ const SignUpPage: React.FC = () => {
                         type="text"
                         name="login"
                         value={formData.login}
+                        onChange={handleInputChange}
+                    />
+                </label>
+
+                <label>
+                    Email:
+                    <input
+                        type="text"
+                        name="email"
+                        value={formData.email}
                         onChange={handleInputChange}
                     />
                 </label>
