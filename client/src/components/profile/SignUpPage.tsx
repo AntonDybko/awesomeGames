@@ -4,7 +4,6 @@ import axios from 'axios';
 
 const SignUpPage: React.FC = () => {
     const [formData, setFormData] = useState({
-        login: '',
         email: '',
         password: '',
         passwordAgain: '',
@@ -21,9 +20,8 @@ const SignUpPage: React.FC = () => {
     };
 
     const postData = async () => {
-        const url = 'http://localhost:5000/users/register'; // Move to .env
+        const url = "http://localhost:5000/users/register";
         const data = {
-            username: formData.login,
             email: formData.email,
             password: formData.password
         };
@@ -32,14 +30,24 @@ const SignUpPage: React.FC = () => {
             const response = await axios.post<FormData>(url, data);
             console.log('POSTED:', response);
         } catch (error: any) {
-            if (error.response.data.details.password) {
-                setFormData({
-                    ...formData,
-                    password: '',
-                    passwordAgain: '',
-                    ok: false,
-                    errorMessage: 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character'
-                });
+            if (error.response.data.details) {
+                if (error.response.data.details.password) {
+                    setFormData({
+                        ...formData,
+                        password: '',
+                        passwordAgain: '',
+                        ok: false,
+                        errorMessage: 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character'
+                    });
+                }
+            } else {
+                if (error.response.data.message) {
+                    setFormData({
+                        ...formData,
+                        ok: false,
+                        errorMessage: error.response.data.message
+                    });
+                }
             }
         }
     }
@@ -64,16 +72,6 @@ const SignUpPage: React.FC = () => {
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <label>
-                    Login:
-                    <input
-                        type="text"
-                        name="login"
-                        value={formData.login}
-                        onChange={handleInputChange}
-                    />
-                </label>
-
                 <label>
                     Email:
                     <input
