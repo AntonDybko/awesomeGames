@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useCookies } from "react-cookie";
 
 const SignUpPage: React.FC = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -10,6 +13,7 @@ const SignUpPage: React.FC = () => {
         ok: true,
         errorMessage: ''
     });
+    const [cookies, setCookie] = useCookies(["user"]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -27,8 +31,9 @@ const SignUpPage: React.FC = () => {
         };
 
         try {
-            const response = await axios.post<FormData>(url, data);
-            console.log('POSTED:', response);
+            const response = await axios.post<FormData, AxiosResponse<{accessToken: string, message: string}>>(url, data);
+            setCookie("user", {username: formData.email, jwt: response.data.accessToken}); // Not safe!!!
+            navigate('/');
         } catch (error: any) {
             if (error.response.data.details) {
                 if (error.response.data.details.password) {
