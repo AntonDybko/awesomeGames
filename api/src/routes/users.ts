@@ -14,8 +14,8 @@ router.get("/refresh-token", handleAsync(authController.handleRefreshToken),
 );
 
 /*POST {
-    token?: string;
-    username?: string;
+    //token?: string; chyba nie trzeba tokenu na razie
+    emailOrUsername?: string
     email?: string;
 }*/
 router.post("/login", handleAsync(authController.handleLogin));

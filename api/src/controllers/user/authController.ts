@@ -4,6 +4,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import dotenv from 'dotenv';
 import { Request, Response } from "express";
 import loginHelper from "../../helpers/loginHelper"
+import validPasswordFormat from "../../helpers/validPasswordFormat"
 import { Error } from "mongoose";
 dotenv.config();
 
@@ -60,6 +61,7 @@ const authController  = {
             }
         } catch (err: any) {
             // Internal server error
+            console.log(err)
             res.status(500).json({ message: 'Internal server error' });
         }
     },
@@ -86,11 +88,20 @@ const authController  = {
 
         try {
             //recording new user in database
+            if(validPasswordFormat(password)){
+                res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
+                    "Contains at least one lowercase letter.",
+                    "Contains at least one uppercase letter.",
+                    "Contains at least one digit (0-9).",
+                    "Contains at least one special character from the set [@ $ ! % * ? & _].",
+                    "Consists of only the allowed characters (letters, digits, and specified special characters)."
+                  ]});
+            }
             const encryptedPass = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
             const user = await User.create({
                 email: email,
                 password: encryptedPass,
-                username: email // Why is this an email???
+                username: username // Why is this an email??? -no email bro
             })
             //creating tokens
             const accessToken = jwt.sign({ _id: user._id,  email: email, username: email}, 
