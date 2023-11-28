@@ -7,8 +7,9 @@ import { useCookies } from "react-cookie";
 const SignUpPage: React.FC = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        username: '',
         email: '',
-        password: '',
+        password: '', // Password Testing1! not working. Test1234 OK
         passwordAgain: '',
         ok: true,
         errorMessage: ''
@@ -26,25 +27,24 @@ const SignUpPage: React.FC = () => {
     const postData = async () => {
         const url = "http://localhost:5000/users/register";
         const data = {
+            username: formData.username,
             email: formData.email,
             password: formData.password
         };
 
         try {
-            const response = await axios.post<FormData, AxiosResponse<{accessToken: string, message: string}>>(url, data);
-            setCookie("user", {username: formData.email, jwt: response.data.accessToken}); // Not safe!!!
+            const response = await axios.post<FormData, AxiosResponse<{ accessToken: string, message: string }>>(url, data);
+            setCookie("user", { username: formData.username, jwt: response.data.accessToken }); // Not safe!!!
             navigate('/');
         } catch (error: any) {
             if (error.response.data.details) {
-                if (error.response.data.details.password) {
-                    setFormData({
-                        ...formData,
-                        password: '',
-                        passwordAgain: '',
-                        ok: false,
-                        errorMessage: 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character'
-                    });
-                }
+                setFormData({
+                    ...formData,
+                    password: '',
+                    passwordAgain: '',
+                    ok: false,
+                    errorMessage: error.response.data.details
+                });
             } else {
                 if (error.response.data.message) {
                     setFormData({
@@ -77,6 +77,16 @@ const SignUpPage: React.FC = () => {
     return (
         <div>
             <form onSubmit={handleSubmit}>
+            <label>
+                    Login:
+                    <input
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleInputChange}
+                    />
+                </label>
+
                 <label>
                     Email:
                     <input

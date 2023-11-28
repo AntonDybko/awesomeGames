@@ -9,7 +9,7 @@ import TicTacToePage from 'components/tictactoe-page/TicTacToePage';
 import TicTacToe from 'components/tictactoe/TicTacToe';
 import LoginPage from "components/profile/LoginPage";
 import SignUpPage from "components/profile/SignUpPage";
-
+import Logout from "components/profile/Logout";
 
 export const Routing: React.FC = () => {
   return (
@@ -24,6 +24,7 @@ export const Routing: React.FC = () => {
           <Route path="/games/tictactoe/:id" element={<TicTacToe />} />
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<SignUpPage />} />
           <Route path="/profile/:userId" element={<Profile />} />
         </Route>

@@ -10,7 +10,7 @@ describe('Testy serwera', () => {
         expect(response.status).toBe(200);
     });*/
     //POST
-    /*it('should register a new user and return tokens', async () => {
+    it('should register a new user and return tokens', async () => {
         const response = await axios.post(`${apiUrl}/users/register`, {
             username: "Anton",
             email: "antond@gmail.com",
@@ -22,10 +22,10 @@ describe('Testy serwera', () => {
         expect(response.data.message).toBe('Login successful');
         expect(response.data.accessToken).toBeDefined();
         expect(response.headers['set-cookie']).toBeDefined();
-    });*/
+    });
     //Post
     it('should handle successful login with username', async () => {
-        const user = {emailOrUsername: "Anton", password: 'Anton228' };
+        const user = { emailOrUsername: "Anton", password: 'Anton228' };
         const response = await axios.post(`${apiUrl}/users/login`, user);
         console.log(response.data)
         // Assertions
@@ -34,7 +34,7 @@ describe('Testy serwera', () => {
         expect(response.data.user).toBeDefined();
     });
     it('should handle successful login with email', async () => {
-        const user = {emailOrUsername: "antond@gmail.com", password: 'Anton228' };
+        const user = { emailOrUsername: "antond@gmail.com", password: 'Anton228' };
         const response = await axios.post(`${apiUrl}/users/login`, user);
         console.log(response.data)
         // Assertions

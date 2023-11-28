@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
               <Link to="/ranking">Ranking</Link>
             </li>
             <li>
-              {!cookies.user ?
+              {!cookies.user.username ?
                 (<Link to="/login">Login</Link>) :
                 (<Link to="/logout">Logout</Link>)
               }
