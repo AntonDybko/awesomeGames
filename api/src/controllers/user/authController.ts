@@ -65,11 +65,12 @@ const authController  = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
-
     handleLogout: async (req: Request, res: Response) => {
         const cookies = req.cookies;
         //if refreshToken doesn't exist in cookies send status code 204 (because user is not logged in)
-        if (!cookies.refreshToken) res.sendStatus(204);
+        if (!cookies.refreshToken) {
+            return res.sendStatus(204)
+        };
         //otherwise find user with refreshToken and set it to empty
         const user = await User.findOne({ refreshToken: cookies.refreshToken})
         //if user exists set his token to empty in db
@@ -78,9 +79,9 @@ const authController  = {
             await user.save();
         }
         res.clearCookie("refreshToken", { httpOnly: true });
+        console.log('RefreshToken cookie cleared!');
         res.sendStatus(204);
     },
-
     handleRegister: async (req: Request, res: Response) => {
         const jwtSecret = process.env.ACCESS_TOKEN_SECRET || 'AccessTokenSecret';
         const refreshSecret = process.env.REFRESH_TOKEN_SECRET || 'RefreshTokenSecret';
@@ -88,8 +89,8 @@ const authController  = {
 
         try {
             //recording new user in database
-            if(validPasswordFormat(password)){
-                res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
+            if(!validPasswordFormat(password)){
+                return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
                     "Contains at least one lowercase letter.",
                     "Contains at least one uppercase letter.",
                     "Contains at least one digit (0-9).",
@@ -123,19 +124,20 @@ const authController  = {
             // console.error(err); // DEV
             
             if(err instanceof Error.ValidationError){
-                res.status(400).json({ message: 'Validation failed', details: err.errors});
+                return res.status(400).json({ message: 'Validation failed', details: err.errors});
             }
             res.status(500).json({ message: 'Internal server error' });
         }
     },
-
     handleRefreshToken: async (req: Request, res: Response) => {
         const cookies = req.cookies;
 
         const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
         const accessSecret = process.env.ACCESS_TOKEN_SECRET;
 
-        if (!cookies?.refreshToken) res.sendStatus(401);
+        if (!cookies?.refreshToken) {
+            return res.sendStatus(401);
+        }
 
         const refreshToken = cookies.refreshToken
 
