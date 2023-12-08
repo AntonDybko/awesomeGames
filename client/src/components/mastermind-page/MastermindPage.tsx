@@ -1,8 +1,12 @@
+import Mastermind from "components/mastermind/Mastermind";
+
 const MastermindPage = () => {
     return (
         <div>
             <h2>Mastermind Page</h2>
-        </div>
+            <hr />
+            <Mastermind />
+        </div>     
     );
 }
 
