@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Mastermind.css';
+import './Mastermind.scss';
 
 
 const Mastermind: React.FC = () => {

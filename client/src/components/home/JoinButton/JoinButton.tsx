@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
+import useAuth from "hooks/useAuth";
 
 const JoinButton: React.FC = () => {
   const navigate = useNavigate();
-  const loggedIn: boolean = false;
+  const { auth } = useAuth();
 
   const handleJoin = () => {
-    if (loggedIn) {
-      
-    } else {
+    if (Object.keys(auth).length !== 0) {
       navigate("/games");
+    } else {
+      console.log(auth)
     }
   };
 

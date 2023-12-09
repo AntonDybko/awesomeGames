@@ -1,5 +1,4 @@
-import { Routes, Route } from "react-router-dom";
-import GamesLayout from "./GamesLayout";
+import { Routes, Route, Link } from "react-router-dom";
 import TicTacToe from "../tictactoe/TicTacToe";
 import Mastermind from "../mastermind/Mastermind";
 
@@ -7,12 +6,14 @@ const Games = () => {
     return (
         <div>
             <h2>Games</h2>
-            <Routes>
-                <Route path="/" element={<GamesLayout />}>
-                    <Route path="tictactoe" element={<TicTacToe />} />
-                    <Route path="mastermind" element={<Mastermind />} />
-                </Route>
-            </Routes>
+            <ul>
+            <li>
+              <Link to="/games/tictactoe">TicTacToe</Link>
+            </li>
+            <li>
+              <Link to="/games/mastermind">Mastermind</Link>
+            </li>
+          </ul>
         </div>
     );
 }

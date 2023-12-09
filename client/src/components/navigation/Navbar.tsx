@@ -1,11 +1,14 @@
 import { Outlet, Link } from "react-router-dom";
-import { CookiesProvider, useCookies } from "react-cookie";
+//import { CookiesProvider, useCookies } from "react-cookie";
+import useAuth from "hooks/useAuth";
 
 const Navbar: React.FC = () => {
-  const [cookies, setCookie] = useCookies(["user"]);
+  //const [cookies, setCookie] = useCookies(["user"]);
+  const { auth } = useAuth();
+
 
   return (
-    <CookiesProvider>
+    //<CookiesProvider>
       <div>
         <nav>
           <ul>
@@ -19,7 +22,10 @@ const Navbar: React.FC = () => {
               <Link to="/ranking">Ranking</Link>
             </li>
             <li>
-              {!cookies.user.username ?
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              {!auth.username ?
                 (<Link to="/login">Login</Link>) :
                 (<Link to="/logout">Logout</Link>)
               }
@@ -31,7 +37,7 @@ const Navbar: React.FC = () => {
 
         <Outlet />
       </div>
-    </CookiesProvider>
+    //</CookiesProvider>
   );
 }
 

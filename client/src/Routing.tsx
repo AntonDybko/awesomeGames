@@ -10,13 +10,15 @@ import TicTacToe from 'components/tictactoe/TicTacToe';
 import LoginPage from "components/profile/LoginPage";
 import SignUpPage from "components/profile/SignUpPage";
 import Logout from "components/profile/Logout";
+import SessionPersistence from "components/other/SessionPersistence";
+import RequireAuth from "components/other/RequireAuth";
 
 export const Routing: React.FC = () => {
   return (
     <Routes>
-      <Route >
+      <Route element={<SessionPersistence />}>
         <Route path="/" element={<Home />} />
-        <Route >
+        <Route element={<RequireAuth />}>
           <Route path="/games" element={<Games />} />
           <Route path="/games/mastermind" element={<MastermindPage />} />
           <Route path="/games/mastermind/:id" element={<Mastermind />} />
