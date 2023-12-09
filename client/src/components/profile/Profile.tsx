@@ -1,7 +1,32 @@
-const Profile = () => {
+import { useEffect, useState } from "react";
+import axios from 'axios-config/axios'
+import UserProps from '../../interfaces/User'
+import { useNavigate } from "react-router-dom";
+
+
+const Profile: React.FC = () => {
+    const [user, setUser] = useState({} as UserProps);
+
+    const userId = window.location.pathname.slice(9)
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function getUser() {
+            try {
+                const res = await axios.get(`users/profile/${userId}`);
+                if (res.status === 200) setUser(res.data);
+            } catch (e) {
+                navigate("/");
+            }
+        }
+        getUser();
+    }, [ userId, navigate ])
+
     return (
-        <div>
-            <h2>Profile</h2>
+        <div className="profile-page">
+            <div className="profile-container">
+                PROFILE
+            </div>
         </div>
     );
 }

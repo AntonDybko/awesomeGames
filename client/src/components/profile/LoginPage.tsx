@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
                         onChange={handleInputChange}
                     />
                 </label>
-                <button type="submit">Sign up!</button>
+                <button type="submit">Log In!</button>
             </form>
             <div className='error-message'>
                 {!formData.ok ? <p>{formData.errorMessage}</p> : <p></p>}
