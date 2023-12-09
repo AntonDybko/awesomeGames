@@ -164,6 +164,10 @@ const Mastermind: React.FC = () => {
           </table>
           <table className="mm-table">
             <tbody>
+              <tr>
+                <td id='black'>black</td>
+                <td id='white'>white</td>
+              </tr>
               {scores.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {row.map((cell, colIndex) => (
