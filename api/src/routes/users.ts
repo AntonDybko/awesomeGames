@@ -2,6 +2,7 @@ import express from "express";
 import verifyJWT from "../middleware/verifyJwt";
 import authController from "../controllers/user/authController";
 import userController from "../controllers/user/userController";
+import scoreController from "../controllers/score/scoreController";
 import handleAsync from "../helpers/handleAsync";
 
 const router = express.Router();
@@ -24,15 +25,20 @@ router.get("/refresh-token", handleAsync(authController.handleRefreshToken),
 router.post("/login", handleAsync(authController.handleLogin));
 
 /*POST {
-  username: string; <min_length=2>
+  username: string;
   email: string;
-  password: string; <min_length=8>
+  password: string;
 }
->> jwt*/
+>> jwt
+*/
 router.post("/register", handleAsync(authController.handleRegister));
 
-//zwykły get - bez hasła
+//zwykły get - bez hasła Czy to powinno zostać tak otwarte?
 router.get("/profile/:username", handleAsync(userController.getUser));
+
+router.get("/profile/:username/scores/:id", handleAsync(scoreController.getScore));
+
+router.post("/profile/:username/scores", verifyJWT, handleAsync(scoreController.addScore));
 
 /*PUT 
 Header - autoryzacyjny

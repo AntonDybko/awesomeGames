@@ -3,6 +3,7 @@ import mongoose, { ConnectOptions } from "mongoose";
 import cors from "cors";
 import dbConfig from "./config/dbConfig";
 import users from "./routes/users";
+import games from "./routes/games";
 import cookieParser from "cookie-parser";
 import http from "http";
 
@@ -18,6 +19,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use("/users", users);
+app.use("/games", games);
 app.use((req, res, next) => {
     res.status(404).send('Route not Found');
 });
