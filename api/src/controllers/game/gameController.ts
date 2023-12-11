@@ -53,12 +53,22 @@ const gameController = {
         }
     },
 
-    getGames: async (req: Request, res: Response) => {
+    getGames: async (_req: Request, res: Response) => {
         try {
             const games = await Game.find({});
             return res.status(200).json(games);
         } catch (error) {
             return res.status(404).json(error);
+        }
+    },
+
+    // contains game name in the url params - just like getGame
+    deleteGame: async (req: Request, res: Response) => {
+        try {
+            await Game.deleteOne({ name: req.params.name });
+            return res.status(200).json({message: "Deleted"});
+        } catch (error) {
+            return res.status(404).json(error)
         }
     }
 }

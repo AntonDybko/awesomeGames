@@ -24,10 +24,19 @@ const scoreController = {
     },
 
     // must contain score id in the request params
-    getScore: async (req:Request, res: Response) => {
+    getScore: async (req: Request, res: Response) => {
         try {
             const score = await Score.find({ _id: req.params.id });
             return res.status(200).json(score);
+        } catch (error) {
+            return res.status(404).json(error);
+        }
+    },
+
+    deleteScore: async (req: Request, res: Response) => {
+        try {
+            await Score.deleteOne({ _id: req.params.id });
+            return res.status(200).json({message: "Deleted"});
         } catch (error) {
             return res.status(404).json(error);
         }
