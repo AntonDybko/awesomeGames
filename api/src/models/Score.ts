@@ -1,9 +1,9 @@
-import { Schema, model, Document, ObjectId } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 interface IScore extends Document {
     score: Number;
-    game: ObjectId;
-    user: ObjectId;
+    game: Schema.Types.ObjectId;
+    user: Schema.Types.ObjectId;
 }
 
 const scoreSchema = new Schema<IScore>({

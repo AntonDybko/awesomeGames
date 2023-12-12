@@ -1,9 +1,9 @@
-import { Schema, model, Document, ObjectId } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 interface IGame extends Document {
     name: String;
     numberOfPlayers: Number;
-    difficulty: String;
+    difficulty?: String;
 }
 
 const gameSchema = new Schema<IGame>({

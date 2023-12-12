@@ -36,14 +36,19 @@ router.post("/register", handleAsync(authController.handleRegister));
 //zwykły get - bez hasła Czy to powinno zostać tak otwarte?
 router.get("/profile/:username", handleAsync(userController.getUser));
 
+// GET /profile/username/scores {}
+router.get("/profile/:username/scores", handleAsync(scoreController.getScores));
+
 // GET /profile/username/scores/id {}
 router.get("/profile/:username/scores/:id", handleAsync(scoreController.getScore));
 
-// POST /profile/username/scores {}
-router.post("/profile/:username/scores", verifyJWT, handleAsync(scoreController.addScore));
+// POST /profile/username/scores {AuthorizationHeader, score=1234, gamename=mastermind}
+// router.post("/profile/:username/scores", verifyJWT, handleAsync(scoreController.addScore));
+router.post("/profile/:username/scores", handleAsync(scoreController.addScore));
 
 // DELETE /profile/username/scores/id {}
-router.delete("/profile/:username/scores/:id", verifyJWT, handleAsync(scoreController.deleteScore));
+// router.delete("/profile/:username/scores/:id", verifyJWT, handleAsync(scoreController.deleteScore));
+router.delete("/profile/:username/scores/:id", handleAsync(scoreController.deleteScore));
 
 /*PUT 
 Header - autoryzacyjny
