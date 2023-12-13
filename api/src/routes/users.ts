@@ -7,7 +7,7 @@ import handleAsync from "../helpers/handleAsync";
 
 const router = express.Router();
 
-// walidacja, czy admin
+// walidacja, czy admin - do zrobienia!
 router.get("/", verifyJWT, handleAsync(userController.getUsers));
 
 // Token w Headerze
@@ -43,12 +43,12 @@ router.get("/profile/:username/scores", handleAsync(scoreController.getScores));
 router.get("/profile/:username/scores/:id", handleAsync(scoreController.getScore));
 
 // POST /profile/username/scores {AuthorizationHeader, score=1234, gamename=mastermind}
-// router.post("/profile/:username/scores", verifyJWT, handleAsync(scoreController.addScore));
-router.post("/profile/:username/scores", handleAsync(scoreController.addScore));
+router.post("/profile/:username/scores", verifyJWT, handleAsync(scoreController.addScore));
+// router.post("/profile/:username/scores", handleAsync(scoreController.addScore));
 
 // DELETE /profile/username/scores/id {}
 // router.delete("/profile/:username/scores/:id", verifyJWT, handleAsync(scoreController.deleteScore));
-router.delete("/profile/:username/scores/:id", handleAsync(scoreController.deleteScore));
+router.delete("/profile/:username/scores/:id", verifyJWT, handleAsync(scoreController.deleteScore));
 
 /*PUT 
 Header - autoryzacyjny

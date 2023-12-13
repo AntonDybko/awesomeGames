@@ -110,6 +110,100 @@ describe('Testy serwera', () => {
         const response = await axios.get(`${apiUrl}/users/profile/Anton`);
         expect(response.status).toBe(200);
     });
+    it('post new game with only a name', async () => {
+        const data = {
+            name: "mastermind"
+        };
+        const response = await axios.post(`${apiUrl}/games`, data);
+        expect(response.status).toBe(201);
+    });
+    it('post new game with a name and numberOfPlayers', async () => {
+        const data = {
+            name: "tictactoe",
+            numberOfPlayers: 2
+        };
+        const response = await axios.post(`${apiUrl}/games`, data);
+        expect(response.status).toBe(201);
+    });
+    it('post new game with a name and difficulty', async () => {
+        const data = {
+            name: "sudoku",
+            difficulty: "hard"
+        };
+        const response = await axios.post(`${apiUrl}/games`, data);
+        expect(response.status).toBe(201);
+    });
+    it('post new game with name, numberOfPlayers and difficulty', async () => {
+        const data = {
+            name: "chess",
+            numberOfPlayers: 2,
+            difficulty: "hard"
+        };
+        const response = await axios.post(`${apiUrl}/games`, data);
+        expect(response.status).toBe(201);
+    });
+    it('get all games', async () => {
+        const response = await axios.get(`${apiUrl}/games`);
+        expect(response.status).toBe(200);
+    });
+    it('get game with name specified in the request params', async () => {
+        const response = await axios.get(`${apiUrl}/games/mastermind`);
+        expect(response.status).toBe(200);
+    });
+    it('delete game with name specified in the request params', async () => {
+        const response = await axios.delete(`${apiUrl}/games/chess`);
+        expect(response.status).toBe(200);
+    });
+    it('post new score', async () => {
+        const data = {
+            gamename: "mastermind",
+            score: 1234,
+        }
+        const config = {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+        };
+        const response = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
+        expect(response.status).toBe(201);
+    });
+    it('get all scores', async () => {
+        const response = await axios.get(`${apiUrl}/users/profile/Anton/scores`);
+        expect(response.status).toBe(200);
+    });
+    it('! get score with specified id', async () => {
+        const data = {
+            gamename: "mastermind",
+            score: 1234,
+        }
+        const config = {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+        };
+        const score = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
+        
+        const response = await axios.get(`${apiUrl}/users/profile/Anton/scores/${score.data._id}`);
+        expect(response.status).toBe(200);
+    });
+    it('! delete score', async () => {
+        const data = {
+            gamename: "mastermind",
+            score: 1234,
+        }
+        const config = {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+        };
+        const score = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
+
+        const response = await axios.delete(`${apiUrl}/users/profile/Anton/scores/${score.data._id}`, config);
+        expect(response.status).toBe(200);
+    });
     it('get new access token with refresh token', async () => {
         const config = {
             headers: {

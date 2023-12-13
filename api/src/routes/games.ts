@@ -10,10 +10,10 @@ router.get("/", handleAsync(gameController.getGames));
 // GET /gameNameHere {}
 router.get("/:name", handleAsync(gameController.getGame));
 
-// POST / {name, numberOfPlayers?, difficulty?}
+// POST / {name, numberOfPlayers?, difficulty?}; trzeba dodać isAdmin middleware!
 router.post("/", handleAsync(gameController.addGame));
 
-// DELETE /gameNameHere {}
+// DELETE /gameNameHere {}; trzeba dodać isAdmin middleware!
 router.delete("/:name", handleAsync(gameController.deleteGame));
 
 export default router;

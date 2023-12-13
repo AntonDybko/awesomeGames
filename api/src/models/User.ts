@@ -1,6 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 interface IUser extends Document {
+  role: string;
   email: string;
   username: string;
   refreshToken: string;
@@ -10,6 +11,11 @@ interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
+  role: {
+    type: String,
+    enum: ['REGULAR', 'ADMIN', 'MODERATOR'],
+    default: 'REGULAR'
+  },
   email: {
     unique: true,
     required: true,
