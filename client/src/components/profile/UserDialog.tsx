@@ -1,7 +1,8 @@
 import DialogProps from "interfaces/Dialog";
 import { useState } from "react";
-import Dialog from '@mui/material/Dialog';
+import Dialog from "@mui/material/Dialog";
 import { DialogContent, DialogTitle } from "@mui/material";
+import { Login } from "./Login/Login";
 
 const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
     const [ option, setOption ] = useState<"login" | "registration">("login")
@@ -28,6 +29,7 @@ const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
                 { option === 'login' ? 
                 <div className="login-dialog">
                     <DialogTitle>Log In</DialogTitle>
+                    <Login />
                     <div className="change-dialog">
                         New to our site?
                     </div>
