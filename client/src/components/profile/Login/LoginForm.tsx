@@ -6,6 +6,7 @@ import axios from "axios-config/axios";
 import * as yup from 'yup';
 import FormInput from "../FormInput";
 import './LoginForm.scss';
+import { useState } from "react";
 
 interface FormValues {
     emailOrUsername: string,
@@ -24,13 +25,14 @@ const loginSchema = yup.object().shape({
 });
 
 const LoginForm: React.FC<LoginFormProps> = ({response, setResponse, setStatus}) => {
-    
+    const [submittingStatus, setSubmittingStatus] = useState(false)
     const { setAuth } = useAuth();
 
     const handleLogIn = async (values: FormValues) => {
         setStatus("pending");
         setResponse({ ...response, pending: 'Logging...'})
         try {
+            setSubmittingStatus(true);
             const res = await axios.post("/users/login", values, {
                 headers: { "Content-Type": "application/json" },
                 withCredentials: true
@@ -54,6 +56,8 @@ const LoginForm: React.FC<LoginFormProps> = ({response, setResponse, setStatus})
             } else {
                 setResponse({ ...response, rejected: "Encountered a problem" });
             }
+        } finally {
+            setSubmittingStatus(false);
         }
     }
 
@@ -74,7 +78,7 @@ const LoginForm: React.FC<LoginFormProps> = ({response, setResponse, setStatus})
                 <button
                     className="submit-login"
                     disabled={
-                    !formik || !(formik.isValid && formik.dirty) || formik.isSubmitting
+                    !formik || !(formik.isValid && formik.dirty) || submittingStatus
                     }
                     type="submit"
                 >
