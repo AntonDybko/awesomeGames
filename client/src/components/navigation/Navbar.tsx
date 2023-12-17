@@ -3,6 +3,9 @@ import useAuth from "hooks/useAuth";
 import useDialog from "hooks/useDialog";
 import UserDialog from "components/profile/UserDialog";
 import useLogout from "hooks/useLogout";
+import './Navbar.scss';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Navbar: React.FC = () => {
   const { auth } = useAuth();
@@ -16,44 +19,36 @@ const Navbar: React.FC = () => {
   }
 
   return (
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/games">Games</Link>
-            </li>
-            <li>
-              <Link to="/ranking">Ranking</Link>
-            </li>
-            <li>
-              <Link to="/profile">Profile</Link>
-            </li>
-            <li>
-              {!auth.username &&
-                (
-                <div>
-                  <div onClick={() => setVisible(true)}>Login</div>
-                  <UserDialog visible={visible} setVisible={setVisible}/>
-                </div>
-                )
-              }
-              {auth.username &&
-                (
-                <div>
-                  <div onClick={() => handleLogout()}>Logout</div>
-                </div>
-                )
-              }
-            </li>
-          </ul>
-        </nav>
+      <div className="navbar">
+        <div className="logo-container">
+            <img alt="logo"/>
+            <div className="site-title"></div>
+        </div>
+        <div className="navbar-links">
+          <Link to="/">Home</Link>
 
-        <hr />
+          <Link to="/games">Games</Link>
 
-        <Outlet />
+          <Link to="/ranking">Ranking</Link>
+
+          <Link to={`/profile/${auth.username}`}>Profile</Link>
+
+          {!auth.username &&
+            (
+            <div className="login-logout">
+              <LoginIcon className="nav-icon" onClick={() => setVisible(true)}></LoginIcon>
+              <UserDialog visible={visible} setVisible={setVisible}/>
+            </div>
+            )
+          }
+          {auth.username &&
+            (
+            <div className="login-logout">
+              <LogoutIcon onClick={() => handleLogout()}></LogoutIcon>
+            </div>
+            )
+          }
+        </div>
       </div>
   );
 }

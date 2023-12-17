@@ -6,8 +6,8 @@ const useLogout = () => {
   const axios = useAxiosProtected();
 
   const logout = async () => {
-    setAuth({});
     await axios.delete("/users/logout", { withCredentials: true });
+    setAuth({});
   };
 
   return logout;

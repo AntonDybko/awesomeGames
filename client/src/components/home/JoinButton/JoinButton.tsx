@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import useDialog from "hooks/useDialog";
+import './JoinButton.scss'
 
 const JoinButton: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const JoinButton: React.FC = () => {
   };
 
   return (
-    <div className="join-button">
+    <div className="button-container">
       <button onClick={() => handleJoin()}>Join</button>
     </div>
   );

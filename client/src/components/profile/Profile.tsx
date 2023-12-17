@@ -9,25 +9,46 @@ const Profile: React.FC = () => {
     const [user, setUser] = useState({} as UserProps);
     const auth = useAuth();
 
-    const userId = window.location.pathname.slice(9)
+    const profileName = window.location.pathname.slice(9)
     const navigate = useNavigate();
+
+    const displayAvatar = () => (
+        <div>
+            {auth.auth.username === profileName ? (
+                // when it's your profile
+                <div className="profile-avatar"
+                style={{
+                    backgroundImage: `url("${
+                      user.picture_url ||
+                      ""
+                    }")`,
+                  }}>
+                </div>
+            ) : (
+                // when you're browsing someone's profile
+                <div>
+                    
+                </div>
+            )}
+        </div>
+    );
 
     useEffect(() => {
         async function getUser() {
             try {
-                const res = await axios.get(`users/profile/${userId}`);
+                const res = await axios.get(`users/profile/${profileName}`);
                 if (res.status === 200) setUser(res.data);
             } catch (e) {
                 navigate("/");
             }
         }
         getUser();
-    }, [ userId, navigate ])
+    }, [ profileName, navigate ])
 
     return (
         <div className="profile-page">
             <div className="profile-container">
-                PROFILE
+                
             </div>
         </div>
     );

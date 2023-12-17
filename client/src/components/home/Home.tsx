@@ -1,4 +1,5 @@
 import JoinButton from './JoinButton/JoinButton'
+import './Home.scss';
 
 const Home: React.FC = () =>  {
     return (
@@ -8,13 +9,13 @@ const Home: React.FC = () =>  {
                     Ready to Play? Start Your Adventure Now!
                 </div>
                 <div className="home-description">
-                    Join our vibrant gaming community and explore a variety of games. Compete with others and reach the top spot 
-                    on the ranking ladder! 
+                    Join our vibrant gaming community and explore a variety of games.
+                    Compete with others and reach the top spot on the ranking ladder! 
                 </div>
+                <JoinButton />
             </div>
             <div className="right-page">
-                <div>Placeholder for an image</div>
-                <JoinButton />
+                <div></div>
             </div>
         </div>
     );

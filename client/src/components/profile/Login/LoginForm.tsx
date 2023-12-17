@@ -5,6 +5,7 @@ import useAuth from "hooks/useAuth";
 import axios from "axios-config/axios";
 import * as yup from 'yup';
 import FormInput from "../FormInput";
+import './LoginForm.scss';
 
 interface FormValues {
     emailOrUsername: string,
@@ -71,6 +72,7 @@ const LoginForm: React.FC<LoginFormProps> = ({response, setResponse, setStatus})
                     <FormInput name="password" type="password" placeholder="Enter Password"/>
                 </div>
                 <button
+                    className="submit-login"
                     disabled={
                     !formik || !(formik.isValid && formik.dirty) || formik.isSubmitting
                     }

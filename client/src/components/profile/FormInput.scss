@@ -1,0 +1,23 @@
+@import "variables.scss";
+
+.form-input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    .inputs {
+        input {
+            margin-bottom: 5px;
+            margin-top: 5px;
+            outline: none;
+            border: none;
+            font-size: 16px;
+            background-color: $main-light-color;
+            color: $main-dark-color;
+            padding: 10px 10px;
+            padding-left: 50px;
+            border-radius: 5px;
+        }
+    }
+}

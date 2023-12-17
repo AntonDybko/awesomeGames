@@ -5,6 +5,7 @@ import useAuth from "hooks/useAuth";
 import axios from "axios-config/axios";
 import FormInput from "../FormInput";
 import registrationSchema from "./registrationSchema";
+import './RegistrationForm.scss';
 
 interface FormValues {
     username: string,
@@ -67,6 +68,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({response, setRespons
                     <FormInput name="matchingPassword" type="password" placeholder="Repeat Password"/>
                 </div>
                 <button
+                    className="submit-register"
                     disabled={
                     !formik || !(formik.isValid && formik.dirty) || formik.isSubmitting
                     }
