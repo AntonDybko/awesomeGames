@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import axios from 'axios-config/axios'
 import UserProps from '../../interfaces/User'
 import { useNavigate } from "react-router-dom";
+import useAuth from "hooks/useAuth";
 
 
 const Profile: React.FC = () => {
     const [user, setUser] = useState({} as UserProps);
+    const auth = useAuth();
 
     const userId = window.location.pathname.slice(9)
     const navigate = useNavigate();
