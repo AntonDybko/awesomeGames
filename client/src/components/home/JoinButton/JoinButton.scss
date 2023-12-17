@@ -1,0 +1,25 @@
+@import "variables.scss";
+
+.button-container {
+    margin-top: 75px;
+    display: flex;
+    justify-content: center;
+    button {
+      text-transform: uppercase;
+      font-size: 1em; 
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      height: 45px;
+      width: 180px;
+      border: none;
+      border-radius: 10px;
+      color: $main-light-color;
+      background-color: $main-dark-color;
+      box-shadow: 2px 2px 8px 0px black;
+      &:hover {
+        cursor: pointer;
+        color: $secondary-light-color;
+        background-color: $secondary-dark-color;
+      }
+    }
+}

@@ -4,6 +4,7 @@ import Dialog from "@mui/material/Dialog";
 import { DialogContent, DialogTitle } from "@mui/material";
 import { Login } from "./Login/Login";
 import Registration from "./Register/Registration";
+import './UserDialog.scss';
 
 const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
     const [ option, setOption ] = useState<"login" | "registration">("login")
@@ -14,6 +15,7 @@ const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
 
     const handleClose = () => {
         setVisible(false);
+        option === 'registration' ? switchOption() : console.log();
     }
 
     return (
@@ -26,7 +28,7 @@ const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
         }}
         open={visible}
         onClose={handleClose}>
-            <DialogContent>
+            <DialogContent className="dialog">
                 { option === 'login' ? 
                 <div className="login-dialog">
                     <DialogTitle>Log In</DialogTitle>

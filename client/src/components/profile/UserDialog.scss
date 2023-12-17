@@ -1,0 +1,16 @@
+@import "variables.scss";
+
+.dialog {
+    border: none;
+    margin: 0;
+    padding: 0;
+    background-color: $secondary-dark-color;
+    min-height: 450px;
+    max-height: 700px;
+    width: 325px;
+    color: $main-light-color;
+    text-align: center;
+    .change-dialog {
+        margin-top: 15px;
+    }
+}
