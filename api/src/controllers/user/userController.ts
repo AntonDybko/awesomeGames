@@ -5,6 +5,22 @@ import dotenv from "dotenv"
 import validPasswordFormat from "../../helpers/validPasswordFormat"
 dotenv.config();
 
+const checkIfUnique = async (req: Request, res: Response, field: string) => {
+    const value = req.query[field];
+
+    if (!value) {
+        return res.status(400).json({ error: `No ${field} provided` });
+    }
+
+    const user = await User.findOne({ [field]: value });
+
+    if (user) {
+        res.status(409).json({ error: `${field} is already taken` });
+    } else {
+        res.sendStatus(200);
+    }
+};
+
 const usersController = {
     //just for development purposes, delete it or remove later
     getUsers: async (req: Request, res: Response) => {
@@ -41,6 +57,16 @@ const usersController = {
         const { password, refreshToken, _id, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
         res.json(userWithoutPassword);
         },
+    
+    isUsernameUnique: async (req: Request, res: Response) => {
+        await checkIfUnique(req, res, 'username');
+    },
+        
+    isEmailUnique: async (req: Request, res: Response) => {
+        await checkIfUnique(req, res, 'email');
+    },
+    
   };
+
   
 export default usersController;

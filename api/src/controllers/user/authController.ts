@@ -118,7 +118,14 @@ const authController  = {
                 httpOnly: true, 
                 maxAge: 7 * 24 * 60 * 60 * 1000 
             }); 
-            res.json({ message: 'Login successful', accessToken });
+            res.json({ message: 'Register successful', 
+                accessToken,
+                user: {
+                    _id: user._id,
+                    email: user.email,
+                    username: user.username
+                }
+            });
         } catch (err: any){
             // console.log('Cought an error:')
             // console.error(err); // DEV

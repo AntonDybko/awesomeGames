@@ -1,17 +1,21 @@
-import { Outlet, Link } from "react-router-dom";
-//import { CookiesProvider, useCookies } from "react-cookie";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import useDialog from "hooks/useDialog";
 import UserDialog from "components/profile/UserDialog";
+import useLogout from "hooks/useLogout";
 
 const Navbar: React.FC = () => {
-  //const [cookies, setCookie] = useCookies(["user"]);
   const { auth } = useAuth();
   const { visible, setVisible } = useDialog();
+  const navigate = useNavigate();
+  const logout = useLogout();
 
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  }
 
   return (
-    //<CookiesProvider>
       <div>
         <nav>
           <ul>
@@ -36,6 +40,13 @@ const Navbar: React.FC = () => {
                 </div>
                 )
               }
+              {auth.username &&
+                (
+                <div>
+                  <div onClick={() => handleLogout()}>Logout</div>
+                </div>
+                )
+              }
             </li>
           </ul>
         </nav>
@@ -44,7 +55,6 @@ const Navbar: React.FC = () => {
 
         <Outlet />
       </div>
-    //</CookiesProvider>
   );
 }
 

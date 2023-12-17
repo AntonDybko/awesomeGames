@@ -6,7 +6,7 @@ interface FormInputProps {
   placeholder: string
 }
 
-export const FormInput: React.FC<FormInputProps> = (props) => {
+const FormInput: React.FC<FormInputProps> = (props) => {
   const [field, meta] = useField(props);
 
   return (
@@ -18,3 +18,5 @@ export const FormInput: React.FC<FormInputProps> = (props) => {
     </div>
   );
 };
+
+export default FormInput;

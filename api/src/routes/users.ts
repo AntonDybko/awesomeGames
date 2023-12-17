@@ -66,4 +66,10 @@ router.put("/profile", verifyJWT, handleAsync(userController.editUser));
 //ogólnie można jescze wymyślić jakiś patch (np picture_url zmieniać okremo), 
 //wtedy poprzednia metoda też będzie raczej patchem.
 
+router.get("/check-username", handleAsync(userController.isUsernameUnique),
+);
+
+router.get("/check-email", handleAsync(userController.isEmailUnique),
+);
+
 export default router;
