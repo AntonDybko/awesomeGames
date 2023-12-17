@@ -1,10 +1,13 @@
 import { Outlet, Link } from "react-router-dom";
 //import { CookiesProvider, useCookies } from "react-cookie";
 import useAuth from "hooks/useAuth";
+import useDialog from "hooks/useDialog";
+import UserDialog from "components/profile/UserDialog";
 
 const Navbar: React.FC = () => {
   //const [cookies, setCookie] = useCookies(["user"]);
   const { auth } = useAuth();
+  const { visible, setVisible } = useDialog();
 
 
   return (
@@ -25,9 +28,13 @@ const Navbar: React.FC = () => {
               <Link to="/profile">Profile</Link>
             </li>
             <li>
-              {!auth.username ?
-                (<Link to="/login">Login</Link>) :
-                (<Link to="/logout">Logout</Link>)
+              {!auth.username &&
+                (
+                <div>
+                  <div onClick={() => setVisible(true)}>Login</div>
+                  <UserDialog visible={visible} setVisible={setVisible}/>
+                </div>
+                )
               }
             </li>
           </ul>
