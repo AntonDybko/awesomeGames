@@ -146,7 +146,13 @@ const Mastermind: React.FC = () => {
 
         <div className="mm-main">
           <h3>Previous Guesses</h3>
-          <h3>Scores</h3>
+          <div>
+            <h3>Scores</h3>
+            <div className="mm-sub-header">
+              <p>Black</p>
+              <p>White</p>
+            </div>
+          </div>
 
           <table className="mm-table">
             <tbody>
@@ -164,10 +170,6 @@ const Mastermind: React.FC = () => {
           </table>
           <table className="mm-table">
             <tbody>
-              <tr>
-                <td id='black'>black</td>
-                <td id='white'>white</td>
-              </tr>
               {scores.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {row.map((cell, colIndex) => (
