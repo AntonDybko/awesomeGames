@@ -4,6 +4,7 @@ import UserProps from '../../interfaces/User'
 import { useNavigate } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import { profile } from "console";
+import './Profile.scss';
 
 
 const Profile: React.FC = () => {
@@ -27,8 +28,13 @@ const Profile: React.FC = () => {
                 </div>
             ) : (
                 // when you're browsing someone's profile
-                <div>
-                    
+                <div className="profile-avatar"
+                style={{
+                    backgroundImage: `url("${
+                      user.picture_url ||
+                      ""
+                    }")`,
+                  }}>
                 </div>
             )}
         </div>
@@ -49,7 +55,12 @@ const Profile: React.FC = () => {
     return (
         <div className="profile-page">
             <div className="profile-container">
-                {profileName}
+                {/*displayAvatar()*/}
+                <img src="/image.png" className="profile-image"/>
+                <div>{profileName}</div>
+
+            </div>
+            <div>
             </div>
         </div>
     );
