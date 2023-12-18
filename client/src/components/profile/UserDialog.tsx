@@ -36,7 +36,7 @@ const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
                     <div className="change-dialog">
                         New to our site?
                     </div>
-                    <div onClick={() => switchOption()}>
+                    <div className="option-text" onClick={() => switchOption()}>
                         Sign Up
                     </div>
                 </div>
@@ -47,7 +47,7 @@ const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
                     <div className="change-dialog">
                         Already a player?
                     </div>
-                    <div onClick={() => switchOption()}>
+                    <div className="option-text" onClick={() => switchOption()}>
                         Log In
                     </div>
                 </div>

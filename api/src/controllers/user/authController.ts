@@ -113,6 +113,9 @@ const authController  = {
                 refreshSecret as Secret, 
                 { expiresIn: "7d" }
             );
+
+            user.refreshToken = refreshToken;
+            await user.save();
             //response
             res.cookie('refreshToken', refreshToken, { 
                 httpOnly: true, 

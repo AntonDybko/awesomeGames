@@ -27,11 +27,15 @@ const Navbar: React.FC = () => {
         <div className="navbar-links">
           <Link to="/">Home</Link>
 
-          <Link to="/games">Games</Link>
+          {auth.username && (
+            <Link to="/games">Games</Link>
+          )}
 
           <Link to="/ranking">Ranking</Link>
 
-          <Link to={`/profile/${auth.username}`}>Profile</Link>
+          {auth.username && (
+            <Link to={`/profile/${auth.username}`}>Profile</Link>
+          )}
 
           {!auth.username &&
             (

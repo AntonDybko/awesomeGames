@@ -3,6 +3,7 @@ import axios from 'axios-config/axios'
 import UserProps from '../../interfaces/User'
 import { useNavigate } from "react-router-dom";
 import useAuth from "hooks/useAuth";
+import { profile } from "console";
 
 
 const Profile: React.FC = () => {
@@ -48,7 +49,7 @@ const Profile: React.FC = () => {
     return (
         <div className="profile-page">
             <div className="profile-container">
-                
+                {profileName}
             </div>
         </div>
     );

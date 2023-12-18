@@ -13,4 +13,10 @@
     .change-dialog {
         margin-top: 15px;
     }
+    .option-text {
+        &:hover {
+            cursor: pointer;
+            color: $secondary-light-color;
+        }
+    }
 }

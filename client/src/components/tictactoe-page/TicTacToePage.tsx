@@ -4,8 +4,8 @@ import '../tictactoe/TicTacToe.scss'
 const TicTacToePage = () => {
     return (
         <div>
-            <h2>TicTacToe Page</h2>
-            <hr />
+            {/*<h2>TicTacToe Page</h2>
+            <hr /> */}
             <div className="tictactoe">
                 <TicTacToe />
             </div>
