@@ -12,11 +12,10 @@ export default class BoardModel {
     constructor(player: Color, oponent: Color) {
         this.playerColor = player;
         this.oponentColor = oponent;
-        this.createCells();
     }
 
     createCells() {
-        const occupiedbyYou = [1, 3, 5, 7, 10, 12, 14, 16, 17, 19, 21];
+        const occupiedbyYou = [1, 3, 5, 7, 10, 12, 14, 16, 17, 19, 21, 23];
         const occupiedbyOponent = [40, 42, 44, 46, 47, 49, 51, 53, 56, 58, 60, 62];
         for (let i = 0; i < this.cellsInRow; i += 1) {
             const row: CellModel[] = [];
@@ -32,5 +31,6 @@ export default class BoardModel {
             }
             this.cells.push(row);
         }
+        console.log(this.cells.length, '; ', this.cells[0].length)
     }
 }
