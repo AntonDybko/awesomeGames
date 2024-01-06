@@ -1,0 +1,35 @@
+.cell {
+    display: flex;
+    width: 64px;
+    height: 64px;
+    justify-content: center;
+    align-items: center;
+}
+
+.dark {
+    background-color: #000;
+}
+
+.light {
+    background-color: #e3b778;
+}
+
+.darkplayer {
+    /*display: flex;
+    width: 64px; 
+    height: 64px;
+    justify-content: center;
+    background-color: rgb(78, 18, 18);
+    border-radius: 50%;*/
+}
+
+.lightplayer {
+    /*position: absolute;
+    width: 80%; 
+    height: 80%;
+    background-color: rgb(25, 160, 209);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);*/
+}
