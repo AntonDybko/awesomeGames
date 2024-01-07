@@ -27,7 +27,7 @@ export const Cell = ({ cell, selected, onCellClick }: CellProps): ReactElement =
                 </div>
             )}
 
-            {(cell.available && !cell.figure) && (
+            {(cell.available /*&& !cell.figure*/) && (
                 <div className='available'/>
             )}
 

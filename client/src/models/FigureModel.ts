@@ -5,6 +5,8 @@ import darkPiece from "../images/brown.png";
 import lightQueen from "../images/light-queen.png";
 import darkQuenn from "../images/brown-queen.png";
 import { FigureNames } from "./FigureNames";
+//import { PlayerModel } from "./PlayerModel";
+import PlayerModel from "./PlayerModel";
 
 class FigureModel {
     label: Labels;
@@ -13,26 +15,22 @@ class FigureModel {
     cell: CellModel;
     name: FigureNames;
 
-    constructor(label: Labels, cell: CellModel, isDame?: boolean){
+    constructor(label: Labels, cell: CellModel){
         this.label = label;
         this.cell = cell;
         this.cell.figure = this;
-        if(isDame) {
-            this.isDame = isDame;
-            this.name = FigureNames.Dame;
-        }else {
-            this.isDame = false;
-            this.name = FigureNames.Piece;
-        }
-        //this.isDame = true;
-        //this.name = FigureNames.Piece;
-        this.imageSrc = label === Labels.Light ? 
-            (this.isDame === true ? lightQueen : lightPiece) : 
-            (this.isDame === true ? darkQuenn : darkPiece)
+        this.isDame = false;
+        this.name = FigureNames.Piece;
+        this.imageSrc = label === Labels.Light ? lightPiece : darkPiece;
     }
 
-    canMove(targetCell: CellModel): boolean {
-        return !targetCell.figure;
+    canMove(targetCell: CellModel, currentyPlayer: PlayerModel): boolean {
+        return this.cell.isForwardCell(targetCell, this) && targetCell.figure?.label != currentyPlayer.label/*(targetCell.figure === null || */
+    }
+
+    makeDame(){
+        this.imageSrc = this.label === Labels.Light ? lightQueen : darkQuenn;
+        this.isDame = true;
     }
 }
 

@@ -3,23 +3,35 @@ import './Board.scss';
 import { Cell } from '../cell/Cell';
 import BoardModel from '../../../models/BoardModel';
 import CellModel from 'models/CellModel';
+//import { PlayerModel } from 'models/PlayerModel';
+import PlayerModel from 'models/PlayerModel';
 
 type BoardProps = {
     board: BoardModel;
     onSetBoard: (board: BoardModel) => void;
+    currentPlayer: PlayerModel;
+    onChangePlayer: () => void;
+    onChangeKillCount: () => void;
 };
 
-export const Board = ({ board, onSetBoard}: BoardProps): ReactElement => {
+export const Board = ({ board, onSetBoard, currentPlayer, onChangePlayer, onChangeKillCount}: BoardProps): ReactElement => {
     const [selected, setSelected] = useState<CellModel>();
+    //const [winner, setWiner] = useState<PlayerModel>();
     
     const handleCellClick = (cell: CellModel) => {
         //console.log(selected)
-        if(selected && selected !== cell && selected.figure?.canMove(cell)){
-            selected.moveFigure(cell);
+        if(selected && selected !== cell && selected.figure?.canMove(cell, currentPlayer)){
+            //console.log(currentPlayer.amountOfDefeatedPiecies)
+            if(cell.figure !== null) {onChangeKillCount();}
+            //console.log(currentPlayer.amountOfDefeatedPiecies)
+            selected.moveFigure(cell, currentPlayer);
             setSelected(undefined);
+            onChangePlayer();
             updateBoard();
         }else{
-            setSelected(cell);
+            if (cell.figure?.label === currentPlayer.label) {
+                setSelected(cell);
+            }
         }
     };
 
@@ -29,7 +41,7 @@ export const Board = ({ board, onSetBoard}: BoardProps): ReactElement => {
     }
 
     const highlightCells = () => {
-        board.highlightCells(selected);
+        board.highlightCells(selected, currentPlayer);
         updateBoard();
     }
 

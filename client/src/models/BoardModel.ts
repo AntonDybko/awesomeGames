@@ -2,6 +2,8 @@ import CellModel from './CellModel';
 import { Labels } from './Labels';
 import { FigureModel } from './FigureModel';
 import { CreateCell } from '../utils/utils';
+//import { PlayerModel } from './PlayerModel';
+import PlayerModel from './PlayerModel';
 
 export default class BoardModel {
     cells: CellModel[][] = [];
@@ -31,10 +33,11 @@ export default class BoardModel {
         });
     }
 
-    highlightCells(selectedCell: CellModel | undefined){
+    highlightCells(selectedCell: CellModel | undefined, currentyPlayer: PlayerModel){
         this.cells.forEach(row => {
             row.forEach(cell => {
-                cell.available = selectedCell?.figure?.canMove(cell) ? true : false
+                cell.available = !!selectedCell?.figure?.canMove(cell, currentyPlayer);
+                //cell.available = selectedCell?.figure?.canMove(cell) ? true : false
             })
         })
     }
