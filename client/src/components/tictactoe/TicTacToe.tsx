@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router'
 import {io, Socket} from 'socket.io-client';
+import { random } from '../../utils/utils'
 
 const socket = io('http://localhost:5000');
 
@@ -113,9 +114,10 @@ const TicTacToe: React.FC = () => {
         [2, 4, 6],
     ];
 
-    const random = () => {
+    /*const random = () => {
         return Array.from(Array(8), () => Math.floor(Math.random() * 36).toString(36)).join('');
-    };
+    };*/
+    //umiescilem to w utils
 
     return (
         <div className="container">

@@ -1,6 +1,6 @@
 import { Labels } from "./Labels";
 
-export default class PlayerModel {
+class PlayerModel {
     label: Labels;
     amountOfDefeatedPiecies: number
 
@@ -8,10 +8,6 @@ export default class PlayerModel {
         this.label = label;
         this.amountOfDefeatedPiecies = killCount;
     }
-
-    increaseKillCount(){
-        this.amountOfDefeatedPiecies += 1;
-    }
 }
 
-//export { PlayerModel };
+export { PlayerModel };

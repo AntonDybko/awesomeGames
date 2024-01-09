@@ -1,8 +1,8 @@
 import { Labels } from './Labels';
 import BoardModel from './BoardModel';
 import { FigureModel } from './FigureModel';
-//import { PlayerModel } from './PlayerModel';
-import PlayerModel from './PlayerModel';
+import { PlayerModel } from './PlayerModel';
+//import PlayerModel from './PlayerModel';
 import { checkDame } from 'utils/utils';
 
 export default class CellModel {
