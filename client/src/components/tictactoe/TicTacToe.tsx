@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router'
 import {io, Socket} from 'socket.io-client';
 import { random } from '../../utils/utils'
+import { socket } from 'socket';
 
-const socket = io('http://localhost:5000');
 
 const TicTacToe: React.FC = () => {
     const [game, setGame] = useState<string[]>(Array(9).fill(''));

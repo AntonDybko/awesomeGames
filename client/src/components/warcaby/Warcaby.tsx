@@ -7,8 +7,9 @@ import { PlayerModel } from 'models/PlayerModel';
 import {io, Socket} from 'socket.io-client';
 import { useLocation } from 'react-router'
 import { random } from 'utils/utils';
+import { socket } from 'socket';
 //import PlayerModel from 'models/PlayerModel';
-const socket = io('http://localhost:5000');
+
 
 function Warcaby() {
     const [board, setBoard] = useState<BoardModel>(new BoardModel());
