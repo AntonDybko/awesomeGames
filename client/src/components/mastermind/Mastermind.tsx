@@ -1,16 +1,73 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios-config/axios';
 import './Mastermind.scss';
 
 
 const Mastermind: React.FC = () => {
+  const [start, setStart] = useState<number>(0);
+  const [end, setEnd] = useState<number>(0);
+  const [consent, setConsent] = useState<Boolean>(false);
   const [selectedColor, setSelectedColor] = useState<string>(''); 
   const [previousGuesses, setPreviousGuesses] = useState<string[][]>(Array.from({ length: 10 }, () => Array(4).fill('')));
   const [guess, setGuess] = useState<string[]>(Array(4).fill(''));
   const [remainingAttempts, setRemainingAttempts] = useState<number>(9);
   const [secretCode, setSecretCode] = useState<string[]>(Array(4).fill(''));
   const [scores, setScores] = useState<number[][]>(Array.from({ length: 10 }, () => Array(2).fill('')));
+  const [maxBlack, setMaxBlack] = useState<number>(0);
+  const [maxWhite, setMaxWhite] = useState<number>(0);
   const [gameResult, setGameResult] = useState<string>('');
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
+
+  const startGame = () => {
+    setStart(Date.now());
+    setConsent(true);
+  }
+
+  const calculateScore = () => {
+    const winMultiplier = 100000000;
+    const blackMultiplier = 10000000;
+    const whiteMultiplier = 1000000;
+    const time = end - start;
+
+    if (gameResult === 'win') {
+      return (8 + remainingAttempts) * winMultiplier / time;
+    } else {
+      return (maxBlack * blackMultiplier + maxWhite * whiteMultiplier) / time;
+    }
+  }
+
+  const checkScoreAndUpdateMax = (score: number[]) => {
+    if (score[0] > maxBlack) {
+      setMaxBlack(score[0]);
+    }
+    if (score[1] > maxWhite) {
+      setMaxWhite(score[1]);
+    }
+  }
+
+  const save = () => {
+    // Czy hook może być asynchroniczny?
+    const sendToDatabase = async () => {
+      try {
+        // Tu jest potrzebny axios.post z Tokenem i nazwą użytkownika
+        /*
+        const data = {
+            gamename: "mastermind",
+            score: 1234,
+        }
+        const config = {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+        };
+        const response = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
+        */
+      } catch {
+        // Tu leci jakiś error
+      }
+    }
+  }
 
   const colors = ['gold', 'red', 'springgreen', 'limegreen', 'skyblue', 'royalblue', 'fuchsia', 'mediumpurple',];
 
@@ -38,6 +95,8 @@ const Mastermind: React.FC = () => {
 
   // dodaje wynik do histori wynikow
   const handleAddScore = (score: number[], i: number) => {
+    checkScoreAndUpdateMax(score);
+
     setScores((prevState) => {
       return prevState.map((row, index) => {
         if (index === i) {
@@ -58,6 +117,7 @@ const Mastermind: React.FC = () => {
 
     if (result[0] === 4) {
       setGameResult('win');
+      setEnd(Date.now());
       setButtonDisable(true);
     }
 
@@ -65,6 +125,7 @@ const Mastermind: React.FC = () => {
 
     if (remainingAttempts === 0) {
       setGameResult('lose');
+      setEnd(Date.now());
       setButtonDisable(true);
     }
   }
@@ -99,6 +160,7 @@ const Mastermind: React.FC = () => {
 
   // resetuje wszystkie dane
   const newGame = () => {
+    setConsent(false);
     setSelectedColor('');
     setPreviousGuesses(Array.from({ length: 10 }, () => Array(4).fill('')));
     setGuess(Array(4).fill(''));
@@ -129,7 +191,12 @@ const Mastermind: React.FC = () => {
 
   return (
     <div>
-      <div className="mastermind">
+      {consent === false && <div>
+        <span>Ready?</span>
+        <span>Set...</span>
+        <button onClick={startGame}>Go!</button>
+      </div>}
+      {consent === true && <div className="mastermind">
         <div className="color-picker">
           <h3>Color Picker</h3>
           <div className="color-column">
@@ -201,7 +268,7 @@ const Mastermind: React.FC = () => {
           </div>
           <button onClick={test}>Test</button>
         </div>
-      </div>
+      </div>}
       {gameResult === 'win' && 
         <h2>Yay! You guessed the secret code!</h2>
       }
