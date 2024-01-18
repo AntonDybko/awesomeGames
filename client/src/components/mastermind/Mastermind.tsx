@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios-config/axios';
 import './Mastermind.scss';
+import useAuth from "hooks/useAuth";
 
+const apiUrl = "http://localhost:5000";
 
 const Mastermind: React.FC = () => {
+  const { auth } = useAuth();
   const [start, setStart] = useState<number>(0);
   const [end, setEnd] = useState<number>(0);
   const [consent, setConsent] = useState<Boolean>(false);
-  const [selectedColor, setSelectedColor] = useState<string>(''); 
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [previousGuesses, setPreviousGuesses] = useState<string[][]>(Array.from({ length: 10 }, () => Array(4).fill('')));
   const [guess, setGuess] = useState<string[]>(Array(4).fill(''));
   const [remainingAttempts, setRemainingAttempts] = useState<number>(9);
@@ -45,29 +48,35 @@ const Mastermind: React.FC = () => {
     }
   }
 
-  const save = () => {
-    // Czy hook może być asynchroniczny?
-    const sendToDatabase = async () => {
-      try {
-        // Tu jest potrzebny axios.post z Tokenem i nazwą użytkownika
-        /*
-        const data = {
-            gamename: "mastermind",
-            score: 1234,
-        }
-        const config = {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
-        };
-        const response = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
-        */
-      } catch {
-        // Tu leci jakiś error
+  const save = async () => {
+    try {
+      const data = {
+        gamename: "mastermind",
+        score: calculateScore(),
       }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+          'Content-Type': 'application/json',
+        },
+      };
+      await axios.post(`${apiUrl}/users/profile/${auth.username}/scores`, data, config);
+
+    } catch (error) {
+      console.error('Cannot save score due to the following error occurence:', error);
     }
   }
+
+  const endGame = () => {
+    setEnd(Date.now);
+    setButtonDisable(true);
+  }
+
+  useEffect(() => {
+    if (end > 0) {
+      save();
+    }
+  }, [end]);
 
   const colors = ['gold', 'red', 'springgreen', 'limegreen', 'skyblue', 'royalblue', 'fuchsia', 'mediumpurple',];
 
@@ -117,16 +126,14 @@ const Mastermind: React.FC = () => {
 
     if (result[0] === 4) {
       setGameResult('win');
-      setEnd(Date.now());
-      setButtonDisable(true);
+      endGame();
     }
 
     setRemainingAttempts(remainingAttempts - 1);
 
     if (remainingAttempts === 0) {
       setGameResult('lose');
-      setEnd(Date.now());
-      setButtonDisable(true);
+      endGame();
     }
   }
 
@@ -136,7 +143,7 @@ const Mastermind: React.FC = () => {
     let tmpSecret = [...secretCode];
     let correct = 0;
     let misplaced = 0;
-    
+
     for (let i = 0; i < tmpSecret.length; i++) {
       if (tmpSecret[i] === tmpGuess[i]) {
         correct++;
@@ -173,6 +180,7 @@ const Mastermind: React.FC = () => {
 
   // dla testów. pokazuje rozwiązanie
   const test = () => {
+    // console.log('Auth:', auth);
     console.log(secretCode);
   }
 
@@ -184,7 +192,7 @@ const Mastermind: React.FC = () => {
     }
     return secretCode;
   };
-  
+
   useEffect(() => {
     setSecretCode(generateSecretCode());
   }, []);
@@ -269,10 +277,10 @@ const Mastermind: React.FC = () => {
           <button onClick={test}>Test</button>
         </div>
       </div>}
-      {gameResult === 'win' && 
+      {gameResult === 'win' &&
         <h2>Yay! You guessed the secret code!</h2>
       }
-      {gameResult === 'lose' && 
+      {gameResult === 'lose' &&
         <h2>Game over! You have run out of attempts. Better luck next time!</h2>
       }
     </div>
