@@ -39,6 +39,21 @@ const scoreController = {
         }
     },
 
+    // must contain username and gamename in the request params
+    getScoresForGame: async (req: Request, res: Response) => {
+        try {
+            const user = await User.find({ username: req.params.username });
+            const game = await Game.find({ name: req.params.gamename });
+
+            if (user && game) {
+                const scores = await Score.find({ user: user[0]._id, game: game[0]._id });
+                return res.status(200).json(scores);
+            }
+        } catch (error) {
+            return res.status(400).json(error);
+        }
+    },
+
     // must contain score id in the request params
     getScore: async (req: Request, res: Response) => {
         try {

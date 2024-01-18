@@ -39,6 +39,9 @@ router.get("/profile/:username", handleAsync(userController.getUser));
 // GET /profile/username/scores {}
 router.get("/profile/:username/scores", handleAsync(scoreController.getScores));
 
+// GET /profile/username/scores/byGame/gamename
+router.get("/profile/:username/scores/byGame/:gamename", handleAsync(scoreController.getScoresForGame));
+
 // GET /profile/username/scores/id {}
 router.get("/profile/:username/scores/:id", handleAsync(scoreController.getScore));
 

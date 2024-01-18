@@ -52,7 +52,7 @@ describe('Testy serwera', () => {
         // Extract the HTTPOnly cookie from the Set-Cookie header
         const httpOnlyCookie = response.headers['set-cookie'].find((cookie) => cookie.includes('HttpOnly'));
         expect(response.status).toBe(200);
-        expect(response.data.message).toBe('Login successful');
+        expect(response.data.message).toBe('Register successful');
         expect(response.data.accessToken).toBeDefined();
         //expect(response.headers['set-cookie']).toBeDefined();
         expect(httpOnlyCookie).toBeDefined();
@@ -172,7 +172,7 @@ describe('Testy serwera', () => {
         const response = await axios.get(`${apiUrl}/users/profile/Anton/scores`);
         expect(response.status).toBe(200);
     });
-    it('! get score with specified id', async () => {
+    it('get score with specified id', async () => {
         const data = {
             gamename: "mastermind",
             score: 1234,
@@ -188,7 +188,7 @@ describe('Testy serwera', () => {
         const response = await axios.get(`${apiUrl}/users/profile/Anton/scores/${score.data._id}`);
         expect(response.status).toBe(200);
     });
-    it('! delete score', async () => {
+    it('delete score', async () => {
         const data = {
             gamename: "mastermind",
             score: 1234,
@@ -202,6 +202,10 @@ describe('Testy serwera', () => {
         const score = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
 
         const response = await axios.delete(`${apiUrl}/users/profile/Anton/scores/${score.data._id}`, config);
+        expect(response.status).toBe(200);
+    });
+    it('get scores for Anton and mastermind', async () => {
+        const response = await axios.get(`${apiUrl}/users/profile/Anton/scores/byGame/mastermind`);
         expect(response.status).toBe(200);
     });
     it('get new access token with refresh token', async () => {
