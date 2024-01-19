@@ -4,6 +4,7 @@ import cors from "cors";
 import dbConfig from "./config/dbConfig";
 import users from "./routes/users";
 import games from "./routes/games";
+import rankings from "./routes/rankings";
 import cookieParser from "cookie-parser";
 import http from "http";
 import { Server } from 'socket.io';
@@ -22,6 +23,7 @@ app.use(express.json());
 
 app.use("/users", users);
 app.use("/games", games);
+app.use("/ranking", rankings);
 app.use((req, res, next) => {
     res.status(404).send('Route not Found');
 });

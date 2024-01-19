@@ -6,39 +6,39 @@ let refreshToken = ''
 
 describe('Testy serwera', () => {
     it('should handle wrong password', async () => {
-        try{
+        try {
             await axios.post(`${apiUrl}/users/register`, {
                 username: "Anton",
                 email: "antond@gmail.com",
                 password: "Anton22"
             });
-        } catch(err) {
+        } catch (err) {
             expect(err.response.status).toBe(400);
             expect(err.response.data.message).toBe('Validation failed');
         }
     });
     it('should handle wrong email format', async () => {
-        try{
+        try {
             await axios.post(`${apiUrl}/users/register`, {
                 username: "Anton",
                 email: "",
                 password: "Anton@22"
             });
-        } catch(err) {
-            console.log(err)
+        } catch (err) {
+            // console.log(err)
             expect(err.response.status).toBe(400);
             //expect(err.response.data.message).toBe('Validation failed');
         }
     });
     it('should handle wrong username format', async () => {
-        try{
+        try {
             await axios.post(`${apiUrl}/users/register`, {
                 username: "",
                 email: "antond@gmail.com",
                 password: "Anton@22"
             });
-        } catch(err) {
-            console.log(err)
+        } catch (err) {
+            // console.log(err)
             expect(err.response.status).toBe(400);
             //expect(err.response.data.message).toBe('Validation failed');
         }
@@ -87,8 +87,8 @@ describe('Testy serwera', () => {
     it('handle logout', async () => {
         const config = {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
             },
         };
         const response = await axios.delete(`${apiUrl}/users/logout`, config);
@@ -99,8 +99,8 @@ describe('Testy serwera', () => {
     it('get main route of users', async () => {
         const config = {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
             },
         };
         const response = await axios.get(`${apiUrl}/users/`, config);
@@ -161,8 +161,8 @@ describe('Testy serwera', () => {
         }
         const config = {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
             },
         };
         const response = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
@@ -179,12 +179,12 @@ describe('Testy serwera', () => {
         }
         const config = {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
             },
         };
         const score = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
-        
+
         const response = await axios.get(`${apiUrl}/users/profile/Anton/scores/${score.data._id}`);
         expect(response.status).toBe(200);
     });
@@ -195,8 +195,8 @@ describe('Testy serwera', () => {
         }
         const config = {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
             },
         };
         const score = await axios.post(`${apiUrl}/users/profile/Anton/scores`, data, config);
@@ -208,10 +208,14 @@ describe('Testy serwera', () => {
         const response = await axios.get(`${apiUrl}/users/profile/Anton/scores/byGame/mastermind`);
         expect(response.status).toBe(200);
     });
+    it('get ranking for mastermind', async () => {
+        const response = await axios.get(`${apiUrl}/ranking/mastermind`);
+        expect(response.status).toBe(200);
+    });
     it('get new access token with refresh token', async () => {
         const config = {
             headers: {
-              Cookie: `refreshToken=${refreshToken}`,
+                Cookie: `refreshToken=${refreshToken}`,
             },
         };
         const response = await axios.get(`${apiUrl}/users/refresh-token`, config);
@@ -231,12 +235,12 @@ describe('Testy serwera', () => {
                 'Content-Type': 'application/json',
             },
         };
-    
+
         const response = await axios.put(`${apiUrl}/users/profile`, editedUser, config);
         expect(response.status).toBe(200);
     });
     it('should handle wrong password in edited user', async () => {
-        try{
+        try {
             const editedUser = {
                 username: 'UpdatedAnton',
                 email: 'antond@gmail.com"',
@@ -249,7 +253,7 @@ describe('Testy serwera', () => {
                 },
             };
             await axios.put(`${apiUrl}/users/profile`, editedUser, config);
-        } catch(err) {
+        } catch (err) {
             expect(err.response.status).toBe(400);
             expect(err.response.data.message).toBe('Validation failed');
         }
@@ -257,12 +261,12 @@ describe('Testy serwera', () => {
 })
 
 function extractRefreshToken(cookies) {
-    console.log(cookies)
+    // console.log(cookies)
     for (const cookie of cookies) {
-      const match = cookie.match(/refreshToken=([^;]+)/);
-      if (match) {
-        return match[1];
-      }
+        const match = cookie.match(/refreshToken=([^;]+)/);
+        if (match) {
+            return match[1];
+        }
     }
     return null;
 }
