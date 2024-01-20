@@ -1,11 +1,13 @@
 import { Server, Socket } from "socket.io";
 import createRatingSystem from './ratingSystem'
+import updateFirstScore from "./helpers/dbHelp/updateFirstScore";
+import getFirstScore from "./helpers/dbHelp/getFirstScore";
 
 const rating = createRatingSystem()
 
 
 const socketManager = (io: Server) => {
-    const rooms: {[name: string]: {players: string[]}} = {} // tutaj będzie jeszcze trzeba przechowywać aktualny rating graczy
+    const rooms: { [name: string]: { players: string[] } } = {} // tutaj będzie jeszcze trzeba przechowywać aktualny rating graczy
 
     io.on('connection', (socket) => {
         console.log("User connected", socket.id);
@@ -34,25 +36,31 @@ const socketManager = (io: Server) => {
             console.log("username:", username)
             socket.join(room);
             io.to(room).emit('opponentJoined');
-            rooms[room].players.push(socket.id)
+            rooms[room].players.push(username)
         })
 
         // 1) pod koniec gry usery osobno wysylaja zapytanie o update rankingu
-        socket.on('winner', (room: string, username: string) => {
-            console.log("room:", room)
-            console.log("username:", username)
-            // wyslac zapytanie o update ratingu
+        socket.on('winner', (room: string, username: string, gamename: string) => {
+            const loser = rooms[room].players.filter((player) => !username)[0];
+            async () => { 
+                const loserRanking = await getFirstScore(loser, gamename);
+                const winnerRanking = await getFirstScore(username, gamename);
+                const newRating = rating.getNextRatings(winnerRanking, loserRanking, 1);
+                
+                updateFirstScore(username, gamename, newRating.nextPlayerARating);
+                updateFirstScore(loser, gamename, newRating.nextPlayerBRating);
+            };
         })
 
-        socket.on('loser', (room: string, username: string) => {
-            console.log("room:", room)
-            console.log("username:", username)
-            // wyslac zapytanie o update ratingu
-        })
+        // socket.on('loser', (room: string, username: string) => {
+        //     console.log("room:", room)
+        //     console.log("username:", username)
+        //     // wyslac zapytanie o update ratingu
+        // })
 
         // 2) pod koniec gry wysylane jest zapytanie o update rankingu obu graczy
-        socket.on('gameover', (room: string) => {
-            console.log("room:", room)
+        // socket.on('gameover', (room: string) => {
+        //     console.log("room:", room)
 
             // const {
             //     playerAProbability,
@@ -63,7 +71,7 @@ const socketManager = (io: Server) => {
             //     playerBRatingDiff
             // } = rating.getNextRatings(playerARating, playerBRating, actualScore) // pozmieniac argumenty na poprawne ()
             // wyslac zapytanie o update ratingu
-        })
+        // })
 
         socket.on('reqRestart', (data) => {
             const room = JSON.parse(data).room;

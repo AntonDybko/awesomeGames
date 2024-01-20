@@ -46,10 +46,10 @@ const TicTacToe: React.FC = () => {
             if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== '') {
                 setWinner(true);
                 // 1)
-                // if (player === xo) {
-                //     console.log("Win")
-                //     socket.emit('winner', room, auth.username)
-                // }
+                if (player === xo) {
+                    console.log("Win")
+                    socket.emit('winner', room, auth.username)
+                }
                 // else {
                 //     console.log("Lose")
                 //     socket.emit('loser', room, auth.username)
