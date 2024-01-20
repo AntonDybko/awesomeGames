@@ -1,7 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import TicTacToe from "../tictactoe/TicTacToe";
 import Mastermind from "../mastermind/Mastermind";
-import Warcaby from "../warcaby/Warcaby";
+import Statki from "../statki/Statki";
 
 const Games = () => {
     return (
@@ -15,7 +15,7 @@ const Games = () => {
               <Link to="/games/mastermind">Mastermind</Link>
             </li>
             <li>
-              <Link to="/games/warcaby">Warcaby</Link>
+              <Link to="/games/statki">Statki</Link>
             </li>
           </ul>
         </div>

@@ -11,7 +11,7 @@ const socketManager = (io: Server) => {
             io.to(room).emit('playerTurn', data);
         })
 
-        socket.on('reqWarcabyTurn', (data) => {
+        socket.on('reqStatkiTurn', (data) => {
             //(json.key, json.label, json.isDame)
             const room = JSON.parse(data).room;
             console.log(JSON.parse(data));
@@ -22,6 +22,36 @@ const socketManager = (io: Server) => {
             //rooms[room] = { players: [] };
             //rooms[room].players.push(socket.id)
             socket.join(room);
+        })
+
+        socket.on('sendDarkBoard', data => {
+            const room = JSON.parse(data).room;
+            io.to(room).emit('lightPlayerTurn', data);
+        })
+
+        /*socket.on('initOponentBoard', data => {
+            const room = JSON.parse(data).room;
+            //io.to(room).emit('lightPlayerTurn', data);
+            console.log(JSON.parse(data).label)
+            io.to(room).emit('getOponentBoard', data);
+            //io.to(room).emit('playerTurn', data);
+        })*/
+        socket.on('initDarkBoard', data => {
+            const room = JSON.parse(data).room;
+            console.log('init dark board')
+            console.log(JSON.parse(data))
+            io.to(room).emit('getDarkBoard', data);
+        })
+        socket.on('initLightBoard', data => {
+            const room = JSON.parse(data).room;
+            console.log('init light board')
+            console.log(JSON.parse(data))
+            io.to(room).emit('getLightBoard', data);
+        })
+
+        socket.on('sendLightBoard', data => {
+            const room = JSON.parse(data).room;
+            io.to(room).emit('darkPlayerTurn', data);
         })
 
         socket.on('join', room => {

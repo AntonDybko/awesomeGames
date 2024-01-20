@@ -1,14 +1,18 @@
-.warcaby {
+.statki {
     padding-top: 50px;
     padding-left: 10%;
     justify-content: center;
     align-items: center;
-    /*
+}
+
+.leftside {
+    left:25%;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    */
+}
+
+.rightside {
+    left:75%;
+    position: absolute;
 }
 
 .player {

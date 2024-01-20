@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import './Warcaby.scss';
+import { useEffect, useState } from 'react';
+import './Statki.scss';
 import { Board } from './board/Board';
-import BoardModel from '../../models/BoardModel';
-import { Labels } from 'models/Labels';
-import { PlayerModel } from 'models/PlayerModel';
-import {io, Socket} from 'socket.io-client';
+import BoardModel from '../../models/statki/BoardModel';
+import { Labels } from 'models/statki/Labels';
+import { PlayerModel } from 'models/statki/PlayerModel';
 import { useLocation } from 'react-router'
-import { random } from 'utils/utils';
+import { boardToArray, random } from 'utils/utils';
 import { socket } from 'socket';
-//import PlayerModel from 'models/PlayerModel';
+import { BoardId } from 'models/statki/BoardId';
 
-
-function Warcaby() {
-    const [board, setBoard] = useState<BoardModel>(new BoardModel());
+function Statki() {
+    const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
+    const [oponentBoard, setOponentBoard] = useState<BoardModel>(new BoardModel(true));
     const [winner, setWiner] = useState<PlayerModel>();
     const [lightPlayer, setLightPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Light, 0));
     const [darkPlayer, setDarkPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Dark, 0));
@@ -20,45 +19,76 @@ function Warcaby() {
     const [playerSide, setPlayerSide] = useState<Labels>();
     const [hasOpponent, setHasOpponent] = useState<boolean>(false);
     const [share, setShare] = useState<boolean>(false);
+    const [sentBoardStatus, setSentBoardStatus] = useState<boolean>(false);
 
     const location = useLocation();
     const params = new URLSearchParams(location.search);
     const paramsRoom = params.get('room');
-    const [room, setRoom] = useState(paramsRoom);
+    const [room, setRoom] = useState(paramsRoom)
 
+    //------------
     const restart = () => {
-        const newBoard = new BoardModel();
+        const newBoard = new BoardModel(false);
         newBoard.createCells();
-        newBoard.addFigures();
+        newBoard.addShips();
         setBoard(newBoard);
         setCurrentPlayer(lightPlayer);
+
+        const newBoard2 = new BoardModel(true);
+        newBoard2.createCells();
+        setOponentBoard(newBoard2);
     };
 
     const changePlayer = () => {
         setCurrentPlayer(currentPlayer.label === Labels.Light ? darkPlayer : lightPlayer);
     }
 
-    const changeLightPlayerCount = (x: number) => {
+    const changeLightPlayerBreakThrough = (x: number) => {
         setLightPlayer(new PlayerModel(Labels.Light, x));
     }
 
-    const changeDarkPlayerCount = (x: number) => {
+    const changeDarkPlayerBreakThrough = (x: number) => {
         setDarkPlayer(new PlayerModel(Labels.Dark, x));
     }
 
-    const changeKillCount = () => {
+    const changeBreakThrough = () => {
         currentPlayer.label === Labels.Light ? 
-            setLightPlayer(new PlayerModel(Labels.Light, lightPlayer.amountOfDefeatedPiecies+1)) : 
-            setDarkPlayer(new PlayerModel(Labels.Dark, darkPlayer.amountOfDefeatedPiecies+1));
+            setLightPlayer(new PlayerModel(Labels.Light, lightPlayer.breakthrough+1)) : 
+            setDarkPlayer(new PlayerModel(Labels.Dark, darkPlayer.breakthrough+1));
     }
 
     useEffect(() => {
         board.updateBoard()
+        console.log('updating board')
     }, [board])
 
     useEffect(() => {
-        if(lightPlayer.amountOfDefeatedPiecies === 12) setWiner(lightPlayer);
-        if(darkPlayer.amountOfDefeatedPiecies === 12) setWiner(darkPlayer);
+        oponentBoard.updateBoard()
+        console.log('updating board')
+    }, [oponentBoard])
+
+
+    useEffect(() => {
+        console.log('have oponent?', hasOpponent)
+        if(!sentBoardStatus && board.cells.length !== 0){//
+            if(playerSide === Labels.Dark) {
+                console.log('sending board', playerSide)
+                socket.emit('initDarkBoard', JSON.stringify(
+                    { board: boardToArray(board), room: room}
+                ));
+            }else{
+                socket.emit('initLightBoard', JSON.stringify(
+                    { board: boardToArray(board), room: room}
+                ));
+            }
+            setSentBoardStatus(true)
+        }
+    }, [hasOpponent])
+
+
+    useEffect(() => {
+        if(lightPlayer.breakthrough === 15) setWiner(lightPlayer);
+        if(darkPlayer.breakthrough === 15) setWiner(darkPlayer);
     }, [lightPlayer, darkPlayer])
 
     useEffect(() => {
@@ -97,7 +127,7 @@ function Warcaby() {
     }, []);
 
     return (
-        <div className="warcaby">
+        <div className="statki">
             <div>Room: {room}</div>
             { winner ? (
                 <h1>{winner.label} player wins!</h1>
@@ -121,27 +151,50 @@ function Warcaby() {
                         </div>
                     ) : null}
                     <br />
+                    <h2 className='leftside'>Player</h2>
+                    <h2 className='rightside'>Oponent</h2>
                     <br />
                     <div className='player'>Current player: {currentPlayer.label}</div>
                     <Board 
+                        id={BoardId.player}
                         board={board} 
                         onSetBoard={setBoard}
                         currentPlayer={currentPlayer}
                         onChangePlayer={changePlayer}
-                        onChangeKillCount={changeKillCount}
-                        hasOpponent={hasOpponent}
+                        onChangeBreakThrough={changeBreakThrough}
+                        hasOpponent={false}
                         playerSide={playerSide}
                         room={room}
                         socket={socket}
                         lightPlayer={lightPlayer}
                         darkPlayer={darkPlayer}
-                        onChangeLightPlayerCount={changeLightPlayerCount}
-                        onChangeDarkPlayerCount={changeDarkPlayerCount}
+                        onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                        onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                     />
+                    { hasOpponent ? (
+                        <Board
+                            id={BoardId.oponent}
+                            board={oponentBoard} 
+                            onSetBoard={setOponentBoard}
+                            currentPlayer={currentPlayer}
+                            onChangePlayer={changePlayer}
+                            onChangeBreakThrough={changeBreakThrough}
+                            hasOpponent={hasOpponent}
+                            playerSide={playerSide}
+                            room={room}
+                            socket={socket}
+                            lightPlayer={lightPlayer}
+                            darkPlayer={darkPlayer}
+                            onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                            onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                        />
+                    ) : null}
+                    
                 </div>
             )}
         </div>
     );
+
 }
 
-export default Warcaby;
+export default Statki;
