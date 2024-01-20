@@ -18,7 +18,7 @@ const JoinButton: React.FC = () => {
 
   return (
     <div className="button-container">
-      <button onClick={() => handleJoin()}>Join</button>
+      <button onClick={() => handleJoin()}>Play</button>
     </div>
   );
 };

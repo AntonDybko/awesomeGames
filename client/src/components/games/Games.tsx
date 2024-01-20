@@ -1,25 +1,39 @@
-import { Routes, Route, Link } from "react-router-dom";
-import TicTacToe from "../tictactoe/TicTacToe";
-import Mastermind from "../mastermind/Mastermind";
-import Warcaby from "../warcaby/Warcaby";
+import "./Games.scss";
+import tictactoeImage from '../../images/tictactoe.png';
+import checkersImage from '../../images/checkers.png';
+import mastermindImage from '../../images/mastermind.png';
+import Card from './card/Card'; 
 
 const Games = () => {
-    return (
-        <div>
-            <h2>Games</h2>
-            <ul>
-            <li>
-              <Link to="/games/tictactoe">TicTacToe</Link>
-            </li>
-            <li>
-              <Link to="/games/mastermind">Mastermind</Link>
-            </li>
-            <li>
-              <Link to="/games/warcaby">Warcaby</Link>
-            </li>
-          </ul>
-        </div>
-    );
-}
+  return (
+    <div className="page">
+      <h2 className="title">GAMES</h2>
+
+      <div className="container">
+        <Card
+          imageSrc={tictactoeImage}
+          title="TicTacToe"
+          description="Tic Tac Toe is a beloved choice for casual entertainment and strategic challenges."
+          linkTo="/games/tictactoe"
+          buttonText="Multiplayer"
+        />
+        <Card
+          imageSrc={mastermindImage}
+          title="Mastermind"
+          description="Classic code-breaking game that challenges players to decipher a hidden code."
+          linkTo="/games/mastermind"
+          buttonText="Singleplayer"
+        />
+        <Card
+          imageSrc={checkersImage}
+          title="Checkers"
+          description="Step onto the checkered battlefield, outmaneuver your opponent, and claim victory."
+          linkTo="/games/warcaby"
+          buttonText="Multiplayer"
+        />
+      </div>
+    </div>
+  );
+};
 
 export default Games;
