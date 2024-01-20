@@ -3,9 +3,11 @@ import { useLocation } from 'react-router'
 import {io, Socket} from 'socket.io-client';
 import { random } from '../../utils/utils'
 import { socket } from 'socket';
+import useAuth from "hooks/useAuth";
 
 
 const TicTacToe: React.FC = () => {
+    const { auth } = useAuth();
     const [game, setGame] = useState<string[]>(Array(9).fill(''));
     const [turnNumber, setTurnNumber] = useState<number>(0);
     const [myTurn, setMyTurn] = useState<boolean>(true);
@@ -43,6 +45,15 @@ const TicTacToe: React.FC = () => {
         combinations.forEach((c) => {
             if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== '') {
                 setWinner(true);
+                // 1)
+                // if (player === xo) {
+                //     console.log("Win")
+                //     socket.emit('winner', room, auth.username)
+                // }
+                // else {
+                //     console.log("Lose")
+                //     socket.emit('loser', room, auth.username)
+                // }
             }
         });
 
@@ -81,6 +92,13 @@ const TicTacToe: React.FC = () => {
         }
     }, [turnData, game, turnNumber, winner, myTurn]);
 
+    // 2)
+    // useEffect(() => {
+    //     if (turnNumber !== 0)
+    //     socket.emit("gameover", room)
+
+    // }, [winner])
+
     useEffect(() => {
         if (paramsRoom) {
             setXO('O');
@@ -89,7 +107,7 @@ const TicTacToe: React.FC = () => {
             setMyTurn(false);
         } else {
             const newRoomName = random();
-            socket.emit('create', newRoomName);
+            socket.emit('create', newRoomName, auth.username);
             setRoom(newRoomName);
             setMyTurn(true);
         }
