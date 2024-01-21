@@ -1,8 +1,9 @@
 import "./Games.scss";
 import tictactoeImage from '../../images/tictactoe.png';
-import checkersImage from '../../images/checkers.png';
-import mastermindImage from '../../images/mastermind.png';
+//import checkersImage from '../../images/checkers.png';
 import Card from './card/Card'; 
+import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
+import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
 
 const Games = () => {
   return (
@@ -18,18 +19,18 @@ const Games = () => {
           buttonText="Multiplayer"
         />
         <Card
-          imageSrc={mastermindImage}
           title="Mastermind"
           description="Classic code-breaking game that challenges players to decipher a hidden code."
           linkTo="/games/mastermind"
           buttonText="Singleplayer"
+          IconComponent={PsychologyAltIcon}
         />
         <Card
-          imageSrc={checkersImage}
-          title="Checkers"
-          description="Step onto the checkered battlefield, outmaneuver your opponent, and claim victory."
+          title="Battleships"
+          description="Prepare for a naval showdown as you deploy your fleet and engage in a battle of wits."
           linkTo="/games/warcaby"
           buttonText="Multiplayer"
+          IconComponent={DirectionsBoatIcon}
         />
       </div>
     </div>

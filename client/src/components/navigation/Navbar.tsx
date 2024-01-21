@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
   return (
       <div className="navbar">
         <div className="logo-container">
-            <img alt="logo"/>
+            <Link to="/" className="logo-typography">AwesomeGames</Link>
             <div className="site-title"></div>
         </div>
         <div className="navbar-links">
