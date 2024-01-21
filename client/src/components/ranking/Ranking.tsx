@@ -17,7 +17,7 @@ const Ranking = () => {
               </li>
               <li className="game-leaderboard">
                 <EmojiEventsIcon className="trophy-icon"/>
-                <Link to="/ranking/warcaby">Warcaby</Link>
+                <Link to="/ranking">Battleships</Link>
               </li>
             </ul>
         </div>
