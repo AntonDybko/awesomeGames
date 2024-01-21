@@ -9,7 +9,7 @@ import TicTacToePage from 'components/tictactoe-page/TicTacToePage';
 import TicTacToe from 'components/tictactoe/TicTacToe';
 import SessionPersistence from "components/other/SessionPersistence";
 import RequireAuth from "components/other/RequireAuth";
-import WarcabyPage from "components/warcaby-page/WarcabyPage";
+import StatkiPage from "components/statki-page/StatkiPage";
 
 export const Routing: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ export const Routing: React.FC = () => {
         <Route element={<RequireAuth />}>
           <Route path="/games" element={<Games />} />
           <Route path="/games/mastermind" element={<MastermindPage />} />
-          <Route path="/games/warcaby" element={<WarcabyPage />} />
+          <Route path="/games/statki" element={<StatkiPage />} />
           <Route path="/games/mastermind/:id" element={<Mastermind />} />
           <Route path="/games/tictactoe" element={<TicTacToePage />} />
           <Route path="/games/tictactoe/:id" element={<TicTacToe />} />

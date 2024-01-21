@@ -1,0 +1,52 @@
+.cell {
+    display: flex;
+    width: 62px;
+    height: 62px;
+    justify-content: center;
+    align-items: center;    
+    background-color: #e3b778;
+    border: 1px solid #1cbad6;
+    //box-sizing: border-box;
+    cursor: pointer;
+}
+
+.miss {
+    background-color: #fff;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.ship {
+    background-color: #0c0c0b;
+}
+
+.light {
+    background-color: #e3b778;
+}
+
+.icon {
+    width: 62px;
+    height: 62px;
+    //cursor: pointer;
+}
+
+.board-border {
+    position: absolute;
+}
+
+.top {
+    transform: translateY(-50px);
+}
+
+.bottom {
+    transform: translateY(50px);
+}
+
+.left {
+    transform: translateX(-50px);
+}
+
+.right {
+    transform: translateX(50px);
+}

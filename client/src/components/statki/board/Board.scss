@@ -1,0 +1,16 @@
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    width: calc(64px * 10);
+    height: calc(64px * 10);
+    position: absolute;
+    top: 90%;
+    //left: 10%;
+    transform: translate(-50%, -50%);
+}
+.player {
+    left:25%;
+}
+.oponent{
+    left:75%;
+}
