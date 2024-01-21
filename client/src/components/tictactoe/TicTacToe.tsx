@@ -42,13 +42,15 @@ const TicTacToe: React.FC = () => {
     };
 
     useEffect(() => {
+        console.log('Hello from the Effect!!!');
+        
         combinations.forEach((c) => {
             if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== '') {
                 setWinner(true);
                 // 1)
                 if (player === xo) {
-                    console.log("Win")
-                    socket.emit('winner', room, auth.username)
+                    console.log("Win - emitting event!")
+                    socket.emit('winner', room, auth.username, 'tictactoe')
                 }
                 // else {
                 //     console.log("Lose")
@@ -102,7 +104,7 @@ const TicTacToe: React.FC = () => {
     useEffect(() => {
         if (paramsRoom) {
             setXO('O');
-            socket.emit('join', paramsRoom);
+            socket.emit('join', paramsRoom, auth.username);
             setRoom(paramsRoom);
             setMyTurn(false);
         } else {
