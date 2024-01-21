@@ -112,14 +112,14 @@ describe('Testy serwera', () => {
     });
     it('post new game with only a name', async () => {
         const data = {
-            name: "mastermind"
+            name: "gomoku"
         };
         const response = await axios.post(`${apiUrl}/games`, data);
         expect(response.status).toBe(201);
     });
     it('post new game with a name and numberOfPlayers', async () => {
         const data = {
-            name: "tictactoe",
+            name: "checkers",
             numberOfPlayers: 2
         };
         const response = await axios.post(`${apiUrl}/games`, data);

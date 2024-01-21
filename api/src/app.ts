@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import http from "http";
 import { Server } from 'socket.io';
 import socketManager from "./socket";
+import initGames from "./helpers/dbHelp/initGames";
 
 mongoose.set("strictQuery", false);
 
@@ -43,6 +44,7 @@ mongoose
     .then(() => {
         console.log("Successfull connection to database.",
         );
+        initGames();
         const port = process.env.PORT || 5000;
         server.listen(port, () => {
             console.log(`API server is up and running`);
