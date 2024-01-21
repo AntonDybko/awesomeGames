@@ -19,12 +19,17 @@ export default async function getFirstScore(username: String, gamename: String) 
                 user: user[0]._id,
                 game: game[0]._id
             });
+            if (response) {
+                score = response.score.valueOf()
+            }
+            else {
+                await Score.create({
+                    score: 1000,
+                    game: game[0]._id,
+                    user: user[0]._id
+                })
 
-            if (response && (typeof response.score) === "number") {
-                const fixed = response.score.toFixed;
-                if (typeof fixed === "number") {
-                    score = fixed;
-                }
+                score = 1000
             }
         }
     } catch (error) {
