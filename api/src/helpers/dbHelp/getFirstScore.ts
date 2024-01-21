@@ -3,8 +3,6 @@ import { User } from "../../models/User";
 import { Game } from "../../models/Game";
 
 export default async function getFirstScore(username: String, gamename: String) {
-    console.log('|getFirstScore>params>', username, gamename);
-    
     let score = 0;
     
     try {

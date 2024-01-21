@@ -7,4 +7,7 @@ const router = express.Router();
 // GET ranking for game
 router.get("/:gamename", handleAsync(rankingController.getRanking));
 
+// GET rank in game for mastermind
+router.get("/mastermind/:username", handleAsync(rankingController.getMastermindRank));
+
 export default router;
