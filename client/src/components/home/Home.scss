@@ -1,9 +1,11 @@
 @import "variables.scss";
 
 .home-page {
+    min-height: 80vh;
     margin-top: 75px;
     display: flex;
+    align-items: center;
     text-align: left;
-    margin-left: 25px;
+    margin-left: 100px;
     gap: 50px;
 }

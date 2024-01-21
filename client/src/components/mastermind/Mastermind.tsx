@@ -128,12 +128,13 @@ const Mastermind: React.FC = () => {
       setGameResult('win');
       endGame();
     }
+    else {
+      setRemainingAttempts(remainingAttempts - 1);
 
-    setRemainingAttempts(remainingAttempts - 1);
-
-    if (remainingAttempts === 0) {
-      setGameResult('lose');
-      endGame();
+      if (remainingAttempts === 0) {
+        setGameResult('lose');
+        endGame();
+      }
     }
   }
 
