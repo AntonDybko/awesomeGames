@@ -1,0 +1,33 @@
+.leaderboard{
+    .leaderboard-title {
+
+    }
+    .players-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        .player-container {
+            .player-info {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: larger;
+                text-decoration: none;
+                color: black;
+                margin-bottom: 1rem;
+                .medal-emoji {
+                    font-size: 3rem;
+                }
+                .trophy-icon {
+                    font-size: 4rem;
+                    color: rgb(56, 56, 56);
+                }
+                .losers-place {
+                }
+                span {
+                    margin-right: 1rem;
+                }
+            }
+        }
+    }
+}

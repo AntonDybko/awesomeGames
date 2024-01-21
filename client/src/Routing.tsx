@@ -10,6 +10,8 @@ import TicTacToe from 'components/tictactoe/TicTacToe';
 import SessionPersistence from "components/other/SessionPersistence";
 import RequireAuth from "components/other/RequireAuth";
 import StatkiPage from "components/statki-page/StatkiPage";
+import MastermindLeaderboard from "components/ranking/leaderboards/MastermindLeaderboard";
+import TicTacToeLeaderboard from "components/ranking/leaderboards/TicTacToeLeaderboard";
 
 export const Routing: React.FC = () => {
   return (
@@ -24,6 +26,8 @@ export const Routing: React.FC = () => {
           <Route path="/games/tictactoe" element={<TicTacToePage />} />
           <Route path="/games/tictactoe/:id" element={<TicTacToe />} />
           <Route path="/ranking" element={<Ranking />} />
+          <Route path="/ranking/mastermind" element={<MastermindLeaderboard />} />
+          <Route path="/ranking/tictactoe" element={<TicTacToeLeaderboard />} />
           <Route path="/profile/:userId" element={<Profile />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
