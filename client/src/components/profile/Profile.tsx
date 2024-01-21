@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import { profile } from "console";
 import './Profile.scss';
+import defaultProfileImage from '../../images/defaultProfileImage.png';
 
 
 const Profile: React.FC = () => {
@@ -14,31 +15,6 @@ const Profile: React.FC = () => {
     const profileName = window.location.pathname.slice(9)
     const navigate = useNavigate();
 
-    const displayAvatar = () => (
-        <div>
-            {auth.auth.username === profileName ? (
-                // when it's your profile
-                <div className="profile-avatar"
-                style={{
-                    backgroundImage: `url("${
-                      user.picture_url ||
-                      ""
-                    }")`,
-                  }}>
-                </div>
-            ) : (
-                // when you're browsing someone's profile
-                <div className="profile-avatar"
-                style={{
-                    backgroundImage: `url("${
-                      user.picture_url ||
-                      ""
-                    }")`,
-                  }}>
-                </div>
-            )}
-        </div>
-    );
 
     useEffect(() => {
         async function getUser() {
@@ -55,12 +31,29 @@ const Profile: React.FC = () => {
     return (
         <div className="profile-page">
             <div className="profile-container">
-                {/*displayAvatar()*/}
-                <img src="/image.png" className="profile-image"/>
-                <div>{profileName}</div>
-
+                <img src={defaultProfileImage} className="profile-image" alt="profile"/>
+                <div className="profile-name">{profileName}</div>
+                <div className="birthday-container">
+                {user.birthday && (
+                    <div>
+                    {user.birthday.toString()}
+                    </div>
+                )}
+                </div>
             </div>
-            <div>
+            <div className="ranking-container">
+                <h2>Rankings</h2>
+                <div className="game-rankings">
+                    <div className="mastermind-ranking">
+                        Mastermind ranking: {}
+                    </div>
+                    <div className="tictactoe-ranking">
+                        Tictactoe ranking: {}
+                    </div>
+                    <div className="battleship-ranking">
+                        Battleship ranking: {}
+                    </div>
+                </div>
             </div>
         </div>
     );

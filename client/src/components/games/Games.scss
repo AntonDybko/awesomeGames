@@ -1,8 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 .page {    
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
     .container {
         display: grid;
         height: 80vh;
@@ -37,9 +34,10 @@
                         border-radius: 50%;
                         z-index: 1;
                     }
-                    img {
-                        width: 11rem;
+                    .game-icon {
+                        width: 9rem;
                         z-index: 2;
+                        font-size: 170px;
                     }
                 }
                 .info {
@@ -73,15 +71,14 @@
                         padding: 0.5rem 0rem;
                         background-color: rgb(228, 54, 6);
                         border: none;
-                        
                         text-transform: uppercase;
-                        letter-spacing: 0.1rem;
                         border-radius: 28px;
-                        font-weight: bolder;
+                        font-weight: normal;
                         a {
                             cursor: pointer;
                             color: white;
-                            font-size: 14px;
+                            font-size: 16px;
+                            letter-spacing: 0.05rem;
                         }
                     }
                 }
@@ -93,7 +90,7 @@
         }
     }
     .title {
-        letter-spacing: .1rem;
+        letter-spacing: .05rem;
         font-weight: 600;
         margin-bottom: 3rem;
     }

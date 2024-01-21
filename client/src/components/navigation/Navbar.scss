@@ -1,5 +1,6 @@
 .navbar {
     display: flex;
+    font-family: "Poppins", sans-serif;
     justify-content: space-between;
     align-items: center;
     //position: fixed;
@@ -30,5 +31,11 @@
     }
     .logo-container {
         margin-left: 50px;
+        .logo-typography {
+            font-size: larger;
+            letter-spacing: 2px;
+            text-decoration: none;
+            color: black;
+        }
     }
 }
