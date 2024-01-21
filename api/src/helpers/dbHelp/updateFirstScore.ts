@@ -9,9 +9,6 @@ export default async function updateFirstScore(username: String, gamename: Strin
         const user = await User.find({ username: username });
         const game = await Game.find({ name: gamename });
 
-        console.log('|updateFirstScore>User>', user);
-        console.log('|updateFirstScore>Game>', game);
-
         if (user && game) {
             await Score.findOneAndUpdate({
                 user: user[0]._id,

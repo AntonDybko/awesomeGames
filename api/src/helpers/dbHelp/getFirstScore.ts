@@ -11,9 +11,6 @@ export default async function getFirstScore(username: String, gamename: String) 
         const user = await User.find({ username: username });
         const game = await Game.find({ name: gamename });
 
-        console.log('|getFirstScore>User>', user);
-        console.log('|getFirstScore>Game>', game);
-
         if (user && game) {
             const response = await Score.findOne({
                 user: user[0]._id,
