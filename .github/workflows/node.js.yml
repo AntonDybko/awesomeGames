@@ -1,7 +1,3 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them,
-# build the source code, and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Node.js CI
 
 on:
@@ -21,6 +17,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Access api
+      run: cd api
+
+    - name: Check for package-lock.json
+      run: |
+        if [ ! -f "package-lock.json" ]; then
+          echo "Error: package-lock.json not found. Run 'npm install' to generate it."
+          exit 1
+        fi
+
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -35,10 +42,14 @@ jobs:
     - name: Start MongoDB Docker container
       run: docker run -d --name mongodb -p 27017:27017 mongo
 
-    - run: npm i
+    - run: npm install
     - run: npm run build --if-present
     - run: npm test
 
-    # Add the following step to stop and remove the MongoDB container after tests
+    # Navigate back to the root folder
+    - name: Change Directory back to the root
+      run: cd ..
+
+    # Add the following step to stop and remove the MongoDB Docker container after tests
     - name: Stop and Remove MongoDB Docker container
       run: docker stop mongodb && docker rm mongodb
