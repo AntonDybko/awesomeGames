@@ -79,7 +79,7 @@ const rankingController = {
                             user: '$_id',
                             averageScore: {
                                 $cond: {
-                                    if: { $gte: ['$scoreCount', 10] }, // Check if there are at least 10 scores
+                                    if: { $gte: ['$scoreCount', 1] }, // Check if there are at least 10 scores - changed to 1 for now
                                     then: { $divide: ['$totalScore', '$scoreCount'] }, // Calculate average
                                     else: 0, // Return 0 if there are fewer than 10 scores
                                 },

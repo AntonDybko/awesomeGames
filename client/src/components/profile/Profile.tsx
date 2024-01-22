@@ -8,9 +8,16 @@ import './Profile.scss';
 import defaultProfileImage from '../../images/defaultProfileImage.png';
 
 
+type TicTacToeRank = number; 
+type MastermindRank = number;
+
+
 const Profile: React.FC = () => {
     const [user, setUser] = useState({} as UserProps);
     const auth = useAuth();
+    const [ticTacToeRank, setTicTacToeRank] = useState<TicTacToeRank>();
+    const [mastermindRank, setMastermindRank] = useState<MastermindRank>();
+
 
     const profileName = window.location.pathname.slice(9)
     const navigate = useNavigate();
@@ -25,8 +32,29 @@ const Profile: React.FC = () => {
                 navigate("/");
             }
         }
+
+        async function getMastermindStats() {
+            try {
+                const res = await axios.get(`ranking/mastermind/${profileName}`);
+                if (res.status === 200) setMastermindRank(res.data[0]?.averageScore);
+            } catch (e) {
+                navigate("/");
+            }
+        }
+
+        async function getTictactoeStats() {
+            try {
+                const res = await axios.get(`users/profile/${profileName}/scores/byGame/tictactoe`);
+                if (res.status === 200) setTicTacToeRank(res.data[0]?.score);
+            } catch (e) {
+                navigate("/");
+            }
+        }
+
         getUser();
-    }, [ profileName, navigate ])
+        getTictactoeStats();
+        getMastermindStats();
+    }, [profileName, navigate]);
 
     return (
         <div className="profile-page">
@@ -45,10 +73,10 @@ const Profile: React.FC = () => {
                 <h2>Rankings</h2>
                 <div className="game-rankings">
                     <div className="mastermind-ranking">
-                        Mastermind ranking: {}
+                        Mastermind ranking: {mastermindRank !== undefined ? (mastermindRank % 1 !== 0 ? mastermindRank.toFixed(1) : mastermindRank) : 'No ranking yet'}
                     </div>
                     <div className="tictactoe-ranking">
-                        Tictactoe ranking: {}
+                        Tictactoe ranking: {ticTacToeRank !== undefined ? (ticTacToeRank % 1 !== 0 ? ticTacToeRank.toFixed(1) : ticTacToeRank)  : 'No ranking yet'}
                     </div>
                     <div className="battleship-ranking">
                         Battleship ranking: {}

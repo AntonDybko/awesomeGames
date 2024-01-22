@@ -9,28 +9,6 @@ const TicTacToeLeaderboard: React.FC = () => {
     const [players, setPlayers] = useState([]);
     const navigate = useNavigate();
 
-    const users = [{
-        "id": 312312,
-        "averageScore": 1001,
-        "username": "filip"
-        },
-        {
-        "id": 312313,
-        "averageScore": 1002,
-        "username": "filip2"
-        },
-        {
-        "id": 312311,
-        "averageScore": 1003,
-        "username": "filip3"
-        },
-        {
-        "id": 312315,
-        "averageScore": 1004,
-        "username": "filip4"
-        }]
-
-
         
     useEffect(() => {
         async function getPlayersList() {

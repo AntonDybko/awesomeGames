@@ -10,27 +10,6 @@ const MastermindLeaderboard: React.FC = () => {
     const [players, setPlayers] = useState([]);
     const navigate = useNavigate();
 
-    const users = [{
-        "id": 312312,
-        "averageScore": 3309.422,
-        "username": "filip"
-        },
-        {
-        "id": 312313,
-        "averageScore": 1430.713123,
-        "username": "michał"
-        },
-        {
-        "id": 312311,
-        "averageScore": 1345.4324,
-        "username": "paweł"
-        },
-        {
-        "id": 312315,
-        "averageScore": 1124.3123,
-        "username": "anton"
-        }]
-
     useEffect(() => {
         async function getPlayersList() {
             try {
