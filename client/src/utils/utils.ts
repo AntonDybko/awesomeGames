@@ -17,6 +17,12 @@ const CreateCell = (i: number, j: number, board: BoardModel, hidden: boolean): C
         return new CellModel(i, j, board); // light
     }*/
 }
+const initBoard = (hiddenFields: boolean, ships: boolean) => {
+    const newBoard = new BoardModel(hiddenFields);
+    newBoard.createCells();
+    if(ships) newBoard.addShips();
+    return newBoard
+}
 /*const checkDame = (targetCell: CellModel, currentyPlayer: PlayerModel): boolean => {
     return (currentyPlayer.label === Labels.Light && targetCell.x === 0) || (currentyPlayer.label === Labels.Dark && targetCell.x === 7)
 }*/
@@ -45,7 +51,7 @@ const getJumpOverCell = (startCell: CellModel, targetCell: CellModel): CellModel
     const jumpOverCol = (startCell.x + targetCell.x) / 2;
     return startCell.board.getCell(jumpOverCol, jumpOverRow);
 }*/
-const getBreaktThrough = (currentPlayer: PlayerModel, l: PlayerModel, d: PlayerModel) => {
+const increasedBreaktThrough = (currentPlayer: PlayerModel, l: PlayerModel, d: PlayerModel) => {
     const light = currentPlayer.label === Labels.Light ? l.breakthrough + 1 : l.breakthrough;
     const dark = currentPlayer.label === Labels.Dark ? d.breakthrough + 1 : d.breakthrough;
     return {light, dark}
@@ -166,8 +172,9 @@ export {
     //getKills,
     //isValidMove,
     //getJumpOverCell,
-    getBreaktThrough,
+    increasedBreaktThrough,
     createBoard,
-    boardToArray
+    boardToArray,
+    initBoard
     //isValidJump
 }

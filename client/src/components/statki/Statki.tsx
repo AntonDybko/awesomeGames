@@ -5,11 +5,17 @@ import BoardModel from '../../models/statki/BoardModel';
 import { Labels } from 'models/statki/Labels';
 import { PlayerModel } from 'models/statki/PlayerModel';
 import { useLocation } from 'react-router'
-import { boardToArray, random } from 'utils/utils';
+import { boardToArray, random, initBoard } from 'utils/utils';
 import { socket } from 'socket';
 import { BoardId } from 'models/statki/BoardId';
+import { Status } from 'models/statki/Status';
+import useAuth from 'hooks/useAuth';
 
 function Statki() {
+    const { auth } = useAuth();
+    //const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.Player);
+    //const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.Observer);
+    //const [sendingBoardStatus, setSendingBoardStatus] =  useState<boolean>(false);
     const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
     const [oponentBoard, setOponentBoard] = useState<BoardModel>(new BoardModel(true));
     const [winner, setWiner] = useState<PlayerModel>();
@@ -19,7 +25,8 @@ function Statki() {
     const [playerSide, setPlayerSide] = useState<Labels>();
     const [hasOpponent, setHasOpponent] = useState<boolean>(false);
     const [share, setShare] = useState<boolean>(false);
-    const [sentBoardStatus, setSentBoardStatus] = useState<boolean>(false);
+    const [status, setStatus] = useState<Status>(Status.Default)
+    //const [sentBoardStatus, setSentBoardStatus] = useState<boolean>(false);
 
     const location = useLocation();
     const params = new URLSearchParams(location.search);
@@ -28,16 +35,10 @@ function Statki() {
 
     //------------
     const restart = () => {
-        const newBoard = new BoardModel(false);
-        newBoard.createCells();
-        newBoard.addShips();
-        setBoard(newBoard);
+        setBoard(initBoard(false, true));
+        setOponentBoard(initBoard(true, false));
         setCurrentPlayer(lightPlayer);
-
-        const newBoard2 = new BoardModel(true);
-        newBoard2.createCells();
-        setOponentBoard(newBoard2);
-    };
+    };//dopracowac
 
     const changePlayer = () => {
         setCurrentPlayer(currentPlayer.label === Labels.Light ? darkPlayer : lightPlayer);
@@ -49,12 +50,6 @@ function Statki() {
 
     const changeDarkPlayerBreakThrough = (x: number) => {
         setDarkPlayer(new PlayerModel(Labels.Dark, x));
-    }
-
-    const changeBreakThrough = () => {
-        currentPlayer.label === Labels.Light ? 
-            setLightPlayer(new PlayerModel(Labels.Light, lightPlayer.breakthrough+1)) : 
-            setDarkPlayer(new PlayerModel(Labels.Dark, darkPlayer.breakthrough+1));
     }
 
     useEffect(() => {
@@ -70,18 +65,9 @@ function Statki() {
 
     useEffect(() => {
         console.log('have oponent?', hasOpponent)
-        if(!sentBoardStatus && board.cells.length !== 0){//
-            if(playerSide === Labels.Dark) {
-                console.log('sending board', playerSide)
-                socket.emit('initDarkBoard', JSON.stringify(
-                    { board: boardToArray(board), room: room}
-                ));
-            }else{
-                socket.emit('initLightBoard', JSON.stringify(
-                    { board: boardToArray(board), room: room}
-                ));
-            }
-            setSentBoardStatus(true)
+        if(hasOpponent){
+            setBoard(initBoard(false, true));
+            setOponentBoard(initBoard(true, false));
         }
     }, [hasOpponent])
 
@@ -95,14 +81,16 @@ function Statki() {
         if (paramsRoom != null) {
             setPlayerSide(Labels.Dark);
             setCurrentPlayer(lightPlayer);
-            socket.emit('join', paramsRoom);
+            //socket.emit('join', paramsRoom);
+            socket.emit('join', JSON.stringify({room: paramsRoom, playerName: auth.username}));
             setRoom(paramsRoom);
         } else {
             setPlayerSide(Labels.Light);
             setCurrentPlayer(darkPlayer);
-            //const newRoomName = '6hj8'
             const newRoomName = random();
-            socket.emit('create', newRoomName);
+            console.log("new room ", newRoomName)
+            console.log(socket.id, ":", auth.username)
+            socket.emit('create', JSON.stringify({room: newRoomName, socketId: socket.id, playerName: auth.username}));
             setRoom(newRoomName);
         }
     }, [paramsRoom]);
@@ -110,76 +98,113 @@ function Statki() {
     useEffect(() => {
 
         const onOponentJoined = () => {
+            console.log("oponent joined")
             setHasOpponent(true);
             setShare(false);
+        }
+
+        const onObserverJoined = () => {
+            console.log('observer here')
+            setPlayerSide(Labels.Neutral);
+            setShare(false);
+            setBoard(initBoard(false, false));
+            setOponentBoard(initBoard(false, false));
+        }
+
+        const onWrongRoom = () => {
+            setStatus(Status.WrongRoom)
+        }
+
+        const onOponentLost = (data: string) => {
+            const { room, lostPlayerSide } = JSON.parse(data);
+            console.log('oponent lost ', lostPlayerSide)
+            if (lostPlayerSide === Labels.Dark) setWiner(lightPlayer)
+            else setWiner(darkPlayer)
         }
 
         socket.on('restart', restart);
 
         socket.on('opponentJoined', onOponentJoined);
 
-        restart();
+        socket.on('observerJoined', onObserverJoined);
+
+        socket.on('wrongRoom', onWrongRoom);
+
+        socket.on('oponentLost', onOponentLost);
+
+        setCurrentPlayer(lightPlayer);
+        //restart();
 
         return () => {
             socket.off('opponentJoined', onOponentJoined);
-            socket.on('restart', restart);
+            socket.off('observerJoined', onObserverJoined);
+            socket.off('wrongRoom', onWrongRoom);
+            socket.off('oponentLost', onOponentLost);
+            socket.off('restart', restart);
         };
     }, []);
+
+    useEffect(() => {
+        if(room !== null && playerSide !== undefined){
+            console.log(room)
+
+            return () => {
+                console.log("my room: ", room)
+                socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
+            };
+        }
+    }, [room, playerSide])
+
+    const giveUp = () => {
+        socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
+    }
 
     return (
         <div className="statki">
             <div>Room: {room}</div>
-            { winner ? (
-                <h1>{winner.label} player wins!</h1>
+            { status === Status.WrongRoom ? (
+                <h1>This room does not exist</h1>
+            ) : playerSide === Labels.Neutral ?(
+                <h1>This game does not provide viewer mod.</h1>
             ) : (
-                <div>
-                    { hasOpponent ? 
-                        ''
-                        : 
-                        <div>
-                            <div>'Waiting for opponent...'</div>
+                winner ? (
+                    <h1>{winner.label} player wins!</h1>
+                ) : (
+                    <div>
+                        { hasOpponent ? 
+                            (playerSide !== undefined && room !== undefined) ?
+                                <div>
+                                    <button className="btn" onClick={() => giveUp()}>Give Up</button>
+                                </div>
+                                : ''
+                            : 
                             <div>
-                                <button className="btn" onClick={() => setShare(!share)}>Share</button>
-                            </div> 
-                        </div>
-                    }
-                    { share ? (
-                        <div>
-                            <br />
-                            <br />
-                            Share link: <input type="text" value={`${window.location.href}?room=${room}`} readOnly />
-                        </div>
-                    ) : null}
-                    <br />
-                    <h2 className='leftside'>Player</h2>
-                    <h2 className='rightside'>Oponent</h2>
-                    <br />
-                    <div className='player'>Current player: {currentPlayer.label}</div>
-                    <Board 
-                        id={BoardId.player}
-                        board={board} 
-                        onSetBoard={setBoard}
-                        currentPlayer={currentPlayer}
-                        onChangePlayer={changePlayer}
-                        onChangeBreakThrough={changeBreakThrough}
-                        hasOpponent={false}
-                        playerSide={playerSide}
-                        room={room}
-                        socket={socket}
-                        lightPlayer={lightPlayer}
-                        darkPlayer={darkPlayer}
-                        onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
-                        onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                    />
-                    { hasOpponent ? (
-                        <Board
-                            id={BoardId.oponent}
-                            board={oponentBoard} 
-                            onSetBoard={setOponentBoard}
+                                <div>'Waiting for opponent...'</div>
+                                <div>
+                                    <button className="btn" onClick={() => setShare(!share)}>Share</button>
+                                </div> 
+                            </div>
+                        }
+                        { share ? (
+                            <div>
+                                <br />
+                                <br />
+                                Share link: <input type="text" value={`${window.location.href}?room=${room}`} readOnly />
+                            </div>
+                        ) : null}
+                        <br />
+                        <h2 className='leftside'>Player</h2>
+                        <h2 className='rightside'>Oponent</h2>
+                        <br />
+                        <div className='player'>Current player: {currentPlayer.label}</div>
+                        <Board 
+                            id={BoardId.player}
+                            board={board} 
+                            onSetBoard={setBoard}
                             currentPlayer={currentPlayer}
                             onChangePlayer={changePlayer}
-                            onChangeBreakThrough={changeBreakThrough}
-                            hasOpponent={hasOpponent}
+                            //onChangeBreakThrough={changeBreakThrough}
+                            hasOpponent={false}
                             playerSide={playerSide}
                             room={room}
                             socket={socket}
@@ -188,9 +213,25 @@ function Statki() {
                             onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                             onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                         />
-                    ) : null}
-                    
-                </div>
+                        <Board
+                                id={BoardId.oponent}
+                                board={oponentBoard} 
+                                onSetBoard={setOponentBoard}
+                                currentPlayer={currentPlayer}
+                                onChangePlayer={changePlayer}
+                                //onChangeBreakThrough={changeBreakThrough}
+                                hasOpponent={hasOpponent}
+                                playerSide={playerSide}
+                                room={room}
+                                socket={socket}
+                                lightPlayer={lightPlayer}
+                                darkPlayer={darkPlayer}
+                                onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                                onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                        />
+                        
+                    </div>
+                )
             )}
         </div>
     );

@@ -73,7 +73,7 @@ export default class BoardModel {
         return this.cells[y][x];
     }
 
-    addShip(x: number, y: number) {
-        new ShipModel(this.getCell(x, y))
+    addShip(x: number, y: number, destroyed?: boolean) {
+        new ShipModel(this.getCell(x, y), destroyed)
     }
 }

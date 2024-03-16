@@ -7,10 +7,10 @@ class ShipModel {
     destroyed: boolean;
     cell: CellModel;
 
-    constructor(cell: CellModel){
+    constructor(cell: CellModel, destroyed?: boolean){
         this.cell = cell;
         this.cell.ship = this;
-        this.destroyed = false;
+        destroyed ? this.destroyed = true : this.destroyed = false;
         //this.cell.empty = false;
         this.imageSrc = cross;
     }
