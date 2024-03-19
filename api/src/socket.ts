@@ -2,25 +2,20 @@ import { Server, Socket } from "socket.io";
 import createRatingSystem from './ratingSystem'
 import updateFirstScore from "./helpers/dbHelp/updateFirstScore";
 import getFirstScore from "./helpers/dbHelp/getFirstScore";
+import { Status } from "./models/Status";
 
 const rating = createRatingSystem()
 
 
 const socketManager = (io: Server) => {
     //const rooms: { [name: string]: { players: string[] } } = {} // tutaj będzie jeszcze trzeba przechowywać aktualny rating graczy
-    const rooms: { [name: string]: { [playerName: string]: {playerId: string}}} = {};
+    const rooms: { [name: string]: { [playerName: string]: {playerId: string, status: Status}}} = {};
     io.on('connection', (socket) => {
         console.log("User connected", socket.id);
         socket.on('reqTurn', (data) => {
             const room = JSON.parse(data).room;
             io.to(room).emit('playerTurn', data);
         })
-
-        /*socket.on('reqStatkiTurn', (data) => {
-            //(json.key, json.label, json.isDame)
-            const room = JSON.parse(data).room;
-            io.to(room).emit('playerTurn', data);
-        })*/
 
         /*socket.on('create', (room: string, username: string) => {
             rooms[room] = { players: [] };
@@ -31,12 +26,14 @@ const socketManager = (io: Server) => {
             const {room, playerName} = JSON.parse(data);
             console.log(socket.id, ":", playerName, ":", room)
             rooms[room] = {}
-            rooms[room][playerName] = {playerId : socket.id}; // tutaj potem sprobowac po prostu socket.id, musi dzialac?
+            rooms[room][playerName] = {playerId: socket.id, status: Status.WaitingForMove}; // tutaj potem sprobowac po prostu socket.id, musi dzialac?
             socket.join(room);
         })
 
         socket.on('attackLight', data => {
-            const { attackedCellKey, room } = JSON.parse(data);
+            const { attackedCellKey, room, playerName } = JSON.parse(data);//playerName
+            rooms[room][playerName].status = Status.WaitingForOponentMove
+            console.log(rooms[room][playerName].status)
             io.to(room).emit('receiveAttackLight', data);
         })
         socket.on('responseToAttackLight', data => {
@@ -44,54 +41,25 @@ const socketManager = (io: Server) => {
             io.to(room).emit('receiveResponseToAttackLight', data);
         })
         socket.on('attackDark', data => {
-            const { attackedCellKey, room } = JSON.parse(data);
-            console.log(attackedCellKey, room)
+            const { attackedCellKey, room, playerName } = JSON.parse(data); //playerName
+            rooms[room][playerName].status = Status.WaitingForOponentMove
+            console.log(rooms[room][playerName].status)
             io.to(room).emit('receiveAttackDark', data);
         })
         socket.on('responseToAttackDark', data => {
             const { ship, attackedCellKey, room } = JSON.parse(data);
             io.to(room).emit('receiveResponseToAttackDark', data);
         })
-
-
-        /*socket.on('sendDarkBoard', data => {
-            const room = JSON.parse(data).room;
-            io.to(room).emit('lightPlayerTurn', data);
-        })*/
-
-        /*socket.on('sendBothBoards', data => {
-            const room = JSON.parse(data).room;
-            console.log(room)
-            io.to(room).emit('getBothBoards', JSON.stringify({ socketId: socket.id }));
-        })*/
-
-        /*socket.on('initOponentBoard', data => {
-            const room = JSON.parse(data).room;
-            //io.to(room).emit('lightPlayerTurn', data);
-            console.log(JSON.parse(data).label)
-            io.to(room).emit('getOponentBoard', data);
-            //io.to(room).emit('playerTurn', data);
-        })*/
-        socket.on('initDarkBoard', data => {
-            const room = JSON.parse(data).room;
-            //if (Object.keys(rooms[room]).length <= 2){
-                console.log('init dark board, ', room)
-                //console.log(JSON.parse(data))
-                io.to(room).emit('getDarkBoard', data);
-            //}
+        socket.on('startTimer', (data) => {
+            const { room, playerName } = JSON.parse(data);
+            rooms[room][playerName].status = Status.WaitingForMove
+            setTimeout(() => {
+                if(rooms[room] !== undefined && rooms[room][playerName].status === Status.WaitingForMove) {
+                    console.log('timer out')
+                    socket.emit('timerOut')
+                }
+            }, 10000)//10000 for testing
         })
-        socket.on('initLightBoard', data => {
-            const room = JSON.parse(data).room;
-            console.log('init light board, ', room)
-            //console.log(JSON.parse(data))
-            io.to(room).emit('getLightBoard', data);
-        })
-
-        /*socket.on('sendLightBoard', data => {
-            const room = JSON.parse(data).room;
-            io.to(room).emit('darkPlayerTurn', data);
-        })*/
-
 
         socket.on('join', data => {
             const {room, playerName} = JSON.parse(data);
@@ -112,7 +80,7 @@ const socketManager = (io: Server) => {
                 }
                 //rooms[room].players.push(username)
                 console.log(socket.id, ":", playerName)
-                rooms[room][playerName] = {playerId: socket.id};
+                rooms[room][playerName] = {playerId: socket.id, status: Status.WaitingForOponentMove};
             }else{
                 //emit proper event
                 io.to(socket.id).emit('wrongRoom');// handle vent
@@ -158,19 +126,21 @@ const socketManager = (io: Server) => {
 
         socket.on('playerLost', data => {
             const { room, lostPlayerSide } = JSON.parse(data);
-            console.log(room, lostPlayerSide)
+            console.log(room, ":", lostPlayerSide)
+            if(rooms[room] !== undefined){
+                delete rooms[room]
+                console.log('someone lost in room ', room)
+                io.to(room).emit('oponentLost', data);
+                /*Object.keys(rooms[room]).forEach(user => {
+                    
+                    if(rooms[room][user] !== undefined && rooms[room][user].playerId === socket.id){
+                        delete rooms[room][user];
 
-            Object.keys(rooms[room]).forEach(user => {
-                
-                if(rooms[room][user] !== undefined && rooms[room][user].playerId === socket.id){
-                    delete rooms[room][user];
+                        if (Object.keys(rooms[room]).length === 0) delete rooms[room]
+                    }
+                })*/
+            }
 
-                    if (Object.keys(rooms[room]).length === 0) delete rooms[room]
-                }
-            })
-
-            console.log('someone lost in room ', room)
-            io.to(room).emit('oponentLost', data);
         })
 
         socket.on('disconnect', () => {

@@ -96,12 +96,14 @@ function Statki() {
     }, [paramsRoom]);
 
     useEffect(() => {
+        console.log(room)
 
-        const onOponentJoined = () => {
+        /*const onOponentJoined = () => {
             console.log("oponent joined")
             setHasOpponent(true);
             setShare(false);
-        }
+            //socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username }));
+        }*/
 
         const onObserverJoined = () => {
             console.log('observer here')
@@ -124,7 +126,7 @@ function Statki() {
 
         socket.on('restart', restart);
 
-        socket.on('opponentJoined', onOponentJoined);
+        //socket.on('opponentJoined', onOponentJoined);
 
         socket.on('observerJoined', onObserverJoined);
 
@@ -136,7 +138,7 @@ function Statki() {
         //restart();
 
         return () => {
-            socket.off('opponentJoined', onOponentJoined);
+            //socket.off('opponentJoined', onOponentJoined);
             socket.off('observerJoined', onObserverJoined);
             socket.off('wrongRoom', onWrongRoom);
             socket.off('oponentLost', onOponentLost);
@@ -145,15 +147,35 @@ function Statki() {
     }, []);
 
     useEffect(() => {
+        const OnTimerOut =() => {
+            console.log("lost: ", room, playerSide)
+            socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
+        }
+
         if(room !== null && playerSide !== undefined){
-            console.log(room)
+            socket.on('timerOut', OnTimerOut)
 
             return () => {
-                console.log("my room: ", room)
                 socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
+                socket.off('timerOut', OnTimerOut)
             };
         }
     }, [room, playerSide])
+
+    useEffect(() => {
+        const onOponentJoined = () => {
+            console.log("oponent joined")
+            setHasOpponent(true);
+            setShare(false);
+            if(playerSide === Labels.Light) socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username }));
+        }
+        socket.on('opponentJoined', onOponentJoined);
+
+        return () => {
+            socket.off('opponentJoined', onOponentJoined);
+        };
+    }, [room])
+
 
     const giveUp = () => {
         socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
@@ -212,6 +234,7 @@ function Statki() {
                             darkPlayer={darkPlayer}
                             onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                             onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                            auth={auth}
                         />
                         <Board
                                 id={BoardId.oponent}
@@ -228,6 +251,7 @@ function Statki() {
                                 darkPlayer={darkPlayer}
                                 onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                                 onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                                auth={auth}
                         />
                         
                     </div>

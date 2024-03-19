@@ -8,6 +8,7 @@ import { Socket } from 'socket.io-client';
 import { increasedBreaktThrough, mergeClasses, splitKey } from 'utils/utils';
 import { Labels } from 'models/statki/Labels';
 import { BoardId } from 'models/statki/BoardId';
+import AuthProps from 'interfaces/Auth';
 
 type BoardProps = {
     id: string;
@@ -24,9 +25,10 @@ type BoardProps = {
     darkPlayer: PlayerModel;
     onChangeLightPlayerBreakThrough: (x: number) => void;
     onChangeDarkPlayerBreakThrough: (x: number) => void;
+    auth: AuthProps;
 };
 
-export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, hasOpponent, room, socket, playerSide, lightPlayer, darkPlayer, onChangeLightPlayerBreakThrough, onChangeDarkPlayerBreakThrough}: BoardProps): ReactElement => {
+export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, hasOpponent, room, socket, playerSide, lightPlayer, darkPlayer, onChangeLightPlayerBreakThrough, onChangeDarkPlayerBreakThrough, auth}: BoardProps): ReactElement => {
     
     const handleCellClick = (cell: CellModel) => {
         if(playerSide === currentPlayer.label && hasOpponent && cell.hidden === true){
@@ -34,11 +36,11 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
 
             if(playerSide === Labels.Light) {
                 socket.emit('attackDark', JSON.stringify(
-                    { attackedCellKey: cell.key, room: room }
+                    { attackedCellKey: cell.key, room: room, playerName: auth.username}
                 ));
             }else if (playerSide === Labels.Dark){
                 socket.emit('attackLight', JSON.stringify(
-                    { attackedCellKey: cell.key, room: room }
+                    { attackedCellKey: cell.key, room: room, playerName: auth.username }
                 ));
             }
         }
@@ -48,28 +50,6 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
         const updatedBoard = board.updateBoard();
         onSetBoard(updatedBoard);
     }
-
-
-    useEffect(() => {
-        const OnGetOponentBoard = (json: string): void => {
-            const req = JSON.parse(json);
-            if(board.cells.length !== 0 && hasOpponent){
-                console.log('oponentboard: ', req.board)
-                const oponentBoardAsArray = req.board;
-                board.addShipsFromArray(oponentBoardAsArray)
-                updateBoard()
-            }
-
-        }
-
-        if(playerSide === Labels.Light) socket.on('getDarkBoard', OnGetOponentBoard);
-        else socket.on('getLightBoard', OnGetOponentBoard);
-
-        return () => {
-            if(playerSide === Labels.Light) socket.off('getDarkBoard', OnGetOponentBoard);
-            else socket.off('getLightBoard', OnGetOponentBoard);
-        }
-    }, [hasOpponent, board])
 
     useEffect(() => {
         const OnReceiveAttack = (json: string) => {
@@ -99,7 +79,6 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
             }
         }
         const OnReceiveReponseToAttack= (json: string) => {
-            console.log("trying to receive attack")
             if(id === BoardId.oponent) {
                 const { ship, attackedCellKey, room } = JSON.parse(json);
                 const [x, y] = splitKey(attackedCellKey)
@@ -130,6 +109,7 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
 
     useEffect(() => {
         const OnPlayerTurn = (json: string): void => {
+            //console.log("timer => room: ", room, ", user: ", auth.username)
             const req = JSON.parse(json);
             onChangeLightPlayerBreakThrough(req.lk)
             onChangeDarkPlayerBreakThrough(req.dk)
@@ -137,6 +117,7 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
             console.log(req.lk, req.dk)
 
             if(id === BoardId.player && currentPlayer.label !== playerSide) {
+                socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username }));
                 onChangePlayer();
                 updateBoard();
             }else if(id === BoardId.player && currentPlayer.label === playerSide) {
@@ -144,13 +125,20 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
             }
         }
 
+        /*const OnTimerOut =() => {
+            console.log("lost: ", room, playerSide)
+            socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
+        }*/
+
         socket.on('playerTurn', OnPlayerTurn)
+        //socket.on('timerOut', OnTimerOut)
 
         return () => {
             socket.off('playerTurn', OnPlayerTurn);
+            //socket.off('timerOut', OnTimerOut)
         };
 
-    }, [board])
+    }, [room, board])
 
     return (
         <div className={mergeClasses("board", id)}>
