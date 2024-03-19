@@ -16,11 +16,11 @@ const socketManager = (io: Server) => {
             io.to(room).emit('playerTurn', data);
         })
 
-        socket.on('reqStatkiTurn', (data) => {
+        /*socket.on('reqStatkiTurn', (data) => {
             //(json.key, json.label, json.isDame)
             const room = JSON.parse(data).room;
             io.to(room).emit('playerTurn', data);
-        })
+        })*/
 
         /*socket.on('create', (room: string, username: string) => {
             rooms[room] = { players: [] };
@@ -28,8 +28,8 @@ const socketManager = (io: Server) => {
             socket.join(room);
         })*///maybe needed in others?
         socket.on('create', (data) => {
-            const {room, socketId, playerName} = JSON.parse(data);
-            console.log(socketId, ":", playerName, ":", room)
+            const {room, playerName} = JSON.parse(data);
+            console.log(socket.id, ":", playerName, ":", room)
             rooms[room] = {}
             rooms[room][playerName] = {playerId : socket.id}; // tutaj potem sprobowac po prostu socket.id, musi dzialac?
             socket.join(room);
@@ -133,6 +133,23 @@ const socketManager = (io: Server) => {
             };
             toDo();
         });*///to chyba nie dla statkow, wiec zakomentowalem, zeby dzialali statki
+        socket.on('winner', (room: string, username: string, gamename: string) => {
+            //console.log(Object.keys(rooms[room]))
+            const loserName = Object.keys(rooms[room]).filter(player => player !== username)[0];
+            //const loser = rooms[room][loserName];
+            console.log(loserName);
+            //console.log(loser)
+
+            const toDo = async () => {
+                const loserRanking = await getFirstScore(loserName, gamename);
+                const winnerRanking = await getFirstScore(username, gamename);
+                const newRating = rating.getNextRatings(winnerRanking, loserRanking, 1);
+                
+                updateFirstScore(username, gamename, newRating.nextPlayerARating);
+                updateFirstScore(loserName, gamename, newRating.nextPlayerBRating);
+            };
+            toDo();
+        });//const rooms: { [name: string]: { [playerName: string]: {playerId: string}}} = {};
 
         socket.on('reqRestart', (data) => {
             const room = JSON.parse(data).room;

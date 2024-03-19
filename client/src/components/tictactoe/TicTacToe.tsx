@@ -104,12 +104,12 @@ const TicTacToe: React.FC = () => {
     useEffect(() => {
         if (paramsRoom) {
             setXO('O');
-            socket.emit('join', paramsRoom, auth.username);
+            socket.emit('join', JSON.stringify({room: paramsRoom, playerName: auth.username}));
             setRoom(paramsRoom);
             setMyTurn(false);
         } else {
             const newRoomName = random();
-            socket.emit('create', newRoomName, auth.username);
+            socket.emit('create', JSON.stringify({room: newRoomName, playerName: auth.username}));
             setRoom(newRoomName);
             setMyTurn(true);
         }

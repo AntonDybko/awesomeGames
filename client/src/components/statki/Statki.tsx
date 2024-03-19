@@ -90,7 +90,7 @@ function Statki() {
             const newRoomName = random();
             console.log("new room ", newRoomName)
             console.log(socket.id, ":", auth.username)
-            socket.emit('create', JSON.stringify({room: newRoomName, socketId: socket.id, playerName: auth.username}));
+            socket.emit('create', JSON.stringify({room: newRoomName, playerName: auth.username}));
             setRoom(newRoomName);
         }
     }, [paramsRoom]);

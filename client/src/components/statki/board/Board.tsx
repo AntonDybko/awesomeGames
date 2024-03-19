@@ -86,13 +86,13 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
                     attackedCell.attack()
                     socket.emit(event, JSON.stringify({ ship: true, attackedCellKey, room}))
                     const bt = increasedBreaktThrough(currentPlayer, lightPlayer, darkPlayer)
-                    socket.emit('reqStatkiTurn', JSON.stringify(
+                    socket.emit('reqTurn', JSON.stringify(
                         { lk: bt.light, dk: bt.dark, room}
                     ));
                 }else if (attackedCell.ship === null){
                     attackedCell.attack()
                     socket.emit(event, JSON.stringify({ ship: false, attackedCellKey, room}))
-                    socket.emit('reqStatkiTurn', JSON.stringify(
+                    socket.emit('reqTurn', JSON.stringify(
                         { lk: lightPlayer.breakthrough, dk: darkPlayer.breakthrough, room}
                     ));
                 }
