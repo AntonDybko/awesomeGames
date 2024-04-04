@@ -143,6 +143,12 @@ const socketManager = (io: Server) => {
 
         })
 
+        socket.on('chatMessage', data => {
+            const { room, username, content } = data;
+            // console.log(room, "chatMessage", username + ": " + content)
+            io.to(room).emit('chatMessage', { username, content })
+        })
+
         socket.on('disconnect', () => {
             console.log("User disconnected", socket.id);
         })
