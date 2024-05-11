@@ -28,7 +28,9 @@ export const Routing: React.FC = () => {
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/ranking/mastermind" element={<MastermindLeaderboard />} />
           <Route path="/ranking/tictactoe" element={<TicTacToeLeaderboard />} />
-          <Route path="/profile/:userId" element={<Profile />} />
+          <Route path="/profile/:userId/*" element={<Profile />} />
+
+          
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

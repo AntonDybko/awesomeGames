@@ -58,7 +58,7 @@ const socketManager = (io: Server) => {
                     console.log('timer out')
                     socket.emit('timerOut')
                 }
-            }, 10000)//10000 for testing
+            }, 60000)//10000 for testing
         })
 
         socket.on('join', data => {

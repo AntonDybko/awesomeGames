@@ -42,7 +42,7 @@ const userSchema = new Schema<IUser>({
     type: Date,
     validate: {
       validator: (value: Date) => {
-        return !isNaN(value.getTime());
+        return value < new Date();
       },
       message: 'Invalid date format',
     },
