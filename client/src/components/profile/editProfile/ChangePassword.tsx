@@ -8,6 +8,7 @@ import usernameSchema from "./schemas/userNameSchema";
 import { toast } from "react-toastify";
 import passwordSchema from "./schemas/passwordSchema";
 import { NotNull } from "yup";
+import { ServerErrorResponse } from "models/ServerErrorResponse";
 
 
 const ChangePassword: React.FC = () => {
@@ -20,7 +21,7 @@ const ChangePassword: React.FC = () => {
         matchingNewPassword: string
     }
 
-    interface ServerError {
+    /*interface ServerError {
         response: {
             data: {
                 message: string,
@@ -28,7 +29,7 @@ const ChangePassword: React.FC = () => {
                 //criteria: Array<string>
             }
         }
-    }//need to create a good interface to handle all kind of errors......
+    }*///need to create a good interface to handle all kind of errors......
 
     const handleEdit = async (values: FormValues) => {
         try {
@@ -45,8 +46,8 @@ const ChangePassword: React.FC = () => {
             }
             //console.log("sdfsdf")
         }catch(err) {
-            const errorWithDetails = err as ServerError;
-            toast.error(`Error: ${errorWithDetails.response?.data.details}`);
+            const errorWithDetails = err as ServerErrorResponse;
+            toast.error(`Error: ${errorWithDetails.response.data.details}`);
         }
     }
 
