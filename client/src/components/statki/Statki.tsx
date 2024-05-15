@@ -26,6 +26,10 @@ function Statki() {
     const [hasOpponent, setHasOpponent] = useState<boolean>(false);
     const [share, setShare] = useState<boolean>(false);
     const [status, setStatus] = useState<Status>(Status.Default)
+    const [timer, setTimer] = useState<number>(60);
+    //const [timerCount, setTimerCount] = useState<boolean>(false)
+    //const [timer, setTimer] = useState<number>(60);
+    //const [oponentTimer, setOponentTimer] = useState<number>(60);
     //const [sentBoardStatus, setSentBoardStatus] = useState<boolean>(false);
 
     const location = useLocation();
@@ -139,6 +143,8 @@ function Statki() {
 
         return () => {
             //socket.off('opponentJoined', onOponentJoined);
+            socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
+            
             socket.off('observerJoined', onObserverJoined);
             socket.off('wrongRoom', onWrongRoom);
             socket.off('oponentLost', onOponentLost);
@@ -156,11 +162,12 @@ function Statki() {
             socket.on('timerOut', OnTimerOut)
 
             return () => {
-                socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
+                //socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
                 socket.off('timerOut', OnTimerOut)
             };
         }
     }, [room, playerSide])
+
 
     useEffect(() => {
         const onOponentJoined = () => {
@@ -175,6 +182,19 @@ function Statki() {
             socket.off('opponentJoined', onOponentJoined);
         };
     }, [room])
+
+    useEffect(() => {
+        if (hasOpponent){
+            const timeout = setTimeout(() => {
+                console.log('timer') //test
+                setTimer(timer-1);
+            }, 1000)
+
+            return () => {
+                clearTimeout(timeout);
+            }
+        }
+    }, [timer, hasOpponent])
 
 
     const giveUp = () => {
@@ -218,31 +238,38 @@ function Statki() {
                         <h2 className='leftside'>Player</h2>
                         <h2 className='rightside'>Oponent</h2>
                         <br />
-                        <div className='player'>Current player: {currentPlayer.label}</div>
-                        <Board 
-                            id={BoardId.player}
-                            board={board} 
-                            onSetBoard={setBoard}
-                            currentPlayer={currentPlayer}
-                            onChangePlayer={changePlayer}
-                            //onChangeBreakThrough={changeBreakThrough}
-                            hasOpponent={false}
-                            playerSide={playerSide}
-                            room={room}
-                            socket={socket}
-                            lightPlayer={lightPlayer}
-                            darkPlayer={darkPlayer}
-                            onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
-                            onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                            auth={auth}
-                        />
-                        <Board
+                        <div className='box'>
+                            <div className='player'>Current player: {currentPlayer.label === playerSide ? "Player" : "Oponent"}</div>
+                            {hasOpponent ? 
+                                <div className="timer">
+                                    {timer}
+                                </div> : 
+                            ''}
+                        </div>
+                        <div>
+                            <Board 
+                                id={BoardId.player}
+                                board={board} 
+                                onSetBoard={setBoard}
+                                currentPlayer={currentPlayer}
+                                onChangePlayer={changePlayer}
+                                hasOpponent={false}
+                                playerSide={playerSide}
+                                room={room}
+                                socket={socket}
+                                lightPlayer={lightPlayer}
+                                darkPlayer={darkPlayer}
+                                onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                                onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                                auth={auth}
+                                onSetTimer={setTimer}
+                            />
+                            <Board
                                 id={BoardId.oponent}
                                 board={oponentBoard} 
                                 onSetBoard={setOponentBoard}
                                 currentPlayer={currentPlayer}
                                 onChangePlayer={changePlayer}
-                                //onChangeBreakThrough={changeBreakThrough}
                                 hasOpponent={hasOpponent}
                                 playerSide={playerSide}
                                 room={room}
@@ -252,8 +279,9 @@ function Statki() {
                                 onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                                 onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                                 auth={auth}
-                        />
-                        
+                                onSetTimer={setTimer}
+                            />
+                        </div>
                     </div>
                 )
             )}

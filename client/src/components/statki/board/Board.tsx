@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, useEffect } from 'react';
+import { Fragment, ReactElement, useEffect, useState } from 'react';
 import './Board.scss';
 import { Cell } from '../cell/Cell';
 import BoardModel from 'models/statki/BoardModel';
@@ -26,10 +26,12 @@ type BoardProps = {
     onChangeLightPlayerBreakThrough: (x: number) => void;
     onChangeDarkPlayerBreakThrough: (x: number) => void;
     auth: AuthProps;
+    onSetTimer: (x: number) => void;
+    //onSetTimerCount: (x: boolean) => void;
 };
 
-export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, hasOpponent, room, socket, playerSide, lightPlayer, darkPlayer, onChangeLightPlayerBreakThrough, onChangeDarkPlayerBreakThrough, auth}: BoardProps): ReactElement => {
-    
+export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, hasOpponent, room, socket, playerSide, lightPlayer, darkPlayer, onChangeLightPlayerBreakThrough, onChangeDarkPlayerBreakThrough, auth ,onSetTimer}: BoardProps): ReactElement => {
+
     const handleCellClick = (cell: CellModel) => {
         if(playerSide === currentPlayer.label && hasOpponent && cell.hidden === true){
             onChangePlayer();
@@ -107,6 +109,7 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
         }
     }, [board])
 
+
     useEffect(() => {
         const OnPlayerTurn = (json: string): void => {
             //console.log("timer => room: ", room, ", user: ", auth.username)
@@ -116,13 +119,16 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
 
             console.log(req.lk, req.dk)
 
+            onSetTimer(60)
             if(id === BoardId.player && currentPlayer.label !== playerSide) {
                 socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username }));
+
                 onChangePlayer();
                 updateBoard();
             }else if(id === BoardId.player && currentPlayer.label === playerSide) {
                 updateBoard();
             }
+
         }
 
         /*const OnTimerOut =() => {
@@ -141,19 +147,21 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
     }, [room, board])
 
     return (
-        <div className={mergeClasses("board", id)}>
+        <div>
+            <div className={mergeClasses("board", id)}>
 
-            {board.cells.map((row, rowIndex) => (
-                <Fragment key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                        <Cell 
-                            cell={cell} 
-                            key={cell.key}
-                            onCellClick={handleCellClick}
-                        />
-                    ))}
-                </Fragment>
-            ))}
+                {board.cells.map((row, rowIndex) => (
+                    <Fragment key={rowIndex}>
+                        {row.map((cell, cellIndex) => (
+                            <Cell 
+                                cell={cell} 
+                                key={cell.key}
+                                onCellClick={handleCellClick}
+                            />
+                        ))}
+                    </Fragment>
+                ))}
+            </div>
         </div>
     );
 };

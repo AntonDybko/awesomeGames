@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from 'axios-config/axios'
 import UserProps from '../../interfaces/User'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Route, Link, Routes } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import { profile } from "console";
 import './Profile.scss';
 import defaultProfileImage from '../../images/defaultProfileImage.png';
+import editImage from '../../images/pngwing.com.png'
+import EditUserName from "./editProfile/EditUserName";
+import EditBirthday from "./editProfile/EditBirthday";
+import EditProfileImage from "./editProfile/EditProfileImage";
+import { Bounce, ToastContainer } from "react-toastify";
+import ChangePassword from './editProfile/ChangePassword';
 
 
 type TicTacToeRank = number; 
@@ -14,12 +20,14 @@ type MastermindRank = number;
 
 const Profile: React.FC = () => {
     const [user, setUser] = useState({} as UserProps);
-    const auth = useAuth();
+    const { auth } = useAuth();
     const [ticTacToeRank, setTicTacToeRank] = useState<TicTacToeRank>();
     const [mastermindRank, setMastermindRank] = useState<MastermindRank>();
+    const [profileImage, setProfileImage] = useState<string | undefined>("")
+    //console.log(user.birthday)
 
-
-    const profileName = window.location.pathname.slice(9)
+    const profileName = auth.username;
+    
     const navigate = useNavigate();
 
 
@@ -59,14 +67,65 @@ const Profile: React.FC = () => {
     return (
         <div className="profile-page">
             <div className="profile-container">
-                <img src={defaultProfileImage} className="profile-image" alt="profile"/>
-                <div className="profile-name">{profileName}</div>
-                <div className="birthday-container">
-                {user.birthday && (
-                    <div>
-                    {user.birthday.toString()}
-                    </div>
-                )}
+                <div>
+                    <Link to={`editProfileImage`} state={{ auth }}><img className="edit-image" src={editImage} alt="editImage"/></Link>
+                    { profileImage ?
+                        <img src={profileImage } className="profile-image" alt="profile"/> :
+                        (user.picture_url ? 
+                        <img src={user.picture_url } className="profile-image" alt="profile"/> :
+                        <img src={defaultProfileImage} className="profile-image" alt="profile"/>)
+                    }
+                    <Routes>
+                        <Route path={"editProfileImage"} element={
+                            <div>
+                                <EditProfileImage setProfileImage={setProfileImage}/>
+                            </div>
+                        }/>
+                    </Routes>
+                </div>
+                <div>
+                    <span>Email: </span>
+                    <span >{user.email}</span>
+                </div>
+                <div>
+                    <Link to={`editUserName`} state={{ auth }}><img className="edit-image" src={editImage} alt="editImage"/></Link>
+                    <span >Username: </span>
+                    <span >{profileName}</span>
+                    <Routes>
+                        <Route path={"editUserName"} element={
+                            <div>
+                                <EditUserName/>
+                            </div>
+                        }/>
+                    </Routes>
+                </div>
+                <div>
+                    <Link to={`editBirthday`} state={{ auth }}><img className="edit-image" src={editImage} alt="editImage"/></Link>
+                    <span>Birthday: </span>
+                    <span className="birthday-container">
+                        {user.birthday ? (
+                            <div>
+                                {new Date(user.birthday).toLocaleDateString()}
+                            </div>
+                        ) : 'undefined'}
+                    </span>
+                    <Routes>
+                        <Route path={"editBirthday"} element={
+                            <div>
+                                <EditBirthday/>
+                            </div>
+                        }/>
+                    </Routes>
+                </div>
+                <div>
+                    <Link to={`changePassword`} state={{ auth }}>Change Password</Link>
+                    <Routes>
+                        <Route path={"changePassword"} element={
+                            <div>
+                                <ChangePassword/>
+                            </div>
+                        }/>
+                    </Routes>
                 </div>
             </div>
             <div className="ranking-container">
@@ -83,6 +142,19 @@ const Profile: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer
+                            position="top-center"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="light"
+                            transition={Bounce}
+                        />
         </div>
     );
 }

@@ -3,20 +3,36 @@
     padding-left: 10%;
     justify-content: center;
     align-items: center;
+
+    .box{
+        margin-left: 40%;
+        width: 200px;
+        display: grid;
+
+        .player {
+            height: 60px;
+            text-transform: capitalize;
+            font-weight: 600;
+        }
+    }
+
+    .leftside {
+        left:25%;
+        position: absolute;
+    }
+    
+    .rightside {
+        left:70%;
+        position: absolute;
+    }
+
+    .timer {
+        background-color: rgba(66, 119, 150, 0.1);
+        width: 200px;
+        height: 30px;
+    }
+
 }
 
-.leftside {
-    left:25%;
-    position: absolute;
-}
 
-.rightside {
-    left:75%;
-    position: absolute;
-}
 
-.player {
-    height: 60px;
-    text-transform: capitalize;
-    font-weight: 600;
-}

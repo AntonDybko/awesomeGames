@@ -66,6 +66,8 @@ Header - autoryzacyjny
 >> jak get */ 
 //zwykły model usera
 router.put("/profile", verifyJWT, handleAsync(userController.editUser));
+
+router.put("/changePassword", verifyJWT, handleAsync(userController.changePassword));
 //ogólnie można jescze wymyślić jakiś patch (np picture_url zmieniać okremo), 
 //wtedy poprzednia metoda też będzie raczej patchem.
 
