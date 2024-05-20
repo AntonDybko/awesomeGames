@@ -27,10 +27,12 @@ type BoardProps = {
     onChangeDarkPlayerBreakThrough: (x: number) => void;
     auth: AuthProps;
     onSetTimer: (x: number) => void;
+    onIncrementStep: () => void;
+    step: number;
     //onSetTimerCount: (x: boolean) => void;
 };
 
-export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, hasOpponent, room, socket, playerSide, lightPlayer, darkPlayer, onChangeLightPlayerBreakThrough, onChangeDarkPlayerBreakThrough, auth ,onSetTimer}: BoardProps): ReactElement => {
+export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, hasOpponent, room, socket, playerSide, lightPlayer, darkPlayer, onChangeLightPlayerBreakThrough, onChangeDarkPlayerBreakThrough, auth ,onSetTimer, onIncrementStep, step}: BoardProps): ReactElement => {
 
     const handleCellClick = (cell: CellModel) => {
         if(playerSide === currentPlayer.label && hasOpponent && cell.hidden === true){
@@ -56,6 +58,9 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
     useEffect(() => {
         const OnReceiveAttack = (json: string) => {
             if(id === BoardId.player) {
+                
+                onIncrementStep();
+
                 let event  = ''
                 if(playerSide === Labels.Light) event = 'responseToAttackLight'
                 else if (playerSide === Labels.Dark) event = 'responseToAttackDark'
@@ -82,6 +87,9 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
         }
         const OnReceiveReponseToAttack= (json: string) => {
             if(id === BoardId.oponent) {
+
+                onIncrementStep();
+
                 const { ship, attackedCellKey, room } = JSON.parse(json);
                 const [x, y] = splitKey(attackedCellKey)
                 const attackedCell = board.getCell(x, y)
@@ -121,7 +129,8 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
 
             onSetTimer(60)
             if(id === BoardId.player && currentPlayer.label !== playerSide) {
-                socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username }));
+                console.log("steeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeep: ", step)
+                socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username, step }));
 
                 onChangePlayer();
                 updateBoard();
@@ -144,7 +153,7 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
             //socket.off('timerOut', OnTimerOut)
         };
 
-    }, [room, board])
+    }, [room, board, step])
 
     return (
         <div>
