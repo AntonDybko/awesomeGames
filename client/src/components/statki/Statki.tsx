@@ -27,6 +27,7 @@ function Statki() {
     const [share, setShare] = useState<boolean>(false);
     const [status, setStatus] = useState<Status>(Status.Default)
     const [timer, setTimer] = useState<number>(60);
+    const [step, setStep] = useState<number>(0);
     //const [timerCount, setTimerCount] = useState<boolean>(false)
     //const [timer, setTimer] = useState<number>(60);
     //const [oponentTimer, setOponentTimer] = useState<number>(60);
@@ -43,6 +44,10 @@ function Statki() {
         setOponentBoard(initBoard(true, false));
         setCurrentPlayer(lightPlayer);
     };//dopracowac
+
+    const incrementStep = () => {
+        setStep(step + 1);
+    }
 
     const changePlayer = () => {
         setCurrentPlayer(currentPlayer.label === Labels.Light ? darkPlayer : lightPlayer);
@@ -174,7 +179,7 @@ function Statki() {
             console.log("oponent joined")
             setHasOpponent(true);
             setShare(false);
-            if(playerSide === Labels.Light) socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username }));
+            if(playerSide === Labels.Light) socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username, step }));
         }
         socket.on('opponentJoined', onOponentJoined);
 
@@ -263,6 +268,8 @@ function Statki() {
                                 onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                                 auth={auth}
                                 onSetTimer={setTimer}
+                                onIncrementStep={incrementStep}
+                                step={step}
                             />
                             <Board
                                 id={BoardId.oponent}
@@ -280,6 +287,8 @@ function Statki() {
                                 onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                                 auth={auth}
                                 onSetTimer={setTimer}
+                                onIncrementStep={incrementStep}
+                                step={step}
                             />
                         </div>
                     </div>
