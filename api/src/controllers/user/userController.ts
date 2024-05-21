@@ -31,7 +31,9 @@ const usersController = {
   
     getUser: async (req: Request, res: Response) => {
         const username = req.params.username;
+        console.log(req.params)
         const user = await User.findOne({ username });
+        //console.log("user: ", user)
         const { password, refreshToken, _id, ...userWithoutPassword } = JSON.parse(
             JSON.stringify(user),
         );

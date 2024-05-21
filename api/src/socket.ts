@@ -70,7 +70,7 @@ const socketManager = (io: Server) => {
             rooms[room].players[playerName].status = Status.WaitingForMove
 
             setTimeout(() => {
-                console.log("step: ", rooms[room].step, " : ", step)
+                if(rooms[room] !== undefined) console.log("step: ", rooms[room].step, " : ", step)
                 if(rooms[room] !== undefined && 
                     rooms[room].players[playerName].status === Status.WaitingForMove && 
                     rooms[room].step === step
