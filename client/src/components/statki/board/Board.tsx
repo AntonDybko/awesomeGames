@@ -115,7 +115,7 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
                 socket.off('receiveReponseToAttackLight', OnReceiveReponseToAttack);
             }
         }
-    }, [board])
+    }, [board, step])
 
 
     useEffect(() => {

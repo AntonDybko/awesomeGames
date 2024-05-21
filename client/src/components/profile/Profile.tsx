@@ -88,16 +88,8 @@ const Profile: React.FC = () => {
                     <span >{user.email}</span>
                 </div>
                 <div>
-                    <Link to={`editUserName`} state={{ auth }}><img className="edit-image" src={editImage} alt="editImage"/></Link>
                     <span >Username: </span>
                     <span >{profileName}</span>
-                    <Routes>
-                        <Route path={"editUserName"} element={
-                            <div>
-                                <EditUserName/>
-                            </div>
-                        }/>
-                    </Routes>
                 </div>
                 <div>
                     <Link to={`editBirthday`} state={{ auth }}><img className="edit-image" src={editImage} alt="editImage"/></Link>
