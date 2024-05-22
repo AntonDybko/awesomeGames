@@ -24,17 +24,17 @@ const Navbar: React.FC = () => {
             <Link to="/" className="logo-typography">AwesomeGames</Link>
             <div className="site-title"></div>
         </div>
-        <div className="navbar-links">
-          <Link to="/">Home</Link>
-
+        <div className="navbar-links"> 
           {auth.username && (
-            <Link to="/games">Games</Link>
-          )}
+            <>
+              <Link to="/">Home</Link>
 
-          <Link to="/ranking">Ranking</Link>
+              <Link to="/games">Games</Link>
 
-          {auth.username && (
-            <Link to={`/profile/${auth.username}`}>Profile</Link>
+              <Link to="/ranking">Ranking</Link>
+
+              <Link to={`/profile/${auth.username}`}>Profile</Link>
+            </>
           )}
 
           {!auth.username &&

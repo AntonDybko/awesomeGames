@@ -41,7 +41,7 @@ const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
                     </div>
                 </div>
                     : 
-                    <div className="register-dialog">
+                <div className="register-dialog">
                     <DialogTitle>Register</DialogTitle>
                     <Registration />
                     <div className="change-dialog">
