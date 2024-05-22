@@ -8,7 +8,7 @@ import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
 const Games = () => {
   return (
     <div className="page">
-      <h2 className="title">GAMES</h2>
+      <h2 className="title">CHOOSE A GAME</h2>
 
       <div className="container">
         <Card

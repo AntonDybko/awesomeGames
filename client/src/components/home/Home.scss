@@ -2,10 +2,32 @@
 
 .home-page {
     min-height: 80vh;
-    margin-top: 75px;
     display: flex;
     align-items: center;
     text-align: left;
     margin-left: 100px;
     gap: 50px;
+    .left-page {
+        margin-top: 75px;
+        .home-text {
+            font-weight: bold;
+            font-size: 60px;
+        }
+    }
+    .right-page {
+        height: 100%;
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        h1 {
+            font-size: 36px;
+            letter-spacing: 1px;
+        }
+        .slider-container {
+            width: 300px;
+            height: 300px;
+            margin: 60px auto;
+        }
+    }
 }

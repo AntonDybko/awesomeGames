@@ -14,8 +14,8 @@ const Registration: React.FC = () => {
 
     return (
         <div className="registration">
-        <Confirmation response={response} status={status}/>
-        <RegistrationForm response={response} setResponse={setResponse} setStatus={setStatus} />
+            <Confirmation response={response} status={status}/>
+            <RegistrationForm response={response} setResponse={setResponse} setStatus={setStatus} />
         </div>
     );
 };

@@ -1,0 +1,53 @@
+.slider {
+    position: relative;
+    height: 100%;
+    .slider-object {
+        height: 100%;
+        .slider-img {
+            height: 100%;
+            width: 100%;
+            background-position: center;
+            border-radius: 10px;
+            background-size: cover;
+        }
+        .slide-description {
+            text-align: center;
+        }
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            :hover {
+                cursor: pointer;
+                color: rgb(99, 99, 99);
+            }
+            .active-slide {
+                color: rgb(99, 99, 99);
+            }
+        }
+    }
+    .leftArrow {
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%);
+        left: -80px;
+        font-size: 45px;
+        z-index: 1;
+        cursor: pointer;
+        :hover {
+            color: rgb(99, 99, 99);
+        }
+    }
+    .rightArrow {
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%);
+        right: -80px;
+        font-size: 45px;
+        z-index: 1;
+        cursor: pointer;
+        :hover {
+            color: rgb(99, 99, 99);
+        }
+    }
+}
