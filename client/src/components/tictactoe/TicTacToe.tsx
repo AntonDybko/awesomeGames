@@ -1,84 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router'
-import {io, Socket} from 'socket.io-client';
-import { random } from '../../utils/utils'
-import { socket } from 'socket';
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { io, Socket } from "socket.io-client";
+import { random } from "../../utils/utils";
+import { socket } from "socket";
 import useAuth from "hooks/useAuth";
-import Chat from 'components/chat/Chat';
+import Chat from "components/chat/Chat";
+import ShortUniqueId from "short-unique-id";
 
+interface LocationState {
+    isRanked?: boolean;
+}
 
 const TicTacToe: React.FC = () => {
     const { auth } = useAuth();
-    const [game, setGame] = useState<string[]>(Array(9).fill(''));
+    const [game, setGame] = useState<string[]>(Array(9).fill(""));
     const [turnNumber, setTurnNumber] = useState<number>(0);
     const [myTurn, setMyTurn] = useState<boolean>(true);
     const [winner, setWinner] = useState<boolean>(false);
-    const [xo, setXO] = useState<'X' | 'O'>('X');
-    const [player, setPlayer] = useState<string>('');
+    const [xo, setXO] = useState<"X" | "O">("X");
+    const [player, setPlayer] = useState<string>("");
     const [hasOpponent, setHasOpponent] = useState<boolean>(false);
     const [share, setShare] = useState<boolean>(false);
     const [turnData, setTurnData] = useState<boolean>(false);
 
     const location = useLocation();
+    const state = location.state as LocationState;
+    const isRanked = state?.isRanked || false;
     const params = new URLSearchParams(location.search);
-    const paramsRoom = params.get('room') || '';
+    const paramsRoom = params.get("room") || "";
     const [room, setRoom] = useState(paramsRoom);
 
+    const uid = new ShortUniqueId({ length: 10 });
+    const navigate = useNavigate();
 
     const turn = (index: number) => {
         if (!game[index] && !winner && myTurn && hasOpponent) {
-            socket.emit('reqTurn', JSON.stringify({ index, value: xo, room }));
+            socket.emit("reqTurn", JSON.stringify({ index, value: xo, room }));
         }
     };
 
     const sendRestart = () => {
-        socket.emit('reqRestart', JSON.stringify({ room }));
+        socket.emit("reqRestart", JSON.stringify({ room }));
     };
 
-    const restart = () => {
-        setGame(Array(9).fill(''));
+    const cancelMatchmaking = () => {
+        navigate("/games");
+    };
+
+    const restart = (firstPlayer: string) => {
+        setGame(Array(9).fill(""));
         setWinner(false);
         setTurnNumber(0);
         setMyTurn(false);
+
+        if (firstPlayer === socket.id) {
+            console.log("to ja");
+            setMyTurn(true);
+            setXO("X");
+        } else {
+            setMyTurn(false);
+            setXO("O");
+        }
     };
 
     useEffect(() => {
-        console.log('Hello from the Effect!!!');
-        
+        console.log("Hello from the Effect!!!");
+
         combinations.forEach((c) => {
-            if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== '') {
+            if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
                 setWinner(true);
-                // 1)
-                if (player === xo) {
-                    console.log("Win - emitting event!")
-                    socket.emit('winner', room, auth.username, 'tictactoe')
+                if (player === xo && isRanked) {
+                    console.log("Win - emitting event!");
+                    socket.emit("winner", room, auth.username, "tictactoe");
                 }
-                // else {
-                //     console.log("Lose")
-                //     socket.emit('loser', room, auth.username)
-                // }
             }
         });
 
         if (turnNumber === 0) {
-            setMyTurn(xo === 'X' ? true : false);
+            setMyTurn(xo === "X" ? true : false);
         }
     }, [game, turnNumber, xo]);
 
     useEffect(() => {
-        socket.on('playerTurn', (json) => {
+        socket.on("playerTurn", (json) => {
             setTurnData(json);
         });
 
-        socket.on('restart', () => {
-            restart();
+        socket.on("restart", (data) => {
+            restart(data.firstPlayer);
         });
 
-        socket.on('opponentJoined', () => {
+        socket.on("opponentJoined", (data) => {
             setHasOpponent(true);
             setShare(false);
+
+            if (data.firstPlayer === socket.id) {
+                console.log("to ja");
+                setMyTurn(true);
+            } else {
+                setMyTurn(false);
+                setXO("O");
+            }
         });
+
+        socket.on("matchFound", (data) => {
+            setRoom(data.room);
+
+            if (data.firstPlayer === socket.id) {
+                console.log("to ja");
+                setMyTurn(true);
+            } else {
+                setMyTurn(false);
+                setXO("O");
+            }
+            console.log("matchfound");
+            setHasOpponent(true);
+        });
+
+        socket.on("queueStart", (data) => {
+            setRoom(data.room);
+        });
+
+        if (isRanked) {
+            console.log("ranked");
+            socket.emit("matchmaking", {
+                playerName: auth.username,
+                game: "tictactoe",
+            });
+        } else {
+            if (paramsRoom) {
+                socket.emit(
+                    "join",
+                    JSON.stringify({
+                        room: paramsRoom,
+                        playerName: auth.username,
+                    })
+                );
+                setRoom(paramsRoom);
+            } else {
+                const newRoomName = uid.rnd();
+                socket.emit(
+                    "create",
+                    JSON.stringify({
+                        room: newRoomName,
+                        playerName: auth.username,
+                        game: "tictactoe",
+                    })
+                );
+                setRoom(newRoomName);
+            }
+        }
     }, []);
+
+    useEffect(() => {
+        if (room) {
+            return () => {
+                socket.emit("leave", { room: room });
+            };
+        }
+    }, [room]);
 
     useEffect(() => {
         if (turnData) {
@@ -95,28 +176,7 @@ const TicTacToe: React.FC = () => {
         }
     }, [turnData, game, turnNumber, winner, myTurn]);
 
-    // 2)
-    // useEffect(() => {
-    //     if (turnNumber !== 0)
-    //     socket.emit("gameover", room)
-
-    // }, [winner])
-
-    useEffect(() => {
-        if (paramsRoom) {
-            setXO('O');
-            socket.emit('join', JSON.stringify({room: paramsRoom, playerName: auth.username}));
-            setRoom(paramsRoom);
-            setMyTurn(false);
-        } else {
-            const newRoomName = random();
-            socket.emit('create', JSON.stringify({room: newRoomName, playerName: auth.username}));
-            setRoom(newRoomName);
-            setMyTurn(true);
-        }
-    }, [paramsRoom]);
-
-    const Box = ({ index, turn, value }: {index:number, turn:any, value:string}) => {
+    const Box = ({ index, turn, value }: { index: number; turn: any; value: string }) => {
         return (
             <div className="box" onClick={() => turn(index)}>
                 {value}
@@ -135,55 +195,72 @@ const TicTacToe: React.FC = () => {
         [2, 4, 6],
     ];
 
-    /*const random = () => {
-        return Array.from(Array(8), () => Math.floor(Math.random() * 36).toString(36)).join('');
-    };*/
-    //umiescilem to w utils
-
     return (
-        <div className="container">
-            <div className="game">
-                Room: {room}
-                <button className="btn" onClick={() => setShare(!share)}>
-                    Share
-                </button>
-                {share ? (
-                    <>
+        <div>
+            {isRanked && !hasOpponent ? (
+                <div>
+                    <div>Searching for worthy opponent...</div>
+                    <button onClick={cancelMatchmaking}>Cancel</button>
+                </div>
+            ) : (
+                <div className="container">
+                    <div className="game">
+                        {isRanked ? <p>This is ranked game</p> : <p>This is normal game</p>}
+                        <div>Room: {room}</div>
+
+                        {!isRanked ? (
+                            <button className="btn" onClick={() => setShare(!share)}>
+                                Share
+                            </button>
+                        ) : null}
+
+                        {share ? (
+                            <div>
+                                Share link:{" "}
+                                <input type="text" value={`${window.location.href}?room=${room}`} readOnly />
+                            </div>
+                        ) : null}
+
                         <br />
                         <br />
-                        Share link: <input type="text" value={`${window.location.href}?room=${room}`} readOnly />
-                    </>
-                ) : null}
-                <br />
-                <br />
-                Turn: {myTurn ? 'You' : 'Opponent'}
-                <br />
-                {hasOpponent ? '' : 'Waiting for opponent...'}
-                <p>
-                    {winner || turnNumber === 9 ? (
-                        <button className="btn" onClick={sendRestart}>
-                            Restart
-                        </button>
-                    ) : null}
-                    {winner ? <span>We have a winner: {player}</span> : turnNumber === 9 ? <span>It's a tie!</span> : <br />}
-                </p>
-                <div className="row">
-                    <Box index={0} turn={turn} value={game[0]} />
-                    <Box index={1} turn={turn} value={game[1]} />
-                    <Box index={2} turn={turn} value={game[2]} />
+                        {hasOpponent ? (
+                            <div>
+                                {(winner || turnNumber === 9) && !isRanked ? (
+                                    <button className="btn" onClick={sendRestart}>
+                                        Restart
+                                    </button>
+                                ) : null}
+                                {winner ? (
+                                    <span>We have a winner: {player}</span>
+                                ) : turnNumber === 9 ? (
+                                    <span>It's a tie!</span>
+                                ) : (
+                                    <div>Turn: {myTurn ? "You" : "Opponent"}</div>
+                                )}
+                            </div>
+                        ) : (
+                            <div>Waiting for opponent...</div>
+                        )}
+                        <br />
+                        <div className="row">
+                            <Box index={0} turn={turn} value={game[0]} />
+                            <Box index={1} turn={turn} value={game[1]} />
+                            <Box index={2} turn={turn} value={game[2]} />
+                        </div>
+                        <div className="row">
+                            <Box index={3} turn={turn} value={game[3]} />
+                            <Box index={4} turn={turn} value={game[4]} />
+                            <Box index={5} turn={turn} value={game[5]} />
+                        </div>
+                        <div className="row">
+                            <Box index={6} turn={turn} value={game[6]} />
+                            <Box index={7} turn={turn} value={game[7]} />
+                            <Box index={8} turn={turn} value={game[8]} />
+                        </div>
+                    </div>
+                    <Chat room={room}></Chat>
                 </div>
-                <div className="row">
-                    <Box index={3} turn={turn} value={game[3]} />
-                    <Box index={4} turn={turn} value={game[4]} />
-                    <Box index={5} turn={turn} value={game[5]} />
-                </div>
-                <div className="row">
-                    <Box index={6} turn={turn} value={game[6]} />
-                    <Box index={7} turn={turn} value={game[7]} />
-                    <Box index={8} turn={turn} value={game[8]} />
-                </div>
-            </div>
-            <Chat room={room}></Chat>
+            )}
         </div>
     );
 };
