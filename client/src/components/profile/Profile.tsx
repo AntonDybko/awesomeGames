@@ -3,15 +3,17 @@ import axios from 'axios-config/axios'
 import UserProps from '../../interfaces/User'
 import { useNavigate, Route, Link, Routes } from "react-router-dom";
 import useAuth from "hooks/useAuth";
-import { profile } from "console";
 import './Profile.scss';
 import defaultProfileImage from '../../images/defaultProfileImage.png';
 import editImage from '../../images/pngwing.com.png'
-import EditUserName from "./editProfile/EditUserName";
 import EditBirthday from "./editProfile/EditBirthday";
 import EditProfileImage from "./editProfile/EditProfileImage";
 import { Bounce, ToastContainer } from "react-toastify";
 import ChangePassword from './editProfile/ChangePassword';
+import EditIcon from '@mui/icons-material/Edit';
+import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
+import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
+import ClearIcon from '@mui/icons-material/Clear';
 
 
 type TicTacToeRank = number; 
@@ -24,7 +26,6 @@ const Profile: React.FC = () => {
     const [ticTacToeRank, setTicTacToeRank] = useState<TicTacToeRank>();
     const [mastermindRank, setMastermindRank] = useState<MastermindRank>();
     const [profileImage, setProfileImage] = useState<string | undefined>("")
-    //console.log(user.birthday)
 
     const profileName = auth.username;
     
@@ -68,7 +69,7 @@ const Profile: React.FC = () => {
         <div className="profile-page">
             <div className="profile-container">
                 <div>
-                    <Link to={`editProfileImage`} state={{ auth }}><img className="edit-image" src={editImage} alt="editImage"/></Link>
+                    <Link to={`editProfileImage`} state={{ auth }}><EditIcon className="edit-icon"/></Link>
                     { profileImage ?
                         <img src={profileImage } className="profile-image" alt="profile"/> :
                         (user.picture_url ? 
@@ -83,16 +84,15 @@ const Profile: React.FC = () => {
                         }/>
                     </Routes>
                 </div>
+                <div className="profile-name">
+                    {profileName}
+                </div>
                 <div>
                     <span>Email: </span>
                     <span >{user.email}</span>
                 </div>
                 <div>
-                    <span >Username: </span>
-                    <span >{profileName}</span>
-                </div>
-                <div>
-                    <Link to={`editBirthday`} state={{ auth }}><img className="edit-image" src={editImage} alt="editImage"/></Link>
+                    <Link to={`editBirthday`} state={{ auth }}><EditIcon className="edit-icon"/></Link>
                     <span>Birthday: </span>
                     <span className="birthday-container">
                         {user.birthday ? (
@@ -110,7 +110,7 @@ const Profile: React.FC = () => {
                     </Routes>
                 </div>
                 <div>
-                    <Link to={`changePassword`} state={{ auth }}>Change Password</Link>
+                    <Link to={`changePassword`} state={{ auth }}><EditIcon className="edit-icon"/>Change Password</Link>
                     <Routes>
                         <Route path={"changePassword"} element={
                             <div>
@@ -123,14 +123,32 @@ const Profile: React.FC = () => {
             <div className="ranking-container">
                 <h2>Rankings</h2>
                 <div className="game-rankings">
-                    <div className="mastermind-ranking">
-                        Mastermind ranking: {mastermindRank !== undefined ? (mastermindRank % 1 !== 0 ? mastermindRank.toFixed(1) : mastermindRank) : 'No ranking yet'}
+                    <div className="mastermind-ranking rating-container">
+                        <div className="game-icon-container">
+                            <PsychologyAltIcon className="game-icon"/>
+                            <p className="rating-name">
+                                MASTERMIND RANKING: 
+                            </p>
+                        </div>
+                        <p className="rating">{mastermindRank !== undefined ? (mastermindRank % 1 !== 0 ? mastermindRank.toFixed(1) : mastermindRank) : 'No ranking yet'}</p>
                     </div>
-                    <div className="tictactoe-ranking">
-                        Tictactoe ranking: {ticTacToeRank !== undefined ? (ticTacToeRank % 1 !== 0 ? ticTacToeRank.toFixed(1) : ticTacToeRank)  : 'No ranking yet'}
+                    <div className="tictactoe-ranking rating-container">
+                        <div className="game-icon-container">
+                            <ClearIcon className="game-icon"/>
+                            <p className="rating-name">
+                                TICTACTOE RANKING: 
+                            </p>
+                        </div>
+                        <p className="rating">{ticTacToeRank !== undefined ? (ticTacToeRank % 1 !== 0 ? ticTacToeRank.toFixed(1) : ticTacToeRank)  : 'No ranking yet'}</p>
                     </div>
-                    <div className="battleship-ranking">
-                        Battleship ranking: {}
+                    <div className="battleship-ranking rating-container">
+                        <div className="game-icon-container">
+                            <DirectionsBoatIcon className="game-icon"/>
+                            <p className="rating-name">
+                                BATTLESHIP RANKING: 
+                            </p>
+                        </div>
+                        <p className="rating">{}</p>
                     </div>
                 </div>
             </div>
