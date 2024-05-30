@@ -1,4 +1,30 @@
+@import "variables.scss";
+
 .rankings-container{
+
+    .leaderboard-header-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .throphy-emoji {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgb(236, 165, 12);
+            font-size: 36px;
+        }
+    }
+    .game-selector {
+        select {
+            background-color: $main-dark-color;
+            color: $main-light-color;
+            width: 200px;
+            height: 50px;
+            font-size: large;
+            padding: 10px;
+        }
+        
+    }
     .leaderboard-list {
         list-style: none;
         margin: 0;

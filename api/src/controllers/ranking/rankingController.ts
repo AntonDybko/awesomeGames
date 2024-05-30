@@ -25,7 +25,7 @@ const rankingController = {
                         $sort: { averageScore: -1 },
                     },
                     {
-                        $limit: 10,
+                        $limit: 100,
                     },
                     {
                         $lookup: {
