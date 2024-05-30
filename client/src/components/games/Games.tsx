@@ -1,6 +1,5 @@
 import "./Games.scss";
 import tictactoeImage from '../../images/tictactoe.png';
-//import checkersImage from '../../images/checkers.png';
 import Card from './card/Card'; 
 import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';

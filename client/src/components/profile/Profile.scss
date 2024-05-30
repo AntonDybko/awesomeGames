@@ -15,10 +15,66 @@
             width: 250px;
             height: 250px;
         }
-        .edit-image {
-            border-radius: 50%;
-            width: 15px;
-            height: 15px;
+        .edit-icon {
+            color: black;
+            font-size: 26px;
+            &:hover {
+                color: rgb(100, 100, 100);
+            }
+        }
+        .profile-name {
+            font-weight: 500;
+            font-size: 28px;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+            &:hover {
+                color: rgb(100, 100, 100);
+            }
+        }
+    }
+    .ranking-container {
+        .game-rankings {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            .rating-container {
+                min-width: 600px;
+                padding: 0px 20px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                font-weight: 500;
+                color: white;
+                .rating-name {
+                    display: flex;
+                    justify-self: flex-start;
+                }
+                .rating {
+                    display: flex;
+                    justify-self: flex-end;
+                }
+                .game-icon-container {
+                    display: flex;
+                    .game-icon {
+                        display: flex;
+                        align-self: center;
+                        font-size: 36px;
+                        margin-right: 10px;
+                    }
+                }
+            }
+            .mastermind-ranking {
+                background-color: rgb(230, 133, 14);
+            }
+            .tictactoe-ranking {
+                background-color: rgb(58, 96, 165);
+            }
+            .battleship-ranking {
+                background-color: rgb(114, 16, 184);
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
         }
     }
 }
