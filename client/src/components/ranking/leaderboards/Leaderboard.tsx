@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import React, { useState } from 'react';
 import "./Leaderboard.scss";
+import Pagination from '@mui/material/Pagination';
 
 interface Player {
   id: number;
@@ -13,57 +13,48 @@ interface LeaderboardProps {
   gameName: String;
 }
 
+const Leaderboard: React.FC<LeaderboardProps> = ({ winnersList, gameName }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-const Leaderboard: React.FC<LeaderboardProps> = ({winnersList, gameName}) => {
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = winnersList.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(winnersList.length / itemsPerPage);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className='leaderboard'>
-      <h2 className="leaderboard-title">{gameName} Leaderboard</h2>
-      <ul className='players-list'>
-        {winnersList.map((player, id) => (
-          <li key={id} className="player-container">
-              {id === 0 && (
-                <div className="player-info">
-                  <span className="medal-emoji">
-                      🥇 
-                  </span>
-                  <span>
-                    {player.username} - {player.averageScore.toFixed(1)} points
-                  </span>
-                </div>
-              )}
-              {id === 1 && (
-                <div className="player-info">
-                  <span className="medal-emoji">
-                    🥈 
-                  </span>
-                  <span>
-                    {player.username} - {player.averageScore.toFixed(1)} points
-                  </span>
-                </div>
-              )}
-              {id === 2 && (
-                <div className="player-info">
-                  <span className="medal-emoji">
-                    🥉 
-                  </span>
-                  <span>
-                    {player.username} - {player.averageScore.toFixed(1)} points
-                  </span>
-                </div>
-              )}
-              {id > 2 && (
-                <div className="player-info">
-                  <EmojiEventsIcon className="trophy-icon" />
-                  <span className="losers-place">{id + 1}.</span>
-                  <span>
-                    {player.username} - {player.averageScore.toFixed(1)} points
-                  </span>
-                </div>
-              )}
-          </li>
-        ))}
-      </ul>
+      <table className='players-table'>
+        <thead className='table-header'>
+          <tr className="header-names">
+            <th>Standing</th>
+            <th>Player</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody className='table-data'>
+          {currentItems.map((player, index) => (
+              <tr key={index} className="player-container">
+                <td className="player-ranking">
+                  {currentPage === 1 && index === 0 && <span className="medal-emoji">🥇</span>}
+                  {currentPage === 1 && index === 1 && <span className="medal-emoji">🥈</span>}
+                  {currentPage === 1 && index === 2 && <span className="medal-emoji">🥉</span>}
+                  {(currentPage !== 1 || index > 2) && <span>#{indexOfFirstItem + index + 1}</span>}
+                </td>
+                <td className='player-info'>{player.username}</td>
+                <td className='player-info'>{player.averageScore.toFixed(0)} points</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+      <div className='pagination'>
+        <Pagination count={totalPages} onChange={handlePageChange} showFirstButton showLastButton />
+      </div>
     </div>
   );
 };

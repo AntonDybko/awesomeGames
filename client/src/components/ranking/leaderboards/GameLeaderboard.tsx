@@ -1,33 +1,30 @@
-
-import { Routes, Route, Link } from "react-router-dom";
-import Leaderboard from "./Leaderboard";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios-config/axios'
+import axios from 'axios-config/axios';
+import Leaderboard from "./Leaderboard";
 
-
-const MastermindLeaderboard: React.FC = () => {
+const GameLeaderboard: React.FC<{ gameName: string }> = ({ gameName }) => {
     const [players, setPlayers] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         async function getPlayersList() {
             try {
-                const res = await axios.get(`ranking/mastermind`);
+                const res = await axios.get(`ranking/${gameName}`);
                 if (res.status === 200) setPlayers(res.data);
+                console.log(res.data);
             } catch (e) {
                 navigate("/");
             }
         }
         getPlayersList();
-    }, [ navigate ])
-    
+    }, [gameName, navigate]);
 
     return (
         <div className="rankings-container">
-            <Leaderboard winnersList={players} gameName={"Mastermind"}/>
+            <Leaderboard winnersList={players} gameName={gameName}/>
         </div>
     );
-}
+};
 
-export default MastermindLeaderboard;
+export default GameLeaderboard;

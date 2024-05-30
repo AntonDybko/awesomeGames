@@ -1,33 +1,51 @@
-.leaderboard{
-    .leaderboard-title {
+@import "variables.scss";
 
-    }
-    .players-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        .player-container {
-            .player-info {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: larger;
-                text-decoration: none;
-                color: black;
-                margin-bottom: 1rem;
+.leaderboard{
+    margin-top: 25px;
+    .players-table {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .table-data {
+            background-color: $main-dark-color;
+            min-height: 570px;
+            min-width: 50%;
+            color: $secondary-light-color;
+            border-bottom-left-radius: 2px;
+            border-bottom-right-radius: 2px;
+            .player-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                color: $secondary-light-color;
+                font-weight: 500;
+                font-size: 18px;
+                min-height: 57px;
                 .medal-emoji {
-                    font-size: 3rem;
+                    font-size: 36px;
+                    color: rgb(241, 145, 0);
                 }
-                .trophy-icon {
-                    font-size: 4rem;
-                    color: rgb(56, 56, 56);
-                }
-                .losers-place {
-                }
-                span {
-                    margin-right: 1rem;
+                .player-info, .player-ranking {
+                    display: flex;
+                    justify-self: center;
+                    align-items: center;
                 }
             }
         }
+        .table-header {
+            min-width: 50%;
+            background-color: $third-dark-color;
+            color: $secondary-light-color;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            .header-names {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+    }
+    .pagination {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
     }
 }
