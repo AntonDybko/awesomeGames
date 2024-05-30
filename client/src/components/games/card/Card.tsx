@@ -43,6 +43,10 @@ const Card: React.FC<CardProps> = ({
             Play Now
             </Link>
           </div>
+          <div className="play">
+            <Link to={linkTo} state={{ isRanked: true }}>Ranked</Link>
+          </div>
+          
         </div>
       </div>
     </div>
