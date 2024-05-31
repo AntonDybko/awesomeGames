@@ -20,13 +20,10 @@ export const Routing: React.FC = () => {
           <Route path="/games" element={<Games />} />
           <Route path="/games/mastermind" element={<MastermindPage />} />
           <Route path="/games/statki" element={<StatkiPage />} />
-          {/* <Route path="/games/mastermind/:id" element={<Mastermind />} /> */}
           <Route path="/games/tictactoe" element={<TicTacToePage />} />
           <Route path="/games/tictactoe/:id" element={<TicTacToe />} />
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/profile/:userId/*" element={<Profile />} />
-
-          
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

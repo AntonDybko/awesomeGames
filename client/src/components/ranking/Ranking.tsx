@@ -20,6 +20,7 @@ const Ranking = () => {
                 <select id="game" value={selectedGame} onChange={handleGameChange}>
                     <option value="tictactoe">Tic-Tac-Toe</option>
                     <option value="mastermind">Mastermind</option>
+                    <option value="battleships">Battleship</option>
                 </select>
             </div>
             <GameLeaderboard gameName={selectedGame} />

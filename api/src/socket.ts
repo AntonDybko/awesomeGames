@@ -233,6 +233,20 @@ const socketManager = (io: Server) => {
         socket.on("playerLost", (data) => {
             const { room, lostPlayerSide } = JSON.parse(data);
             console.log(room, ":", lostPlayerSide);
+            
+            console.log(rooms[room])
+            const winnerName = Object.keys(rooms[room].players).filter((player) => player !== lostPlayerSide)[0];
+
+            const toDo = async () => {
+                const loserRanking = await getFirstScore(lostPlayerSide, "battleships");
+                const winnerRanking = await getFirstScore(winnerName, "battleships");
+                const newRating = rating.getNextRatings(winnerRanking, loserRanking, 1);
+
+                updateFirstScore(winnerName, "battleships", newRating.nextPlayerARating);
+                updateFirstScore(lostPlayerSide, "battleships", newRating.nextPlayerBRating);
+            };
+            toDo();
+
             if (rooms[room] !== undefined) {
                 delete rooms[room];
                 console.log("someone lost in room ", room);

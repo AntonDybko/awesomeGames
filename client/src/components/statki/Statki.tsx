@@ -150,7 +150,7 @@ function Statki() {
 
         return () => {
             //socket.off('opponentJoined', onOponentJoined);
-            socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide }));
+            socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username }));
 
             socket.off("observerJoined", onObserverJoined);
             socket.off("wrongRoom", onWrongRoom);
