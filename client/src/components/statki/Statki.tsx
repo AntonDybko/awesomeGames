@@ -162,7 +162,7 @@ function Statki() {
     useEffect(() => {
         const OnTimerOut = () => {
             console.log("lost: ", room, playerSide);
-            socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide }));
+            socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username }));
         };
 
         if (room !== null && playerSide !== undefined) {
