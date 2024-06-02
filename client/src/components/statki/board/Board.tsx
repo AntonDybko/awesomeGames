@@ -129,7 +129,6 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
 
             onSetTimer(60)
             if(id === BoardId.player && currentPlayer.label !== playerSide) {
-                console.log("steeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeep: ", step)
                 socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username, step }));
 
                 onChangePlayer();
@@ -139,11 +138,6 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
             }
 
         }
-
-        /*const OnTimerOut =() => {
-            console.log("lost: ", room, playerSide)
-            socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
-        }*/
 
         socket.on('playerTurn', OnPlayerTurn)
         //socket.on('timerOut', OnTimerOut)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Statki.scss";
 import { Board } from "./board/Board";
 import BoardModel from "../../models/statki/BoardModel";
@@ -29,16 +29,29 @@ function Statki() {
     const [status, setStatus] = useState<Status>(Status.Default);
     const [timer, setTimer] = useState<number>(60);
     const [step, setStep] = useState<number>(0);
-    //const [timerCount, setTimerCount] = useState<boolean>(false)
-    //const [timer, setTimer] = useState<number>(60);
-    //const [oponentTimer, setOponentTimer] = useState<number>(60);
-    //const [sentBoardStatus, setSentBoardStatus] = useState<boolean>(false);
+    const [opponent, setOpponent] = useState<String>("");
 
     const location = useLocation();
     const params = new URLSearchParams(location.search);
     const paramsRoom = params.get("room");
     const [room, setRoom] = useState(paramsRoom);
+//refs
+    const hasOpponentRef = useRef(false);
+    const userNameRef = useRef<string | undefined>(undefined)
+    const winnerRef = useRef<PlayerModel>()
 
+    useEffect(() => {
+        userNameRef.current = auth.username;
+    }, [auth.username]);
+
+    useEffect(() => {
+        hasOpponentRef.current = hasOpponent;
+    }, [hasOpponent]);
+
+    useEffect(() => {
+        winnerRef.current = winner;
+    }, [winner]);
+//end of refs
     //------------
     const restart = () => {
         setBoard(initBoard(false, true));
@@ -81,8 +94,14 @@ function Statki() {
     }, [hasOpponent]);
 
     useEffect(() => {
-        if (lightPlayer.breakthrough === 15) setWiner(lightPlayer);
-        if (darkPlayer.breakthrough === 15) setWiner(darkPlayer);
+        if (lightPlayer.breakthrough === 15) {
+            setWiner(lightPlayer)
+            if(playerSide === Labels.Light) socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: opponent }));
+        };
+        if (darkPlayer.breakthrough === 15) { 
+            setWiner(darkPlayer)
+            if(playerSide === Labels.Light) socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: opponent }));
+        };
     }, [lightPlayer, darkPlayer]);
 
     useEffect(() => {
@@ -108,13 +127,6 @@ function Statki() {
 
     useEffect(() => {
         console.log(room);
-
-        /*const onOponentJoined = () => {
-            console.log("oponent joined")
-            setHasOpponent(true);
-            setShare(false);
-            //socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username }));
-        }*/
 
         const onObserverJoined = () => {
             console.log("observer here");
@@ -150,7 +162,7 @@ function Statki() {
 
         return () => {
             //socket.off('opponentJoined', onOponentJoined);
-            socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username }));
+            //console.log()
 
             socket.off("observerJoined", onObserverJoined);
             socket.off("wrongRoom", onWrongRoom);
@@ -158,6 +170,18 @@ function Statki() {
             socket.off("restart", restart);
         };
     }, []);
+
+    useEffect(() => {
+        return () => {
+            console.log("return checking: ", room !== undefined, hasOpponentRef.current, winnerRef.current === undefined, userNameRef.current !== undefined)
+            if(room !== undefined && hasOpponentRef.current && winnerRef.current === undefined && userNameRef.current !== undefined){
+                console.log("what is going on here??")
+                console.log(room, userNameRef.current, winnerRef.current )
+                socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current}));
+            }
+        }
+
+    }, [room])
 
     useEffect(() => {
         const OnTimerOut = () => {
@@ -169,7 +193,6 @@ function Statki() {
             socket.on("timerOut", OnTimerOut);
 
             return () => {
-                //socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
                 socket.off("timerOut", OnTimerOut);
             };
         }
@@ -180,13 +203,24 @@ function Statki() {
             console.log("oponent joined");
             setHasOpponent(true);
             setShare(false);
+            console.log(room, auth.username, step)
+            socket.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username}));
             if (playerSide === Labels.Light)
                 socket.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
         };
+
+        const onOpponentUserName = (data: string) => {
+            const { opponent } = JSON.parse(data);
+            console.log("oponent name: ", opponent);
+            setOpponent(opponent);
+        };
+
         socket.on("opponentJoined", onOponentJoined);
+        socket.on("opponentUserName", onOpponentUserName);
 
         return () => {
             socket.off("opponentJoined", onOponentJoined);
+            socket.off("opponentUserName", onOpponentUserName);
         };
     }, [room]);
 

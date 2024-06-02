@@ -1,5 +1,5 @@
 import express from "express";
-import verifyJWT from "../middleware/verifyJwt";
+import {verifyJWT, verifyUser} from "../middleware/verifyJwt";
 import authController from "../controllers/user/authController";
 import userController from "../controllers/user/userController";
 import scoreController from "../controllers/score/scoreController";
@@ -65,9 +65,9 @@ Header - autoryzacyjny
 }
 >> jak get */ 
 //zwykły model usera
-router.put("/profile", verifyJWT, handleAsync(userController.editUser));
+router.put("/profile", verifyUser, handleAsync(userController.editUser));
 
-router.put("/changePassword", verifyJWT, handleAsync(userController.changePassword));
+router.put("/changePassword", verifyUser, handleAsync(userController.changePassword));
 //ogólnie można jescze wymyślić jakiś patch (np picture_url zmieniać okremo), 
 //wtedy poprzednia metoda też będzie raczej patchem.
 
