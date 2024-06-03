@@ -13,7 +13,8 @@ const gameController = {
                 const game = await Game.create({
                     name
                 });
-                return res.status(201).json(game);
+                const { __v, ...gameToReturn } = JSON.parse(JSON.stringify(game));
+                return res.status(201).json(gameToReturn);
             }
 
             if (!numberOfPlayers && difficulty) {
@@ -21,7 +22,8 @@ const gameController = {
                     name,
                     difficulty
                 });
-                return res.status(201).json(game);
+                const { __v, ...gameToReturn } = JSON.parse(JSON.stringify(game));
+                return res.status(201).json(gameToReturn);
             }
 
             if (numberOfPlayers && !difficulty) {
@@ -29,7 +31,8 @@ const gameController = {
                     name,
                     numberOfPlayers
                 });
-                return res.status(201).json(game);
+                const { __v, ...gameToReturn } = JSON.parse(JSON.stringify(game));
+                return res.status(201).json(gameToReturn);
             }
 
             const game = await Game.create({
@@ -37,7 +40,8 @@ const gameController = {
                 numberOfPlayers,
                 difficulty
             });
-            return res.status(201).json(game);
+            const { __v, ...gameToReturn } = JSON.parse(JSON.stringify(game));
+            return res.status(201).json(gameToReturn);
         } catch (error) {
             return res.status(400).json(error)
         }

@@ -88,6 +88,16 @@ const authController  = {
         const {email, password, username} = req.body;
 
         try {
+            const existingUsername = await User.findOne({ username });
+            if (existingUsername) {
+                return res.status(400).json({ message: 'Username already exists' });
+            }
+
+            const existingEmail = await User.findOne({ email });
+            if (existingEmail) {
+                return res.status(400).json({ message: 'Email already taken' });
+            }
+
             //recording new user in database
             if(!validPasswordFormat(password)){
                 return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
@@ -102,7 +112,7 @@ const authController  = {
             const user = await User.create({
                 email: email,
                 password: encryptedPass,
-                username: username // Why is this an email??? -no email bro
+                username: username
             })
             //creating tokens
             const accessToken = jwt.sign({ _id: user._id,  email: email, username: email}, 
@@ -121,7 +131,7 @@ const authController  = {
                 httpOnly: true, 
                 maxAge: 7 * 24 * 60 * 60 * 1000 
             }); 
-            res.json({ message: 'Register successful', 
+            res.status(201).json({ message: 'Register successful', 
                 accessToken,
                 user: {
                     _id: user._id,
@@ -136,7 +146,7 @@ const authController  = {
             if(err instanceof Error.ValidationError){
                 return res.status(400).json({ message: 'Validation failed', details: err.errors});
             }
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500).json({ message: "Internal server error" });
         }
     },
     handleRefreshToken: async (req: Request, res: Response) => {
