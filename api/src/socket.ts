@@ -263,7 +263,7 @@ const socketManager = (io: Server) => {
             console.log(room, playerName);
             const opponent = Object.keys(rooms[room].players).filter((player) => player !== playerName)[0];
 
-            io.to(room).emit("opponentUserName", JSON.stringify({ opponent }));
+            socket.emit("opponentUserName", JSON.stringify({ opponent }));
         });
 
         socket.on("chatMessage", (data) => {

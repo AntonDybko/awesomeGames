@@ -252,7 +252,8 @@ function Statki() {
     }, [timer, hasOpponent]);
 
     const giveUp = () => {
-        socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide }));
+        socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current }));
+        //socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide }));
     };
 
     return (
