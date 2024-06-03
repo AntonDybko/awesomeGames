@@ -35,10 +35,10 @@ function Statki() {
     const params = new URLSearchParams(location.search);
     const paramsRoom = params.get("room");
     const [room, setRoom] = useState(paramsRoom);
-//refs
+    //refs
     const hasOpponentRef = useRef(false);
-    const userNameRef = useRef<string | undefined>(undefined)
-    const winnerRef = useRef<PlayerModel>()
+    const userNameRef = useRef<string | undefined>(undefined);
+    const winnerRef = useRef<PlayerModel>();
 
     useEffect(() => {
         userNameRef.current = auth.username;
@@ -51,7 +51,7 @@ function Statki() {
     useEffect(() => {
         winnerRef.current = winner;
     }, [winner]);
-//end of refs
+    //end of refs
     //------------
     const restart = () => {
         setBoard(initBoard(false, true));
@@ -95,13 +95,17 @@ function Statki() {
 
     useEffect(() => {
         if (lightPlayer.breakthrough === 15) {
-            setWiner(lightPlayer)
-            if(playerSide === Labels.Light) socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: opponent }));
-        };
-        if (darkPlayer.breakthrough === 15) { 
-            setWiner(darkPlayer)
-            if(playerSide === Labels.Light) socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: opponent }));
-        };
+            setWiner(lightPlayer);
+            if (playerSide === Labels.Light) {
+                socket.emit("winner", room, auth.username, "battleships");
+            }
+        }
+        if (darkPlayer.breakthrough === 15) {
+            setWiner(darkPlayer);
+            if (playerSide === Labels.Dark) {
+                socket.emit("winner", room, auth.username, "battleships");
+            }
+        }
     }, [lightPlayer, darkPlayer]);
 
     useEffect(() => {
@@ -173,15 +177,25 @@ function Statki() {
 
     useEffect(() => {
         return () => {
-            console.log("return checking: ", room !== undefined, hasOpponentRef.current, winnerRef.current === undefined, userNameRef.current !== undefined)
-            if(room !== undefined && hasOpponentRef.current && winnerRef.current === undefined && userNameRef.current !== undefined){
-                console.log("what is going on here??")
-                console.log(room, userNameRef.current, winnerRef.current )
-                socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current}));
+            console.log(
+                "return checking: ",
+                room !== undefined,
+                hasOpponentRef.current,
+                winnerRef.current === undefined,
+                userNameRef.current !== undefined
+            );
+            if (
+                room !== undefined &&
+                hasOpponentRef.current &&
+                winnerRef.current === undefined &&
+                userNameRef.current !== undefined
+            ) {
+                console.log("what is going on here??");
+                console.log(room, userNameRef.current, winnerRef.current);
+                socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current }));
             }
-        }
-
-    }, [room])
+        };
+    }, [room]);
 
     useEffect(() => {
         const OnTimerOut = () => {
@@ -203,8 +217,8 @@ function Statki() {
             console.log("oponent joined");
             setHasOpponent(true);
             setShare(false);
-            console.log(room, auth.username, step)
-            socket.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username}));
+            console.log(room, auth.username, step);
+            socket.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
             if (playerSide === Labels.Light)
                 socket.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
         };
@@ -244,6 +258,8 @@ function Statki() {
     return (
         <div className="statki">
             <div>Room: {room}</div>
+            <div>Player: {playerSide}</div>
+            <div>Opponent: {opponent}</div>
             {status === Status.WrongRoom ? (
                 <h1>This room does not exist</h1>
             ) : playerSide === Labels.Neutral ? (
