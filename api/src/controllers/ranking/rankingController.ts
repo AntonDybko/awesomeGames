@@ -10,6 +10,46 @@ const rankingController = {
         try {
             const game = await Game.find({ name: req.params.gamename }).exec();
 
+            if (req.params.gamename === 'mastermind') {
+                const scores = await Score.aggregate([
+                    {
+                        $match: { game: game[0]._id },
+                    },
+                    {
+                        $group: {
+                            _id: '$user',
+                            averageScore: { $max: '$score' },
+                        },
+                    },
+                    {
+                        $sort: { averageScore: -1 }, 
+                    },
+                    {
+                        $limit: 100,
+                    },
+                    {
+                        $lookup: {
+                            from: 'users', 
+                            localField: '_id',
+                            foreignField: '_id',
+                            as: 'userDetails',
+                        },
+                    },
+                    {
+                        $unwind: '$userDetails',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            username: '$userDetails.username',
+                            averageScore: 1,
+                        },
+                    },
+                ]).exec();
+
+                return res.status(200).json(scores);
+            }
+
             if (game.length > 0) {
                 const scores = await Score.aggregate([
                     {
@@ -60,7 +100,7 @@ const rankingController = {
         try {
             const game = await Game.find({ name: 'mastermind' }).exec();
             const user = await User.find({ username: req.params.username }).exec();
-
+    
             if (game.length > 0 && user.length > 0) {
                 const scores = await Score.aggregate([
                     {
@@ -69,21 +109,19 @@ const rankingController = {
                     {
                         $group: {
                             _id: '$user',
-                            scoreCount: { $sum: 1 }, // Count the number of scores
-                            totalScore: { $sum: '$score' }, // Calculate the total score
+                            highestScore: { $max: '$score' },
                         },
                     },
                     {
+                        $addFields: {
+                            averageScore: '$highestScore'
+                        }
+                    },
+                    {
                         $project: {
-                            _id: 0, // Exclude _id field
+                            _id: 0, 
                             user: '$_id',
-                            averageScore: {
-                                $cond: {
-                                    if: { $gte: ['$scoreCount', 1] }, // Check if there are at least 10 scores - changed to 1 for now
-                                    then: { $divide: ['$totalScore', '$scoreCount'] }, // Calculate average
-                                    else: 0, // Return 0 if there are fewer than 10 scores
-                                },
-                            },
+                            averageScore: 1,
                         },
                     },
                 ]).exec();

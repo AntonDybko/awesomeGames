@@ -34,7 +34,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ winnersList, gameName }) => {
           <tr className="header-names">
             <th>Standing</th>
             <th>Player</th>
-            <th>Rating</th>
+            <th>{gameName !== 'mastermind' ? 'Rating' : 'High Score'}</th>
           </tr>
         </thead>
         <tbody className='table-data'>
