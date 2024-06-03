@@ -136,7 +136,7 @@ const socketManager = (io: Server) => {
                         console.log("timer out");
                         socket.emit("timerOut");
                     }
-                }, 60000); //10000 for testing
+                }, 10000); //10000 for testing
             }
         });
 
@@ -233,23 +233,26 @@ const socketManager = (io: Server) => {
         });
 
         socket.on("playerLost", (data) => {
-            const { room, lostPlayerSide } = JSON.parse(data);
+            const { room, lostPlayerSide, isRanked } = JSON.parse(data);
             console.log(room, ":", lostPlayerSide);
 
             console.log("room: ", rooms[room]);
-            const winnerName = Object.keys(rooms[room].players).filter((player) => player !== lostPlayerSide)[0];
-            console.log("winner: ", winnerName);
 
-            const toDo = async () => {
-                const loserRanking = await getFirstScore(lostPlayerSide, "battleships");
-                const winnerRanking = await getFirstScore(winnerName, "battleships");
-                const newRating = rating.getNextRatings(winnerRanking, loserRanking, 1);
-                console.log("scores: ", loserRanking, "; ", winnerRanking, " -> ", newRating);
+            if (isRanked) {
+                const winnerName = Object.keys(rooms[room].players).filter((player) => player !== lostPlayerSide)[0];
+                console.log("winner: ", winnerName);
 
-                updateFirstScore(winnerName, "battleships", newRating.nextPlayerARating);
-                updateFirstScore(lostPlayerSide, "battleships", newRating.nextPlayerBRating);
-            };
-            toDo();
+                const toDo = async () => {
+                    const loserRanking = await getFirstScore(lostPlayerSide, "battleships");
+                    const winnerRanking = await getFirstScore(winnerName, "battleships");
+                    const newRating = rating.getNextRatings(winnerRanking, loserRanking, 1);
+                    console.log("scores: ", loserRanking, "; ", winnerRanking, " -> ", newRating);
+
+                    updateFirstScore(winnerName, "battleships", newRating.nextPlayerARating);
+                    updateFirstScore(lostPlayerSide, "battleships", newRating.nextPlayerBRating);
+                };
+                toDo();
+            }
 
             if (rooms[room] !== undefined) {
                 delete rooms[room];

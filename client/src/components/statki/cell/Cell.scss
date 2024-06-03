@@ -1,9 +1,9 @@
 .cell {
     display: flex;
-    width: 62px;
-    height: 62px;
+    width: 46px;
+    height: 46px;
     justify-content: center;
-    align-items: center;    
+    align-items: center;
     background-color: #e3b778;
     border: 1px solid #1cbad6;
     //box-sizing: border-box;
@@ -12,8 +12,8 @@
 
 .miss {
     background-color: #fff;
-    width: 10px;
-    height: 10px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
 }
 
@@ -26,8 +26,8 @@
 }
 
 .icon {
-    width: 62px;
-    height: 62px;
+    width: 31px;
+    height: 31px;
     //cursor: pointer;
 }
 
