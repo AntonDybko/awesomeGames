@@ -20,7 +20,8 @@ const scoreController = {
                     game: game[0]._id,
                     user: user[0]._id
                 })
-                return res.status(201).json(newScore);
+                const { __v , ...newScoreToReturn } = JSON.parse(JSON.stringify(newScore));
+                return res.status(201).json(newScoreToReturn);
             }
             return res.status(404).json({message: "Cannot find Object references!"});
         } catch (error) {
@@ -31,8 +32,8 @@ const scoreController = {
     // request must contain the username in the request params
     getScores:async (req: Request, res: Response) => {
         try {
-            const user = await User.find({ username: req.params.username });
-            const scores = await Score.find({ user: user[0]._id });
+            const user = await User.find({ username: req.params.username }).select('-__v'); ;
+            const scores = await Score.find({ user: user[0]._id }).select('-__v');
             return res.status(200).json(scores);
         } catch (error) {
             return res.status(400).json(error);
@@ -46,7 +47,7 @@ const scoreController = {
             const game = await Game.find({ name: req.params.gamename });
 
             if (user && game) {
-                const scores = await Score.find({ user: user[0]._id, game: game[0]._id });
+                const scores = await Score.find({ user: user[0]._id, game: game[0]._id }).select('-__v');;
                 return res.status(200).json(scores);
             }
         } catch (error) {
@@ -57,7 +58,7 @@ const scoreController = {
     // must contain score id in the request params
     getScore: async (req: Request, res: Response) => {
         try {
-            const score = await Score.find({ _id: req.params.id });
+            const score = await Score.find({ _id: req.params.id }).select('-__v');;
             return res.status(200).json(score);
         } catch (error) {
             return res.status(404).json(error);
