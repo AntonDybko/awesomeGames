@@ -27,18 +27,18 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    # Add the following steps for Docker setup
-    - name: Install Docker
+    - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y docker.io
-    - name: Start MongoDB Docker container
-      run: docker run -d --name mongodb -p 27017:27017 mongo
+        cd api
+        npm i
 
-    - run: npm i
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Build project
+      run: |
+        cd api
+        npm run build --if-present
 
-    # Add the following step to stop and remove the MongoDB container after tests
-    - name: Stop and Remove MongoDB Docker container
-      run: docker stop mongodb && docker rm mongodb
+    - name: Run tests
+      run: |
+        cd api
+        npm test
+
