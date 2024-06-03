@@ -5,13 +5,13 @@
         height: 80vh;
         grid-template-columns: repeat(3, 1fr);
         .choice {
-            margin-top: 50px;
+            margin-top: 75px;
             height: 55%;
             display: flex;
             justify-content: center;
             align-items: center;
             .card{
-                min-height: 55vh;
+                min-height: 66vh;
                 width: 16rem;
                 box-shadow: 0 18px 18px rgba(0, 0, 0, 0.2), 0 0px 40px rgba(0, 0, 0, 0.2);
                 border-radius: 29px;
