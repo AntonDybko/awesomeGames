@@ -136,7 +136,7 @@ const socketManager = (io: Server) => {
                         console.log("timer out");
                         socket.emit("timerOut");
                     }
-                }, 10000); //10000 for testing
+                }, 60000); //10000 for testing
             }
         });
 
@@ -265,7 +265,7 @@ const socketManager = (io: Server) => {
             const { room, playerName } = JSON.parse(data);
             console.log(room, playerName);
             const opponent = Object.keys(rooms[room].players).filter((player) => player !== playerName)[0];
-
+            console.log("oponent username sent")
             socket.emit("opponentUserName", JSON.stringify({ opponent }));
         });
 

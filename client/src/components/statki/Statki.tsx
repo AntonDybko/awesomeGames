@@ -24,7 +24,8 @@ function Statki() {
     //const [sendingBoardStatus, setSendingBoardStatus] =  useState<boolean>(false);
     const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
     const [oponentBoard, setOponentBoard] = useState<BoardModel>(new BoardModel(true));
-    const [winner, setWiner] = useState<PlayerModel>();
+    //const [winner, setWiner] = useState<PlayerModel>();
+    const [winner, setWinner] = useState<string|undefined>(undefined);
     const [lightPlayer, setLightPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Light, 0));
     const [darkPlayer, setDarkPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Dark, 0));
     const [currentPlayer, setCurrentPlayer] = useState<PlayerModel>(lightPlayer);
@@ -34,7 +35,7 @@ function Statki() {
     const [status, setStatus] = useState<Status>(Status.Default);
     const [timer, setTimer] = useState<number>(60);
     const [step, setStep] = useState<number>(0);
-    const [opponent, setOpponent] = useState<String>("");
+    const [opponent, setOpponent] = useState<string|undefined>(undefined);
 
     const location = useLocation();
     const state = location.state as LocationState;
@@ -48,7 +49,8 @@ function Statki() {
     //refs
     const hasOpponentRef = useRef(false);
     const userNameRef = useRef<string | undefined>(undefined);
-    const winnerRef = useRef<PlayerModel>();
+    const winnerRef = useRef<string | undefined>(undefined);
+    const opponentRef = useRef<string | undefined>(undefined);
 
     useEffect(() => {
         userNameRef.current = auth.username;
@@ -61,6 +63,10 @@ function Statki() {
     useEffect(() => {
         winnerRef.current = winner;
     }, [winner]);
+
+    useEffect(() => {
+        opponentRef.current = opponent;
+    }, [opponent]);
     //end of refs
     //------------
     const restart = () => {
@@ -104,14 +110,19 @@ function Statki() {
     }, [hasOpponent]);
 
     useEffect(() => {
+        //console.log(opponent)
         if (lightPlayer.breakthrough === 15) {
-            setWiner(lightPlayer);
+            if(playerSide === Labels.Light) setWinner(auth.username);
+            else setWinner(opponentRef.current);
+
             if (playerSide === Labels.Light && isRanked) {
                 socket.emit("winner", room, auth.username, "battleships");
             }
         }
         if (darkPlayer.breakthrough === 15) {
-            setWiner(darkPlayer);
+            if(playerSide === Labels.Dark) setWinner(auth.username);
+            else setWinner(opponentRef.current);
+
             if (playerSide === Labels.Dark && isRanked) {
                 socket.emit("winner", room, auth.username, "battleships");
             }
@@ -164,9 +175,9 @@ function Statki() {
 
         const onOponentLost = (data: string) => {
             const { room, lostPlayerSide } = JSON.parse(data);
-            console.log("oponent lost ", lostPlayerSide);
-            if (lostPlayerSide === Labels.Dark) setWiner(lightPlayer);
-            else setWiner(darkPlayer);
+            console.log("oponent lost ", lostPlayerSide, "current user: ", userNameRef.current);
+            if (lostPlayerSide === userNameRef.current) setWinner(opponentRef.current);
+            else setWinner(userNameRef.current);
         };
 
         socket.on("restart", restart);
@@ -292,19 +303,20 @@ function Statki() {
     const giveUp = () => {
         // socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide, isRanked })); // wywala błąd na backendzie, nie zmienia rankingu
         socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked })); // give up sprawia ze zawsze dark player wygrywa, zmienia ranking
+        //setWiner(opponent);
     };
 
     return (
         <div className="statki">
             <div>Room: {room}</div>
             <div>Player: {playerSide}</div>
-            <div>Opponent: {opponent}</div>
+            <div>Opponent: {opponentRef.current}</div>
             {status === Status.WrongRoom ? (
                 <h1>This room does not exist</h1>
             ) : playerSide === Labels.Neutral ? (
                 <h1>This game does not provide viewer mod.</h1>
-            ) : winner ? (
-                <h1>{winner.label} player wins!</h1>
+            ) : winnerRef.current !== undefined ? (
+                <h1>{winnerRef.current} wins!</h1>
             ) : (
                 <div>
                     {hasOpponent ? (
