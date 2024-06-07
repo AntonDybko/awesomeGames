@@ -123,6 +123,7 @@ const socketManager = (io: Server) => {
             console.log("startTimer");
 
             const { room, playerName, step } = JSON.parse(data);
+            // console.log(room, playerName);
             if (rooms[room]) {
                 rooms[room].players[playerName].status = Status.WaitingForMove;
 
@@ -265,7 +266,7 @@ const socketManager = (io: Server) => {
             const { room, playerName } = JSON.parse(data);
             console.log(room, playerName);
             const opponent = Object.keys(rooms[room].players).filter((player) => player !== playerName)[0];
-            console.log("oponent username sent")
+            console.log("oponent username sent");
             socket.emit("opponentUserName", JSON.stringify({ opponent }));
         });
 

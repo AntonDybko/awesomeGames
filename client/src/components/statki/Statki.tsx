@@ -25,7 +25,7 @@ function Statki() {
     const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
     const [oponentBoard, setOponentBoard] = useState<BoardModel>(new BoardModel(true));
     //const [winner, setWiner] = useState<PlayerModel>();
-    const [winner, setWinner] = useState<string|undefined>(undefined);
+    const [winner, setWinner] = useState<string | undefined>(undefined);
     const [lightPlayer, setLightPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Light, 0));
     const [darkPlayer, setDarkPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Dark, 0));
     const [currentPlayer, setCurrentPlayer] = useState<PlayerModel>(lightPlayer);
@@ -35,7 +35,7 @@ function Statki() {
     const [status, setStatus] = useState<Status>(Status.Default);
     const [timer, setTimer] = useState<number>(60);
     const [step, setStep] = useState<number>(0);
-    const [opponent, setOpponent] = useState<string|undefined>(undefined);
+    const [opponent, setOpponent] = useState<string | undefined>(undefined);
 
     const location = useLocation();
     const state = location.state as LocationState;
@@ -112,7 +112,7 @@ function Statki() {
     useEffect(() => {
         //console.log(opponent)
         if (lightPlayer.breakthrough === 15) {
-            if(playerSide === Labels.Light) setWinner(auth.username);
+            if (playerSide === Labels.Light) setWinner(auth.username);
             else setWinner(opponentRef.current);
 
             if (playerSide === Labels.Light && isRanked) {
@@ -120,7 +120,7 @@ function Statki() {
             }
         }
         if (darkPlayer.breakthrough === 15) {
-            if(playerSide === Labels.Dark) setWinner(auth.username);
+            if (playerSide === Labels.Dark) setWinner(auth.username);
             else setWinner(opponentRef.current);
 
             if (playerSide === Labels.Dark && isRanked) {
@@ -191,15 +191,17 @@ function Statki() {
         socket.on("oponentLost", onOponentLost);
 
         socket.on("matchFound", (data) => {
-            setRoom(data.room);
+            const { room, firstPlayer } = data;
+            setRoom(room);
 
-            if (data.firstPlayer === socket.id) {
+            if (firstPlayer === socket.id) {
                 setPlayerSide(Labels.Light);
                 socket.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
             } else {
                 setPlayerSide(Labels.Dark);
             }
-            console.log("matchfound");
+            console.log("matchfound", room);
+            socket.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
             setCurrentPlayer(lightPlayer);
             setHasOpponent(true);
         });
@@ -309,8 +311,16 @@ function Statki() {
     return (
         <div className="statki">
             <div>Room: {room}</div>
-            <div>Player: {playerSide}</div>
-            <div>Opponent: {opponentRef.current}</div>
+            <div>Side: {playerSide}</div>
+            <div>
+                User: {auth.username} | {userNameRef.current}
+            </div>
+            <div>
+                Opponent: {opponent} | {opponentRef.current}
+            </div>
+            <div>
+                Winner: {winner} | {winnerRef.current}
+            </div>
             {status === Status.WrongRoom ? (
                 <h1>This room does not exist</h1>
             ) : playerSide === Labels.Neutral ? (
