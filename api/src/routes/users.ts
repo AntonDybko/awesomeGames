@@ -1,5 +1,5 @@
 import express from "express";
-import {verifyJWT, verifyUser} from "../middleware/verifyJwt";
+import {verifyJWT, verifyUser} from "../middleware/jwtVerification";
 import authController from "../controllers/user/authController";
 import userController from "../controllers/user/userController";
 import scoreController from "../controllers/score/scoreController";

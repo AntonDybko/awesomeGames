@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { User } from "../../models/User";
-import { RequestWithVerifiedUser } from "../../types/requestWithVerifiedUser";
+import { RequestWithVerifiedUser } from "../../types/RequestWithVerifiedUser";
 import dotenv from "dotenv"
 import validPasswordFormat from "../../helpers/validPasswordFormat"
 import bcrypt from "bcryptjs";

@@ -10,6 +10,8 @@ import http from "http";
 import { Server } from 'socket.io';
 import socketManager from "./socket";
 import initGames from "./helpers/dbHelp/initGames";
+import { verifyJWT, verifySocket } from "./middleware/jwtVerification";
+import { AuthenticatedRequest } from "./types/AuthenticatedRequest";
 
 mongoose.set("strictQuery", false);
 
@@ -33,6 +35,9 @@ app.use((req, res, next) => {
 const server = http.createServer(app);
 
 const io = new Server(server, {cors: {origin: "http://localhost:3000"}});
+io.engine.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    verifySocket(req, res, next);
+});
 socketManager(io)
 
 const mongoConnectionURL = `mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;

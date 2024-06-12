@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router'
 import {io, Socket} from 'socket.io-client';
 import { random } from '../../utils/utils'
-import { socket } from 'socket';
+//import { socket } from 'socket';
 import useAuth from "hooks/useAuth";
 import './Chat.scss';
 
@@ -14,9 +14,10 @@ interface ChatMessage {
 
 interface Props {
     room: string,
+    socket: Socket | null;
 }
 
-const Chat: React.FC<Props> = ({ room }) => {
+const Chat: React.FC<Props> = ({ room, socket }) => {
     const { auth } = useAuth();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputMessage, setInputMessage] = useState<string>('');
@@ -24,17 +25,17 @@ const Chat: React.FC<Props> = ({ room }) => {
 
 
     useEffect(() => {
-        socket.on('chatMessage', (chatMessage: ChatMessage) => {
+        socket?.on('chatMessage', (chatMessage: ChatMessage) => {
             setMessages((prevMessages) => [...prevMessages, chatMessage])
         });
-    }, [])
+    }, [socket])
 
     useEffect(() => {
         scrollToBottom();
       }, [messages]);
 
     const sendMessage = () => {
-        socket.emit('chatMessage', { room, username: auth.username, content: inputMessage })
+        socket?.emit('chatMessage', { room, username: auth.username, content: inputMessage })
         setInputMessage('')
     }
 

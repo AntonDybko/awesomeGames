@@ -17,6 +17,10 @@ const socketManager = (io: Server) => {
     //const rooms: { [name: string]: { [playerName: string]: {playerId: string, status: Status}}} = {};
     io.on("connection", (socket) => {
         console.log("User connected", socket.id);
+
+        socket.on('authenticate', data => {
+            
+        })
         socket.on("reqTurn", (data) => {
             const room = JSON.parse(data).room;
             io.to(room).emit("playerTurn", data);
@@ -143,6 +147,7 @@ const socketManager = (io: Server) => {
 
         socket.on("join", (data) => {
             const { room, playerName } = JSON.parse(data);
+            console.log("trying to join:", room, playerName)
             if (rooms[room] && playerName !== undefined) {
                 //
                 console.log("-----------");

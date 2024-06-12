@@ -6,19 +6,28 @@ import { Labels } from "models/statki/Labels";
 import { PlayerModel } from "models/statki/PlayerModel";
 import { useLocation } from "react-router";
 import { boardToArray, random, initBoard } from "utils/utils";
-import { socket } from "socket";
+//import { socket? } from "socket?";
 import { BoardId } from "models/statki/BoardId";
 import { Status } from "models/statki/Status";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
+import ServerToClientEvents from "interfaces/ServerToClientEvents";
+import ClientToServerEvents from "interfaces/ClientToServerEvents";
+import { Socket } from "socket.io-client";
 
 interface LocationState {
     isRanked?: boolean;
 }
 
-function Statki() {
+type StatkiProps = {
+    //socket?: socket?<ServerToClientEvents, ClientToServerEvents> | null;
+    socket: Socket | null;
+}
+
+function Statki ({socket}: StatkiProps) {
     const { auth } = useAuth();
+    //const socket? = props.socket?;
     //const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.Player);
     //const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.Observer);
     //const [sendingBoardStatus, setSendingBoardStatus] =  useState<boolean>(false);
@@ -52,9 +61,11 @@ function Statki() {
     const winnerRef = useRef<string | undefined>(undefined);
     const opponentRef = useRef<string | undefined>(undefined);
 
+
     useEffect(() => {
         userNameRef.current = auth.username;
     }, [auth.username]);
+
 
     useEffect(() => {
         hasOpponentRef.current = hasOpponent;
@@ -116,7 +127,7 @@ function Statki() {
             else setWinner(opponentRef.current);
 
             if (playerSide === Labels.Light && isRanked) {
-                socket.emit("winner", room, auth.username, "battleships");
+                socket?.emit("winner", room, auth.username, "battleships");
             }
         }
         if (darkPlayer.breakthrough === 15) {
@@ -124,15 +135,15 @@ function Statki() {
             else setWinner(opponentRef.current);
 
             if (playerSide === Labels.Dark && isRanked) {
-                socket.emit("winner", room, auth.username, "battleships");
+                socket?.emit("winner", room, auth.username, "battleships");
             }
         }
-    }, [lightPlayer, darkPlayer]);
+    }, [lightPlayer, darkPlayer, socket]);
 
     useEffect(() => {
         if (isRanked) {
             console.log("ranked");
-            socket.emit("matchmaking", {
+            socket?.emit("matchmaking", {
                 playerName: auth.username,
                 game: "battleships",
             });
@@ -140,23 +151,24 @@ function Statki() {
             if (paramsRoom) {
                 setPlayerSide(Labels.Dark);
                 setCurrentPlayer(lightPlayer);
-                //socket.emit('join', paramsRoom);
-                socket.emit("join", JSON.stringify({ room: paramsRoom, playerName: auth.username }));
+                //socket?.emit('join', paramsRoom);
+                console.log("player joined existing room:", paramsRoom, auth.username)
+                socket?.emit("join", JSON.stringify({ room: paramsRoom, playerName: auth.username }));
                 setRoom(paramsRoom);
             } else {
                 setPlayerSide(Labels.Light);
                 setCurrentPlayer(darkPlayer);
                 const newRoomName = uid.rnd();
                 console.log("new room ", newRoomName);
-                console.log(socket.id, ":", auth.username);
-                socket.emit(
+                console.log(socket?.id, ":", auth.username);
+                socket?.emit(
                     "create",
                     JSON.stringify({ room: newRoomName, playerName: auth.username, game: "battleships" })
                 );
                 setRoom(newRoomName);
             }
         }
-    }, [paramsRoom]);
+    }, [paramsRoom, socket]);
 
     useEffect(() => {
         console.log(room);
@@ -180,33 +192,33 @@ function Statki() {
             else setWinner(userNameRef.current);
         };
 
-        socket.on("restart", restart);
+        socket?.on("restart", restart);
 
-        //socket.on('opponentJoined', onOponentJoined);
+        //socket?.on('opponentJoined', onOponentJoined);
 
-        socket.on("observerJoined", onObserverJoined);
+        socket?.on("observerJoined", onObserverJoined);
 
-        socket.on("wrongRoom", onWrongRoom);
+        socket?.on("wrongRoom", onWrongRoom);
 
-        socket.on("oponentLost", onOponentLost);
+        socket?.on("oponentLost", onOponentLost);
 
-        socket.on("matchFound", (data) => {
+        socket?.on("matchFound", (data: any) => {
             const { room, firstPlayer } = data;
             setRoom(room);
 
-            if (firstPlayer === socket.id) {
+            if (firstPlayer === socket?.id) {
                 setPlayerSide(Labels.Light);
-                socket.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
+                socket?.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
             } else {
                 setPlayerSide(Labels.Dark);
             }
             console.log("matchfound", room);
-            socket.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
+            socket?.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
             setCurrentPlayer(lightPlayer);
             setHasOpponent(true);
         });
 
-        socket.on("queueStart", (data) => {
+        socket?.on("queueStart", (data: any) => {
             setRoom(data.room);
         });
 
@@ -214,15 +226,15 @@ function Statki() {
         //restart();
 
         return () => {
-            //socket.off('opponentJoined', onOponentJoined);
+            //socket?.off('opponentJoined', onOponentJoined);
             //console.log()
 
-            socket.off("observerJoined", onObserverJoined);
-            socket.off("wrongRoom", onWrongRoom);
-            socket.off("oponentLost", onOponentLost);
-            socket.off("restart", restart);
+            socket?.off("observerJoined", onObserverJoined);
+            socket?.off("wrongRoom", onWrongRoom);
+            socket?.off("oponentLost", onOponentLost);
+            socket?.off("restart", restart);
         };
-    }, []);
+    }, [socket]);
 
     useEffect(() => {
         return () => {
@@ -240,28 +252,29 @@ function Statki() {
                 userNameRef.current !== undefined
             ) {
                 console.log("what is going on here??");
-                console.log(room, userNameRef.current, winnerRef.current);
+                console.log(room , userNameRef.current, winnerRef.current);
                 console.log("emitting lose");
-                socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked }));
+                socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked }));
             } else {
-                socket.emit("leave", { room: room });
+                //console.log("something strange", room, hasOpponentRef.current, winnerRef.current, userNameRef.current)
+                socket?.emit("leave", { room: room  });
             }
         };
-    }, [room]);
+    }, [socket, room]);
 
     useEffect(() => {
         const OnTimerOut = () => {
             console.log("lost: ", room, playerSide);
-            socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username, isRanked }));
+            socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username, isRanked }));
         };
         if (room !== null && playerSide !== undefined && !winner) {
-            socket.on("timerOut", OnTimerOut);
+            socket?.on("timerOut", OnTimerOut);
 
             return () => {
-                socket.off("timerOut", OnTimerOut);
+                socket?.off("timerOut", OnTimerOut);
             };
         }
-    }, [room, playerSide, winner]);
+    }, [room, playerSide, winner, socket]);
 
     useEffect(() => {
         const onOponentJoined = () => {
@@ -269,9 +282,9 @@ function Statki() {
             setHasOpponent(true);
             setShare(false);
             console.log(room, auth.username, step);
-            socket.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
+            socket?.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
             if (playerSide === Labels.Light)
-                socket.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
+                socket?.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
         };
 
         const onOpponentUserName = (data: string) => {
@@ -280,14 +293,14 @@ function Statki() {
             setOpponent(opponent);
         };
 
-        socket.on("opponentJoined", onOponentJoined);
-        socket.on("opponentUserName", onOpponentUserName);
+        socket?.on("opponentJoined", onOponentJoined);
+        socket?.on("opponentUserName", onOpponentUserName);
 
         return () => {
-            socket.off("opponentJoined", onOponentJoined);
-            socket.off("opponentUserName", onOpponentUserName);
+            socket?.off("opponentJoined", onOponentJoined);
+            socket?.off("opponentUserName", onOpponentUserName);
         };
-    }, [room]);
+    }, [room, socket]);
 
     useEffect(() => {
         if (hasOpponent) {
@@ -303,8 +316,8 @@ function Statki() {
     }, [timer, hasOpponent]);
 
     const giveUp = () => {
-        // socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide, isRanked })); // wywala błąd na backendzie, nie zmienia rankingu
-        socket.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked })); // give up sprawia ze zawsze dark player wygrywa, zmienia ranking
+        // socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide, isRanked })); // wywala błąd na backendzie, nie zmienia rankingu
+        socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked })); // give up sprawia ze zawsze dark player wygrywa, zmienia ranking
         //setWiner(opponent);
     };
 
@@ -313,13 +326,13 @@ function Statki() {
             <div>Room: {room}</div>
             <div>Side: {playerSide}</div>
             <div>
-                User: {auth.username} | {userNameRef.current}
+                User: {userNameRef.current}
             </div>
             <div>
-                Opponent: {opponent} | {opponentRef.current}
+                Opponent: {opponentRef.current}
             </div>
             <div>
-                Winner: {winner} | {winnerRef.current}
+                Winner: {winnerRef.current}
             </div>
             {status === Status.WrongRoom ? (
                 <h1>This room does not exist</h1>
@@ -409,7 +422,7 @@ function Statki() {
                         />
                     </div>
                     <div className="chat">
-                        <Chat room={room}></Chat>
+                        <Chat room={room} socket={socket}></Chat>
                     </div>
                 </div>
             )}

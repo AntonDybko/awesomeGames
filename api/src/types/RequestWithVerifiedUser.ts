@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { DecodedUser } from "./decodedUser";
+import { DecodedUser } from "./DecodedUser";
 
 export interface RequestWithVerifiedUser extends Request {
     user: DecodedUser;
