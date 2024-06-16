@@ -179,12 +179,6 @@ const Mastermind: React.FC = () => {
     setButtonDisable(false);
   }
 
-  // dla testów. pokazuje rozwiązanie
-  const test = () => {
-    // console.log('Auth:', auth);
-    console.log(secretCode);
-  }
-
   const generateSecretCode = (): string[] => {
     const secretCode = [];
     for (let i = 0; i < 4; i++) {
@@ -200,9 +194,8 @@ const Mastermind: React.FC = () => {
 
   return (
     <div>
-      {consent === false && <div>
-        <span>Ready?</span>
-        <span>Set...</span>
+      {consent === false && <div className="mastermind-start-message">
+        <div>Ready? Set...</div>
         <button onClick={startGame}>Go!</button>
       </div>}
       {consent === true && <div className="mastermind">
@@ -275,7 +268,6 @@ const Mastermind: React.FC = () => {
             <button disabled={buttonDisable} onClick={handleNewGuess}>Submit</button>
             <button onClick={newGame}>New Game</button>
           </div>
-          <button onClick={test}>Test</button>
         </div>
       </div>}
       {gameResult === 'win' &&

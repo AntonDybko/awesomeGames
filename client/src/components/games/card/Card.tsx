@@ -40,12 +40,15 @@ const Card: React.FC<CardProps> = ({
           <button className="mode">{buttonText}</button>
           <div className="play">
             <Link to={linkTo}>
-            Play Now
+             {buttonText !== 'Singleplayer' ? 'Play Casual' : 'Play Highscore Mode'}
             </Link>
           </div>
-          <div className="play">
-            <Link to={linkTo} state={{ isRanked: true }}>Ranked</Link>
-          </div>
+          {
+            buttonText !== 'Singleplayer' &&
+              <div className="play">
+                <Link to={linkTo} state={{ isRanked: true }}>Ranked Matchmaking</Link>
+              </div>
+          }
           
         </div>
       </div>

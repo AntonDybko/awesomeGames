@@ -33,8 +33,8 @@ const usersController = {
         const username = req.params.username;
         console.log(req.params)
         const user = await User.findOne({ username });
-        //console.log("user: ", user)
-        const { password, refreshToken, _id, ...userWithoutPassword } = JSON.parse(
+        if (!user) res.status(404).json({ message: "User not found" });
+        const { password, refreshToken, _id, __v, ...userWithoutPassword } = JSON.parse(
             JSON.stringify(user),
         );
         res.json(userWithoutPassword);
@@ -46,15 +46,14 @@ const usersController = {
         const userToUpdate = req.body;
         console.log(req.body)
 
-
         console.log("user update request passed successfully", userToUpdate)
 
         const user = await User.findOneAndUpdate(
             { _id: request.user._id },
             { ...userToUpdate },
-            { returnNewDocument: true },
+            { new: true },
         );
-        const { password, refreshToken, _id, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
+        const { password, refreshToken, _id, __v, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
         res.json(userWithoutPassword);
     },
 
@@ -83,9 +82,9 @@ const usersController = {
         const user = await User.findOneAndUpdate(
             { _id: request.user._id },
             { password: encryptedPass },
-            { returnNewDocument: true },
+            { new: true },
         );
-        const { password, refreshToken, _id, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
+        const { password, refreshToken, _id, __v, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
         res.json(userWithoutPassword);
     },
     
