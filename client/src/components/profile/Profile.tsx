@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from 'axios-config/axios'
 import UserProps from '../../interfaces/User'
 import { useNavigate, Route, Link, Routes } from "react-router-dom";
@@ -25,7 +25,17 @@ const Profile: React.FC = () => {
     const [ticTacToeRank, setTicTacToeRank] = useState<TicTacToeRank>();
     const [mastermindRank, setMastermindRank] = useState<MastermindRank>();
     const [profileImage, setProfileImage] = useState<string | undefined>("")
+    const [birthday, setBirthday] = useState<Date | undefined>(undefined);
     const pattern = /http:\/\/localhost:3000\/profile\/([^\/]+)/;
+
+    const birthdayRef = useRef<Date | undefined>(user.birthday);
+    useEffect(() => {
+        birthdayRef.current = birthday;
+    }, [birthday]);
+    useEffect(() => {
+        setBirthday(user.birthday);
+    }, [user.birthday]);
+    
 
     const match = window.location.href.match(pattern);
     const profileName = match ? match[1] : null;
@@ -76,7 +86,7 @@ const Profile: React.FC = () => {
                             <Routes>
                                 <Route path={"editProfileImage"} element={
                                     <div>
-                                        <EditProfileImage setProfileImage={setProfileImage}/>
+                                        <EditProfileImage onSetProfileImage={setProfileImage}/>
                                     </div>
                                 }/>
                             </Routes>
@@ -104,7 +114,7 @@ const Profile: React.FC = () => {
                             <Routes>
                                 <Route path={"editBirthday"} element={
                                     <div>
-                                        <EditBirthday/>
+                                        <EditBirthday onSetBirthday={setBirthday}/>
                                     </div>
                                 }/>
                             </Routes>
@@ -113,11 +123,11 @@ const Profile: React.FC = () => {
                     }
                     <span>Birthday: </span>
                     <span className="birthday-container">
-                        {user.birthday ? (
+                        {birthdayRef.current ? (
                             <div>
-                                {new Date(user.birthday).toLocaleDateString()}
+                                {new Date(birthdayRef.current).toLocaleDateString()}
                             </div>
-                        ) : 'undefined'}
+                        ) : 'not set'}
                     </span>
                 </div>
                 <div>

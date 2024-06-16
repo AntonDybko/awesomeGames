@@ -1,15 +1,18 @@
 import axios from "axios-config/axios";
 import { Formik, Form } from "formik";
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import FormInput from "../FormInput";
 import { toast } from "react-toastify";
 import passwordSchema from "./schemas/passwordSchema";
 import { ServerErrorResponse } from "interfaces/ServerErrorResponse";
+import { useState } from "react";
 
 
 const ChangePassword: React.FC = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const { auth } = location.state;
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
     interface FormValues {
         newPassword: string,
@@ -28,11 +31,18 @@ const ChangePassword: React.FC = () => {
             })
             if(res.status === 200) {
                 toast.success('Password updated succesfully!');
+                setIsSubmitted(true);
             }
         }catch(err) {
             const errorWithDetails = err as ServerErrorResponse;
             toast.error(`Error: ${errorWithDetails.response.data.details}`);
         }
+    }
+
+    if(isSubmitted){
+        setIsSubmitted(false);
+        const editProfilePage = window.location.href.replace(/\/editBirthday$/, '');
+        navigate(editProfilePage);
     }
 
     return (
