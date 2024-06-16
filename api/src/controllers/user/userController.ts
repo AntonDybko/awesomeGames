@@ -23,7 +23,6 @@ const checkIfUnique = async (req: Request, res: Response, field: string) => {
 };
 
 const usersController = {
-    //just for development purposes, delete it or remove later
     getUsers: async (req: Request, res: Response) => {
         const users = await User.find();
         res.json(users);
@@ -44,24 +43,38 @@ const usersController = {
         const userToUpdate = req.body;
 
         if(req.body.password) {
-            if(!validPasswordFormat(req.body.password)){
-                return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
-                    "Contains at least one lowercase letter.",
-                    "Contains at least one uppercase letter.",
-                    "Contains at least one digit (0-9).",
-                    "Contains at least one special character from the set [@ $ ! % * ? & _].",
-                    "Consists of only the allowed characters (letters, digits, and specified special characters)."
-                ]});
-            }
-        }
+            try{
+                if(!validPasswordFormat(req.body.password)){
+                    return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
+                        "Contains at least one lowercase letter.",
+                        "Contains at least one uppercase letter.",
+                        "Contains at least one digit (0-9).",
+                        "Contains at least one special character from the set [@ $ ! % * ? & _].",
+                        "Consists of only the allowed characters (letters, digits, and specified special characters)."
+                    ]});
+                }
 
-        const user = await User.findOneAndUpdate(
-            { _id: request.user._id },
-            { ...userToUpdate },
-            { new: true },
-        );
-        const { password, refreshToken, _id, __v, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
-        res.json(userWithoutPassword);
+                const encryptedPass = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
+                
+                const { password, ...userToUpdateWithoutPassword } = userToUpdate;
+
+                const user = await User.findOneAndUpdate(
+                    { _id: request.user._id },
+                    { ...userToUpdateWithoutPassword, password: encryptedPass },
+                    { new: true },
+                );
+                const { password: hashedPassword, refreshToken, _id, __v, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
+                res.json(userWithoutPassword);
+            }catch(err) {console.log(err)}
+        }else{
+            const user = await User.findOneAndUpdate(
+                { _id: request.user._id },
+                { ...userToUpdate },
+                { new: true },
+            );
+            const { password, refreshToken, _id, __v, ...userWithoutPassword } = JSON.parse(JSON.stringify(user));
+            res.json(userWithoutPassword);
+        }
     },
 
     changePassword: async (req: Request, res: Response) => {
