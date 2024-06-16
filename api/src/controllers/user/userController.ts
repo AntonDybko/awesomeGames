@@ -46,6 +46,18 @@ const usersController = {
         const userToUpdate = req.body;
         console.log(req.body)
 
+        if(req.body.password) {
+            if(!validPasswordFormat(req.body.password)){
+                return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
+                    "Contains at least one lowercase letter.",
+                    "Contains at least one uppercase letter.",
+                    "Contains at least one digit (0-9).",
+                    "Contains at least one special character from the set [@ $ ! % * ? & _].",
+                    "Consists of only the allowed characters (letters, digits, and specified special characters)."
+                ]});
+            }
+        }
+
         console.log("user update request passed successfully", userToUpdate)
 
         const user = await User.findOneAndUpdate(
