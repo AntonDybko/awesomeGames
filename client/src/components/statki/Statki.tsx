@@ -301,11 +301,13 @@ function Statki ({socket}: StatkiProps) {
                     ) : (
                         <div>
                             <div>'Waiting for opponent...'</div>
-                            <div>
-                                <button className="btn" onClick={() => setShare(!share)}>
-                                    Share
-                                </button>
-                            </div>
+                            {!isRanked ? 
+                                <div>
+                                    <button className="btn" onClick={() => setShare(!share)}>
+                                        Share
+                                    </button>
+                                </div> : ''
+                            }
                         </div>
                     )}
                     {share ? (
