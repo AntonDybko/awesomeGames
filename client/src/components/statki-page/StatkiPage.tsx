@@ -1,10 +1,7 @@
-import ServerToClientEvents from "interfaces/ServerToClientEvents";
 import Statki from "../statki/Statki";
-import ClientToServerEvents from "interfaces/ClientToServerEvents";
 import { Socket } from "socket.io-client";
 
 type StatkiProps = {
-    //socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
     socket: Socket | null;
 }
 

@@ -61,7 +61,6 @@ const authController  = {
             }
         } catch (err: any) {
             // Internal server error
-            console.log(err)
             res.status(500).json({ message: 'Internal server error' });
         }
     },
@@ -79,7 +78,6 @@ const authController  = {
             await user.save();
         }
         res.clearCookie("refreshToken", { httpOnly: true });
-        console.log('RefreshToken cookie cleared!');
         res.sendStatus(204);
     },
     handleRegister: async (req: Request, res: Response) => {
@@ -140,8 +138,6 @@ const authController  = {
                 }
             });
         } catch (err: any){
-            // console.log('Cought an error:')
-            // console.error(err); // DEV
             
             if(err instanceof Error.ValidationError){
                 return res.status(400).json({ message: 'Validation failed', details: err.errors});

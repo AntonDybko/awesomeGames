@@ -1,6 +1,5 @@
 import CellModel from "./CellModel";
 import cross from '../../images/cross.png'
-//import shipImg from "../../images/ch_light.png";
 
 class ShipModel {
     imageSrc: string;
@@ -11,7 +10,6 @@ class ShipModel {
         this.cell = cell;
         this.cell.ship = this;
         destroyed ? this.destroyed = true : this.destroyed = false;
-        //this.cell.empty = false;
         this.imageSrc = cross;
     }
 }

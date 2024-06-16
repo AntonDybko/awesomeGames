@@ -12,7 +12,6 @@ const GameLeaderboard: React.FC<{ gameName: string }> = ({ gameName }) => {
             try {
                 const res = await axios.get(`ranking/${gameName}`);
                 if (res.status === 200) setPlayers(res.data);
-                console.log(res.data);
             } catch (e) {
                 navigate("/");
             }

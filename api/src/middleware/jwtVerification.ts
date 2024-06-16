@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest"
 import { RequestWithVerifiedUser } from "../types/RequestWithVerifiedUser";
@@ -10,7 +10,6 @@ const verifyJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction,
     if (!authHeader) return res.sendStatus(401);
 
     if (!authHeader.startsWith("Bearer ")) {
-        console.log("invalid token");
         return res.sendStatus(403);
     }
 
@@ -36,12 +35,10 @@ const verifySocket = (req: AuthenticatedRequest, res: Response, next: NextFuncti
     const header = req.headers["authorization"];
 
     if (!header) {
-        console.log("no token");
         return next(new Error("no token"));
     }
 
     if (!header.startsWith("Bearer ")) {
-        console.log("invalid token");
         return next(new Error("invalid token"));
     }
 
@@ -67,7 +64,6 @@ const verifyUser = (req: AuthenticatedRequest, res: Response, next: NextFunction
     if (!authHeader) return res.sendStatus(401);
 
     if (!authHeader.startsWith("Bearer ")) {
-        console.log("invalid token");
         return res.sendStatus(403);
     }
 

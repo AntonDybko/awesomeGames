@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router'
-import {io, Socket} from 'socket.io-client';
-import { random } from '../../utils/utils'
-//import { socket } from 'socket';
+import { Socket} from 'socket.io-client';
 import useAuth from "hooks/useAuth";
 import './Chat.scss';
 

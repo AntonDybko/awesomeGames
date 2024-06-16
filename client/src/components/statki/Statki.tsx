@@ -5,15 +5,12 @@ import BoardModel from "../../models/statki/BoardModel";
 import { Labels } from "models/statki/Labels";
 import { PlayerModel } from "models/statki/PlayerModel";
 import { useLocation } from "react-router";
-import { boardToArray, random, initBoard } from "utils/utils";
-//import { socket? } from "socket?";
+import { initBoard } from "utils/utils";
 import { BoardId } from "models/statki/BoardId";
 import { Status } from "models/statki/Status";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
-import ServerToClientEvents from "interfaces/ServerToClientEvents";
-import ClientToServerEvents from "interfaces/ClientToServerEvents";
 import { Socket } from "socket.io-client";
 
 interface LocationState {
@@ -21,19 +18,13 @@ interface LocationState {
 }
 
 type StatkiProps = {
-    //socket?: socket?<ServerToClientEvents, ClientToServerEvents> | null;
     socket: Socket | null;
 }
 
 function Statki ({socket}: StatkiProps) {
     const { auth } = useAuth();
-    //const socket? = props.socket?;
-    //const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.Player);
-    //const [playerStatus, setPlayerStatus] = useState<PlayerStatus>(PlayerStatus.Observer);
-    //const [sendingBoardStatus, setSendingBoardStatus] =  useState<boolean>(false);
     const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
     const [oponentBoard, setOponentBoard] = useState<BoardModel>(new BoardModel(true));
-    //const [winner, setWiner] = useState<PlayerModel>();
     const [winner, setWinner] = useState<string | undefined>(undefined);
     const [lightPlayer, setLightPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Light, 0));
     const [darkPlayer, setDarkPlayer] = useState<PlayerModel>(new PlayerModel(Labels.Dark, 0));
@@ -80,11 +71,6 @@ function Statki ({socket}: StatkiProps) {
     }, [opponent]);
     //end of refs
     //------------
-    const restart = () => {
-        setBoard(initBoard(false, true));
-        setOponentBoard(initBoard(true, false));
-        setCurrentPlayer(lightPlayer);
-    }; //dopracowac
 
     const incrementStep = () => {
         setStep(step + 1);
@@ -104,16 +90,13 @@ function Statki ({socket}: StatkiProps) {
 
     useEffect(() => {
         board.updateBoard();
-        console.log("updating board");
     }, [board]);
 
     useEffect(() => {
         oponentBoard.updateBoard();
-        console.log("updating board");
     }, [oponentBoard]);
 
     useEffect(() => {
-        console.log("have oponent?", hasOpponent);
         if (hasOpponent) {
             setBoard(initBoard(false, true));
             setOponentBoard(initBoard(true, false));
@@ -121,7 +104,6 @@ function Statki ({socket}: StatkiProps) {
     }, [hasOpponent]);
 
     useEffect(() => {
-        //console.log(opponent)
         if (lightPlayer.breakthrough === 15) {
             if (playerSide === Labels.Light) setWinner(auth.username);
             else setWinner(opponentRef.current);
@@ -142,7 +124,6 @@ function Statki ({socket}: StatkiProps) {
 
     useEffect(() => {
         if (isRanked) {
-            console.log("ranked");
             socket?.emit("matchmaking", {
                 playerName: auth.username,
                 game: "battleships",
@@ -151,16 +132,12 @@ function Statki ({socket}: StatkiProps) {
             if (paramsRoom) {
                 setPlayerSide(Labels.Dark);
                 setCurrentPlayer(lightPlayer);
-                //socket?.emit('join', paramsRoom);
-                console.log("player joined existing room:", paramsRoom, auth.username)
                 socket?.emit("join", JSON.stringify({ room: paramsRoom, playerName: auth.username }));
                 setRoom(paramsRoom);
             } else {
                 setPlayerSide(Labels.Light);
                 setCurrentPlayer(darkPlayer);
                 const newRoomName = uid.rnd();
-                console.log("new room ", newRoomName);
-                console.log(socket?.id, ":", auth.username);
                 socket?.emit(
                     "create",
                     JSON.stringify({ room: newRoomName, playerName: auth.username, game: "battleships" })
@@ -171,10 +148,7 @@ function Statki ({socket}: StatkiProps) {
     }, [paramsRoom, socket]);
 
     useEffect(() => {
-        console.log(room);
-
         const onObserverJoined = () => {
-            console.log("observer here");
             setPlayerSide(Labels.Neutral);
             setShare(false);
             setBoard(initBoard(false, false));
@@ -187,14 +161,9 @@ function Statki ({socket}: StatkiProps) {
 
         const onOponentLost = (data: string) => {
             const { room, lostPlayerSide } = JSON.parse(data);
-            console.log("oponent lost ", lostPlayerSide, "current user: ", userNameRef.current);
             if (lostPlayerSide === userNameRef.current) setWinner(opponentRef.current);
             else setWinner(userNameRef.current);
         };
-
-        socket?.on("restart", restart);
-
-        //socket?.on('opponentJoined', onOponentJoined);
 
         socket?.on("observerJoined", onObserverJoined);
 
@@ -212,7 +181,6 @@ function Statki ({socket}: StatkiProps) {
             } else {
                 setPlayerSide(Labels.Dark);
             }
-            console.log("matchfound", room);
             socket?.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
             setCurrentPlayer(lightPlayer);
             setHasOpponent(true);
@@ -223,40 +191,25 @@ function Statki ({socket}: StatkiProps) {
         });
 
         setCurrentPlayer(lightPlayer);
-        //restart();
 
         return () => {
-            //socket?.off('opponentJoined', onOponentJoined);
-            //console.log()
 
             socket?.off("observerJoined", onObserverJoined);
             socket?.off("wrongRoom", onWrongRoom);
             socket?.off("oponentLost", onOponentLost);
-            socket?.off("restart", restart);
         };
     }, [socket]);
 
     useEffect(() => {
         return () => {
-            console.log(
-                "return checking: ",
-                room !== undefined,
-                hasOpponentRef.current,
-                winnerRef.current === undefined,
-                userNameRef.current !== undefined
-            );
             if (
                 room !== undefined &&
                 hasOpponentRef.current &&
                 winnerRef.current === undefined &&
                 userNameRef.current !== undefined
             ) {
-                console.log("what is going on here??");
-                console.log(room , userNameRef.current, winnerRef.current);
-                console.log("emitting lose");
                 socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked }));
             } else {
-                //console.log("something strange", room, hasOpponentRef.current, winnerRef.current, userNameRef.current)
                 socket?.emit("leave", { room: room  });
             }
         };
@@ -264,7 +217,6 @@ function Statki ({socket}: StatkiProps) {
 
     useEffect(() => {
         const OnTimerOut = () => {
-            console.log("lost: ", room, playerSide);
             socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username, isRanked }));
         };
         if (room !== null && playerSide !== undefined && !winner) {
@@ -278,10 +230,8 @@ function Statki ({socket}: StatkiProps) {
 
     useEffect(() => {
         const onOponentJoined = () => {
-            console.log("oponent joined");
             setHasOpponent(true);
             setShare(false);
-            console.log(room, auth.username, step);
             socket?.emit("getOponentUserName", JSON.stringify({ room, playerName: auth.username }));
             if (playerSide === Labels.Light)
                 socket?.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
@@ -289,7 +239,6 @@ function Statki ({socket}: StatkiProps) {
 
         const onOpponentUserName = (data: string) => {
             const { opponent } = JSON.parse(data);
-            console.log("oponent name: ", opponent);
             setOpponent(opponent);
         };
 
@@ -305,7 +254,6 @@ function Statki ({socket}: StatkiProps) {
     useEffect(() => {
         if (hasOpponent) {
             const timeout = setTimeout(() => {
-                console.log("timer"); //test
                 setTimer(timer - 1);
             }, 1000);
 
@@ -316,9 +264,7 @@ function Statki ({socket}: StatkiProps) {
     }, [timer, hasOpponent]);
 
     const giveUp = () => {
-        // socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: playerSide, isRanked })); // wywala błąd na backendzie, nie zmienia rankingu
-        socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked })); // give up sprawia ze zawsze dark player wygrywa, zmienia ranking
-        //setWiner(opponent);
+        socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked }));
     };
 
     return (

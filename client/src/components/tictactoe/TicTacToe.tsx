@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
-import { io, Socket } from "socket.io-client";
-import { random } from "../../utils/utils";
-//import { socket } from "socket";
+import { Socket } from "socket.io-client";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";

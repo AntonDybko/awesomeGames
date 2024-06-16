@@ -1,21 +1,13 @@
 import BoardModel from "models/statki/BoardModel";
-import internal from "stream";
 import { Labels } from "models/statki/Labels";
 import CellModel from '../models/statki/CellModel'
 import { PlayerModel } from "models/statki/PlayerModel";
-import { number } from "yup";
-//import PlayerModel from "models/PlayerModel";
 
 const mergeClasses = (...rest: string[]): string => {
     return rest.join(' ');
 };
 const CreateCell = (i: number, j: number, board: BoardModel, hidden: boolean): CellModel => {
     return new CellModel(i, j, board, hidden); 
-    /*if ((i + j) % 2 !== 0) {
-        return new CellModel(i, j, board); // dark
-    } else {
-        return new CellModel(i, j, board); // light
-    }*/
 }
 const initBoard = (hiddenFields: boolean, ships: boolean) => {
     const newBoard = new BoardModel(hiddenFields);
@@ -23,9 +15,7 @@ const initBoard = (hiddenFields: boolean, ships: boolean) => {
     if(ships) newBoard.addShips();
     return newBoard
 }
-/*const checkDame = (targetCell: CellModel, currentyPlayer: PlayerModel): boolean => {
-    return (currentyPlayer.label === Labels.Light && targetCell.x === 0) || (currentyPlayer.label === Labels.Dark && targetCell.x === 7)
-}*/
+
 const random = () => {
     return Array.from(Array(8), () => Math.floor(Math.random() * 36).toString(36)).join('');
 };
@@ -35,22 +25,7 @@ const splitKey =(key: string): number[] => {
     const x = parseInt(splittedKey[1]);
     return [x, y];
 }
-/*const changeKills = (currentPlayer: PlayerModel, light: PlayerModel, dark: PlayerModel) => {
-    const lightKills = currentPlayer.label === Labels.Light ? light.amountOfDefeatedPiecies + 1 : light.amountOfDefeatedPiecies;
-    const darkKills = currentPlayer.label === Labels.Dark ? dark.amountOfDefeatedPiecies + 1 : dark.amountOfDefeatedPiecies;
-    return {lightKills, darkKills}
-}
-const getKills = (currentPlayer: PlayerModel, light: PlayerModel, dark: PlayerModel) => {
-    return changeKills(currentPlayer, light, dark);
-}
-const isValidMove = (row: number, col: number): boolean => {
-    return row >= 0 && row < 8 && col >= 0 && col < 8;
-}
-const getJumpOverCell = (startCell: CellModel, targetCell: CellModel): CellModel => {
-    const jumpOverRow = (startCell.y + targetCell.y) / 2;
-    const jumpOverCol = (startCell.x + targetCell.x) / 2;
-    return startCell.board.getCell(jumpOverCol, jumpOverRow);
-}*/
+
 const increasedBreaktThrough = (currentPlayer: PlayerModel, l: PlayerModel, d: PlayerModel) => {
     const light = currentPlayer.label === Labels.Light ? l.breakthrough + 1 : l.breakthrough;
     const dark = currentPlayer.label === Labels.Dark ? d.breakthrough + 1 : d.breakthrough;
@@ -68,7 +43,7 @@ const createBoard = (): number[][] => {
 
     function placeRandomShips() {
         const shipLengths = [1, 2, 3, 4, 5];
-        //const shipLengths = [1, 2, 3, 4, 5];//tests
+
         const maxAttempts = 50;
 
         for (const shipLength of shipLengths) {
@@ -159,23 +134,14 @@ const boardToArray = (board: BoardModel): number[][] =>{
     
     return boardAsArray;
 }
-/*const isValidJump = (row: number, col: number, targetRow: number, targetCol: number): boolean => {
-    const jumpOverRow = (row + targetRow) / 2;
-    const jumpOverCol = (col + targetCol) / 2;
-    return isValidMove(jumpOverRow, jumpOverCol);
-}*/
+
 export {
     mergeClasses,
     CreateCell,
-    //checkDame,
     random,
     splitKey,
-    //getKills,
-    //isValidMove,
-    //getJumpOverCell,
     increasedBreaktThrough,
     createBoard,
     boardToArray,
     initBoard
-    //isValidJump
 }

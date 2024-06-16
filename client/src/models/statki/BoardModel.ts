@@ -1,6 +1,5 @@
 import { CreateCell, createBoard } from "utils/utils";
 import CellModel from "./CellModel";
-import { Labels } from "./Labels";
 import { ShipModel } from "./ShipModel";
 
 
@@ -23,25 +22,12 @@ export default class BoardModel {
             this.cells.push(row);
         }
         console.log(this.cells.length, ':', this.cells[0].length)
-        //console.log(this.cells.length, '; ', this.cells[0].length)
     }
 
-    /*addFigures() {
-        this.cells.forEach((row, rowIndex) => {
-            row.forEach((cell, cellIndex) => {
-                if (rowIndex <= 2 && cell.label === Labels.Dark) {
-                    new FigureModel(Labels.Dark, this.getCell(rowIndex, cellIndex), false);
-                } else if (rowIndex >= this.cells.length - 3 && cell.label === Labels.Dark) {
-                    new FigureModel(Labels.Light, this.getCell(rowIndex, cellIndex), false);
-                }
-            });
-        });
-    }*/
     addShips() {
         const board = createBoard()
         board.forEach((row, rowIndex) => {
             row.forEach((cell, cellIndex) => {
-                //console.log('indexes', rowIndex, ':', cellIndex)
                 if(cell === 1) {
                     this.addShip(rowIndex, cellIndex)
                 }
@@ -50,17 +36,13 @@ export default class BoardModel {
     }
 
     addShipsFromArray(board: number[][]) {
-        //console.log(board)
         board.forEach((row, rowIndex) => {
             row.forEach((cell, cellIndex) => {
-                //console.log('indexes', rowIndex, ':', cellIndex)
                 if(cell === 1) {
                     this.addShip(rowIndex, cellIndex)
                 }
             })
         })
-        //console.log('oponentCelss')
-        //console.log(this.cells)
     }
 
     updateBoard(): BoardModel {

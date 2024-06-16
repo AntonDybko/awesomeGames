@@ -15,7 +15,7 @@ const UserDialog: React.FC<DialogProps> = ({ visible, setVisible }) => {
 
     const handleClose = () => {
         setVisible(false);
-        option === 'registration' ? switchOption() : console.log();
+        if(option === 'registration') switchOption() 
     }
 
     return (

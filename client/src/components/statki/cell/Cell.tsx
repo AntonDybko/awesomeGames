@@ -1,12 +1,10 @@
 import { ReactElement } from 'react';
 import './Cell.scss';
-//import { Labels } from '../../../models/statki/Labels';
 import { mergeClasses } from '../../../utils/utils';
 import CellModel from 'models/statki/CellModel';
 
 type CellProps = {
     cell: CellModel;
-    //selected: boolean;
     onCellClick: (cell: CellModel) => void;
 };
 
@@ -24,6 +22,7 @@ export const Cell = ({ cell, onCellClick }: CellProps): ReactElement => {
                 <img 
                     className="icon" 
                     src={cell.ship?.imageSrc}
+                    alt='destroyedShip'
                 />
             )}
         </div>

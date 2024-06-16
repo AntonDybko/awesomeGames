@@ -5,7 +5,6 @@ import { useNavigate, Route, Link, Routes } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import './Profile.scss';
 import defaultProfileImage from '../../images/defaultProfileImage.png';
-import editImage from '../../images/pngwing.com.png'
 import EditBirthday from "./editProfile/EditBirthday";
 import EditProfileImage from "./editProfile/EditProfileImage";
 import { Bounce, ToastContainer } from "react-toastify";
@@ -30,8 +29,6 @@ const Profile: React.FC = () => {
 
     const match = window.location.href.match(pattern);
     const profileName = match ? match[1] : null;
-    console.log(profileName);
-    //const profileName = auth.username;
     
     const navigate = useNavigate();
 

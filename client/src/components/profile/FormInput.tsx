@@ -1,8 +1,6 @@
 import { useField } from "formik";
-import { TextField } from "@mui/material";
 import './FormInput.scss';
 import { ChangeEvent } from "react";
-import { DateRangePicker } from "react-date-range";
 
 interface FormInputProps {
   type: string,

@@ -31,7 +31,6 @@ const usersController = {
   
     getUser: async (req: Request, res: Response) => {
         const username = req.params.username;
-        console.log(req.params)
         const user = await User.findOne({ username });
         if (!user) res.status(404).json({ message: "User not found" });
         const { password, refreshToken, _id, __v, ...userWithoutPassword } = JSON.parse(
@@ -41,10 +40,8 @@ const usersController = {
     },
   
     editUser: async (req: Request, res: Response) => {
-        console.log('edit User request')
         const request = req as RequestWithVerifiedUser;
         const userToUpdate = req.body;
-        console.log(req.body)
 
         if(req.body.password) {
             if(!validPasswordFormat(req.body.password)){
@@ -58,8 +55,6 @@ const usersController = {
             }
         }
 
-        console.log("user update request passed successfully", userToUpdate)
-
         const user = await User.findOneAndUpdate(
             { _id: request.user._id },
             { ...userToUpdate },
@@ -70,16 +65,11 @@ const usersController = {
     },
 
     changePassword: async (req: Request, res: Response) => {
-        console.log('change password request')
         const request = req as RequestWithVerifiedUser;
-        console.log(req.body)
-        //const userToConfirm = await User.findById(request.user._id);
         
         if(req.body.newPassword !== req.body.matchingNewPassword){
-            console.log("not match")
             return res.status(400).json({ message: 'Validation failed', details: "Password didn't match"});
         }else if(!validPasswordFormat(req.body.newPassword)){
-            console.log("wrong format")
             return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
                 "Contains at least one lowercase letter.",
                 "Contains at least one uppercase letter.",

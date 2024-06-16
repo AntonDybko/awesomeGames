@@ -129,8 +129,6 @@ const rankingController = {
                 return res.status(200).json(scores);
             }
 
-            console.log(req.params.gamename, req.params.username);
-            console.log(user, game);
             return res.status(404).json({ message: "No game with specified name!" });
         } catch (error) {
             console.error('Error:', error);

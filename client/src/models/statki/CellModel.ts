@@ -5,7 +5,6 @@ export default class CellModel {
     readonly x: number;
     readonly y: number;
     board: BoardModel;
-    //empty: boolean;
     hidden: boolean;
     ship: ShipModel | null;
     key: string;
@@ -17,7 +16,6 @@ export default class CellModel {
         this.y = y;
         this.board = board;
         this.key = `${String(x)}${String(y)}`;
-        //this.empty = true;
         this.ship = null;
         this.miss = false;
         this.hidden = hidden;
@@ -28,7 +26,6 @@ export default class CellModel {
         if(this.hidden) this.hidden = false;
         if(this.ship !== null) this.ship.destroyed = true;
         else if (destroyedShip){
-            //this.board.addShip(this.x, this.y, destroyedShip)
             this.addShip(destroyedShip)
         }
         else {

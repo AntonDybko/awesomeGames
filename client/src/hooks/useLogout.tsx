@@ -10,7 +10,6 @@ const useLogout = () => {
     setAuth({});
   };
 
-  console.log()
   return logout;
 };
 

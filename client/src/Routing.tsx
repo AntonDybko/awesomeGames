@@ -9,13 +9,9 @@ import TicTacToe from 'components/tictactoe/TicTacToe';
 import SessionPersistence from "components/other/SessionPersistence";
 import RequireAuth from "components/other/RequireAuth";
 import StatkiPage from "components/statki-page/StatkiPage";
-
-import { io, Socket } from 'socket.io-client';
-//import ServerToClientEvents from 'interfaces/ServerToClientEvents';
-//import ClientToServerEvents from 'interfaces/ClientToServerEvents';
+import { Socket } from 'socket.io-client';
 
 type RoutingProps = {
-  //socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
   socket: Socket | null;
 }
 

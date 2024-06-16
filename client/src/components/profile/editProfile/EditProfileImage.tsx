@@ -1,20 +1,18 @@
 import axios from "axios-config/axios";
 import { Formik, Form } from "formik";
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 import { useLocation } from "react-router-dom"
-import FormInput from "../FormInput";
 import imageSchema from "./schemas/imageSchema";
-import { Bounce, ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface FormInputProps {
     setProfileImage: Dispatch<SetStateAction<string | undefined>>
 }
 
-const EditUserName: React.FC<FormInputProps> = (props) => {
+const EditProfileImage: React.FC<FormInputProps> = (props) => {
     const location = useLocation();
     const { auth } = location.state;
-    //setUserName(username);
 
     interface FormValues {
         picture_url: string | undefined,
@@ -55,12 +53,7 @@ const EditUserName: React.FC<FormInputProps> = (props) => {
                                 fileReader.onload = (event) => {
                                     formik.setFieldValue('picture_url', event.target?.result?.toString());
                                     props.setProfileImage(event.target?.result?.toString())
-                                    /*if (fileReader.readyState === 2) {
-                                        formik.setFieldValue('picture_url', fileReader.result?.toString());
-                                        props.setProfileImage(fileReader.result?.toString())
-                                    }*/
                                 };
-                                //if(e.target.files) fileReader.readAsDataURL(e.target.files[0]);
                             }}/>
                         </div>
                         <div>
@@ -76,4 +69,4 @@ const EditUserName: React.FC<FormInputProps> = (props) => {
     )
 }
 
-export default EditUserName;
+export default EditProfileImage;

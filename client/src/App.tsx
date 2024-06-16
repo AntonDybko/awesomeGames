@@ -3,10 +3,7 @@ import './App.scss';
 import Navbar from './components/navigation/Navbar';
 import { Routing } from './Routing';
 import { io, Socket } from 'socket.io-client';
-//import ServerToClientEvents from 'interfaces/ServerToClientEvents';
-//import ClientToServerEvents from 'interfaces/ClientToServerEvents';
 import useAuth from 'hooks/useAuth';
-//import { Socket } from 'dgram';
 
 const App: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
