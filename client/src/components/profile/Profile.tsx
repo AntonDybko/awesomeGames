@@ -15,15 +15,15 @@ import DirectionsBoatIcon from '@mui/icons-material/DirectionsBoat';
 import ClearIcon from '@mui/icons-material/Clear';
 
 
-type TicTacToeRank = number; 
-type MastermindRank = number;
+type Ranking = number;
 
 
 const Profile: React.FC = () => {
     const [user, setUser] = useState({} as UserProps);
     const { auth } = useAuth();
-    const [ticTacToeRank, setTicTacToeRank] = useState<TicTacToeRank>();
-    const [mastermindRank, setMastermindRank] = useState<MastermindRank>();
+    const [ticTacToeRank, setTicTacToeRank] = useState<Ranking>();
+    const [mastermindRank, setMastermindRank] = useState<Ranking>();
+    const [battleshipRank, setBattleshipRank] = useState<Ranking>();
     const [profileImage, setProfileImage] = useState<string | undefined>("")
     const [birthday, setBirthday] = useState<Date | undefined>(undefined);
     const pattern = /http:\/\/localhost:3000\/profile\/([^\/]+)/;
@@ -71,9 +71,19 @@ const Profile: React.FC = () => {
             }
         }
 
+        async function getBattleshipStats() {
+            try {
+                const res = await axios.get(`users/profile/${profileName}/scores/byGame/battleships`);
+                if (res.status === 200) setBattleshipRank(res.data[0]?.score);
+            } catch (e) {
+                navigate("/");
+            }
+        }
+
         getUser();
         getTictactoeStats();
         getMastermindStats();
+        getBattleshipStats();
     }, [profileName, navigate]);
 
     return (
@@ -174,7 +184,7 @@ const Profile: React.FC = () => {
                                 BATTLESHIP RANKING: 
                             </p>
                         </div>
-                        <p className="rating">{}</p>
+                        <p className="rating">{battleshipRank !== undefined ? (battleshipRank % 1 !== 0 ? battleshipRank.toFixed(1) : battleshipRank)  : 'No ranking yet'}</p>
                     </div>
                 </div>
             </div>

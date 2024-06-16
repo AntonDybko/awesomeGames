@@ -28,6 +28,13 @@
                     display: flex;
                     justify-self: center;
                     align-items: center;
+                    a {
+                        color: $secondary-light-color;
+                        text-decoration: none;
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
                 }
             }
         }

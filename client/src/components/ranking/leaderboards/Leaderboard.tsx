@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import "./Leaderboard.scss";
 import Pagination from '@mui/material/Pagination';
+import { Link } from "react-router-dom";
 
 interface Player {
   id: number;
@@ -46,7 +47,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ winnersList, gameName }) => {
                   {currentPage === 1 && index === 2 && <span className="medal-emoji">🥉</span>}
                   {(currentPage !== 1 || index > 2) && <span>#{indexOfFirstItem + index + 1}</span>}
                 </td>
-                <td className='player-info'>{player.username}</td>
+                <td className='player-info'><Link to={`../profile/${player.username}`}>{player.username}</Link></td>
                 <td className='player-info'>{player.averageScore.toFixed(0)} points</td>
               </tr>
             ))}
