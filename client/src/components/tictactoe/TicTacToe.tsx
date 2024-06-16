@@ -3,7 +3,7 @@ import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import { random } from "../../utils/utils";
-import { socket } from "socket";
+//import { socket } from "socket";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
@@ -12,7 +12,11 @@ interface LocationState {
     isRanked?: boolean;
 }
 
-const TicTacToe: React.FC = () => {
+type SocketProps =  {
+    socket: Socket | null
+}
+
+const TicTacToe: React.FC<SocketProps> = ({socket}) => {
     const { auth } = useAuth();
     const [game, setGame] = useState<string[]>(Array(9).fill(""));
     const [turnNumber, setTurnNumber] = useState<number>(0);
@@ -36,12 +40,12 @@ const TicTacToe: React.FC = () => {
 
     const turn = (index: number) => {
         if (!game[index] && !winner && myTurn && hasOpponent) {
-            socket.emit("reqTurn", JSON.stringify({ index, value: xo, room }));
+            socket?.emit("reqTurn", JSON.stringify({ index, value: xo, room }));
         }
     };
 
     const sendRestart = () => {
-        socket.emit("reqRestart", JSON.stringify({ room }));
+        socket?.emit("reqRestart", JSON.stringify({ room }));
     };
 
     const cancelMatchmaking = () => {
@@ -54,7 +58,7 @@ const TicTacToe: React.FC = () => {
         setTurnNumber(0);
         setMyTurn(false);
 
-        if (firstPlayer === socket.id) {
+        if (firstPlayer === socket?.id) {
             console.log("to ja");
             setMyTurn(true);
             setXO("X");
@@ -72,7 +76,7 @@ const TicTacToe: React.FC = () => {
                 setWinner(true);
                 if (player === xo && isRanked) {
                     console.log("Win - emitting event!");
-                    socket.emit("winner", room, auth.username, "tictactoe");
+                    socket?.emit("winner", room, auth.username, "tictactoe");
                 }
             }
         });
@@ -80,22 +84,22 @@ const TicTacToe: React.FC = () => {
         if (turnNumber === 0) {
             setMyTurn(xo === "X" ? true : false);
         }
-    }, [game, turnNumber, xo]);
+    }, [game, turnNumber, xo, socket]);
 
     useEffect(() => {
-        socket.on("playerTurn", (json) => {
+        socket?.on("playerTurn", (json: any) => {
             setTurnData(json);
         });
 
-        socket.on("restart", (data) => {
+        socket?.on("restart", (data: any) => {
             restart(data.firstPlayer);
         });
 
-        socket.on("opponentJoined", (data) => {
+        socket?.on("opponentJoined", (data: any) => {
             setHasOpponent(true);
             setShare(false);
 
-            if (data.firstPlayer === socket.id) {
+            if (data.firstPlayer === socket?.id) {
                 console.log("to ja");
                 setMyTurn(true);
             } else {
@@ -104,10 +108,10 @@ const TicTacToe: React.FC = () => {
             }
         });
 
-        socket.on("matchFound", (data) => {
+        socket?.on("matchFound", (data: any) => {
             setRoom(data.room);
 
-            if (data.firstPlayer === socket.id) {
+            if (data.firstPlayer === socket?.id) {
                 console.log("to ja");
                 setMyTurn(true);
             } else {
@@ -118,19 +122,19 @@ const TicTacToe: React.FC = () => {
             setHasOpponent(true);
         });
 
-        socket.on("queueStart", (data) => {
+        socket?.on("queueStart", (data: any) => {
             setRoom(data.room);
         });
 
         if (isRanked) {
             console.log("ranked");
-            socket.emit("matchmaking", {
+            socket?.emit("matchmaking", {
                 playerName: auth.username,
                 game: "tictactoe",
             });
         } else {
             if (paramsRoom) {
-                socket.emit(
+                socket?.emit(
                     "join",
                     JSON.stringify({
                         room: paramsRoom,
@@ -140,7 +144,7 @@ const TicTacToe: React.FC = () => {
                 setRoom(paramsRoom);
             } else {
                 const newRoomName = uid.rnd();
-                socket.emit(
+                socket?.emit(
                     "create",
                     JSON.stringify({
                         room: newRoomName,
@@ -151,15 +155,15 @@ const TicTacToe: React.FC = () => {
                 setRoom(newRoomName);
             }
         }
-    }, []);
+    }, [socket]);
 
     useEffect(() => {
         if (room) {
             return () => {
-                socket.emit("leave", { room: room });
+                socket?.emit("leave", { room: room });
             };
         }
-    }, [room]);
+    }, [room, socket]);
 
     useEffect(() => {
         if (turnData) {
@@ -258,7 +262,7 @@ const TicTacToe: React.FC = () => {
                             <Box index={8} turn={turn} value={game[8]} />
                         </div>
                     </div>
-                    <Chat room={room}></Chat>
+                    <Chat room={room} socket={socket}></Chat>
                 </div>
             )}
         </div>

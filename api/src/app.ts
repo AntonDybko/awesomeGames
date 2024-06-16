@@ -8,6 +8,10 @@ import http from "http";
 import { Server } from 'socket.io';
 import socketManager from "./socket";
 
+import initGames from "./helpers/dbHelp/initGames";
+import { verifyJWT, verifySocket } from "./middleware/jwtVerification";
+import { AuthenticatedRequest } from "./types/AuthenticatedRequest";
+
 const app: Application = express();
 
 app.use(cookieParser());
@@ -27,7 +31,11 @@ app.use((req, res, next) => {
 
 const server = http.createServer(app);
 
-const io = new Server(server, { cors: { origin: "http://localhost:3000" } });
-socketManager(io);
+const io = new Server(server, {cors: {origin: "http://localhost:3000"}});
+io.engine.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    verifySocket(req, res, next);
+});
+socketManager(io)
+
 
 export { app, server };

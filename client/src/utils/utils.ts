@@ -68,6 +68,7 @@ const createBoard = (): number[][] => {
 
     function placeRandomShips() {
         const shipLengths = [1, 2, 3, 4, 5];
+        //const shipLengths = [1, 2, 3, 4, 5];//tests
         const maxAttempts = 50;
 
         for (const shipLength of shipLengths) {

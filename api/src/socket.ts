@@ -17,6 +17,10 @@ const socketManager = (io: Server) => {
     //const rooms: { [name: string]: { [playerName: string]: {playerId: string, status: Status}}} = {};
     io.on("connection", (socket) => {
         console.log("User connected", socket.id);
+
+        socket.on('authenticate', data => {
+            
+        })
         socket.on("reqTurn", (data) => {
             const room = JSON.parse(data).room;
             io.to(room).emit("playerTurn", data);
@@ -123,23 +127,27 @@ const socketManager = (io: Server) => {
             console.log("startTimer");
 
             const { room, playerName, step } = JSON.parse(data);
-            rooms[room].players[playerName].status = Status.WaitingForMove;
+            // console.log(room, playerName);
+            if (rooms[room]) {
+                rooms[room].players[playerName].status = Status.WaitingForMove;
 
-            setTimeout(() => {
-                if (rooms[room] !== undefined) console.log("step: ", rooms[room].step, " : ", step);
-                if (
-                    rooms[room] !== undefined &&
-                    rooms[room].players[playerName].status === Status.WaitingForMove &&
-                    rooms[room].step === step
-                ) {
-                    console.log("timer out");
-                    socket.emit("timerOut");
-                }
-            }, 60000); //10000 for testing
+                setTimeout(() => {
+                    if (rooms[room] !== undefined) console.log("step: ", rooms[room].step, " : ", step);
+                    if (
+                        rooms[room] !== undefined &&
+                        rooms[room].players[playerName].status === Status.WaitingForMove &&
+                        rooms[room].step === step
+                    ) {
+                        console.log("timer out");
+                        socket.emit("timerOut");
+                    }
+                }, 60000); //10000 for testing
+            }
         });
 
         socket.on("join", (data) => {
             const { room, playerName } = JSON.parse(data);
+            console.log("trying to join:", room, playerName)
             if (rooms[room] && playerName !== undefined) {
                 //
                 console.log("-----------");
@@ -231,13 +239,40 @@ const socketManager = (io: Server) => {
         });
 
         socket.on("playerLost", (data) => {
-            const { room, lostPlayerSide } = JSON.parse(data);
+            const { room, lostPlayerSide, isRanked } = JSON.parse(data);
             console.log(room, ":", lostPlayerSide);
+
+            console.log("room: ", rooms[room]);
+
+            if (isRanked) {
+                const winnerName = Object.keys(rooms[room].players).filter((player) => player !== lostPlayerSide)[0];
+                console.log("winner: ", winnerName);
+
+                const toDo = async () => {
+                    const loserRanking = await getFirstScore(lostPlayerSide, "battleships");
+                    const winnerRanking = await getFirstScore(winnerName, "battleships");
+                    const newRating = rating.getNextRatings(winnerRanking, loserRanking, 1);
+                    console.log("scores: ", loserRanking, "; ", winnerRanking, " -> ", newRating);
+
+                    updateFirstScore(winnerName, "battleships", newRating.nextPlayerARating);
+                    updateFirstScore(lostPlayerSide, "battleships", newRating.nextPlayerBRating);
+                };
+                toDo();
+            }
+
             if (rooms[room] !== undefined) {
                 delete rooms[room];
                 console.log("someone lost in room ", room);
                 io.to(room).emit("oponentLost", data);
             }
+        });
+
+        socket.on("getOponentUserName", (data) => {
+            const { room, playerName } = JSON.parse(data);
+            console.log(room, playerName);
+            const opponent = Object.keys(rooms[room].players).filter((player) => player !== playerName)[0];
+            console.log("oponent username sent");
+            socket.emit("opponentUserName", JSON.stringify({ opponent }));
         });
 
         socket.on("chatMessage", (data) => {
@@ -249,6 +284,7 @@ const socketManager = (io: Server) => {
 
         socket.on("disconnect", () => {
             console.log("User disconnected", socket.id);
+            socket.disconnect();
         });
     });
 };

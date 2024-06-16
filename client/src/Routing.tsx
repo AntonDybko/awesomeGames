@@ -10,7 +10,16 @@ import SessionPersistence from "components/other/SessionPersistence";
 import RequireAuth from "components/other/RequireAuth";
 import StatkiPage from "components/statki-page/StatkiPage";
 
-export const Routing: React.FC = () => {
+import { io, Socket } from 'socket.io-client';
+//import ServerToClientEvents from 'interfaces/ServerToClientEvents';
+//import ClientToServerEvents from 'interfaces/ClientToServerEvents';
+
+type RoutingProps = {
+  //socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
+  socket: Socket | null;
+}
+
+export const Routing: React.FC<RoutingProps> = ({socket}) => {
   return (
     <Routes>
       <Route element={<SessionPersistence />}>
@@ -18,13 +27,11 @@ export const Routing: React.FC = () => {
         <Route element={<RequireAuth />}>
           <Route path="/games" element={<Games />} />
           <Route path="/games/mastermind" element={<Mastermind />} />
-          <Route path="/games/statki" element={<StatkiPage />} />
-          <Route path="/games/tictactoe" element={<TicTacToePage />} />
-          <Route path="/games/tictactoe/:id" element={<TicTacToe />} />
+          <Route path="/games/statki" element={<StatkiPage socket={socket}/>} />
+          <Route path="/games/tictactoe" element={<TicTacToePage socket={socket}/>} />
+          <Route path="/games/tictactoe/:id" element={<TicTacToe socket={socket}/>} />
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/profile/:userId/*" element={<Profile />} />
-
-          
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

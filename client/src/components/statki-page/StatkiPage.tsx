@@ -1,11 +1,19 @@
+import ServerToClientEvents from "interfaces/ServerToClientEvents";
 import Statki from "../statki/Statki";
+import ClientToServerEvents from "interfaces/ClientToServerEvents";
+import { Socket } from "socket.io-client";
 
-const StatkiPage = () => {
+type StatkiProps = {
+    //socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
+    socket: Socket | null;
+}
+
+const StatkiPage = ({socket}: StatkiProps) => {
     return (
         <div>
             <h2>Battleships</h2>
             <hr />
-            <Statki />
+            <Statki socket={socket}/>
         </div>     
     );
 }

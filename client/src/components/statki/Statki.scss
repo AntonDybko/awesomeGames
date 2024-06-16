@@ -1,11 +1,11 @@
 .statki {
     padding-top: 50px;
-    padding-left: 10%;
+    padding-left: 0%;
     justify-content: center;
     align-items: center;
 
-    .box{
-        margin-left: 40%;
+    .box {
+        margin: auto;
         width: 200px;
         display: grid;
 
@@ -17,12 +17,12 @@
     }
 
     .leftside {
-        left:25%;
+        left: 15%;
         position: absolute;
     }
-    
+
     .rightside {
-        left:70%;
+        left: 75%;
         position: absolute;
     }
 
@@ -32,7 +32,8 @@
         height: 30px;
     }
 
+    .chat {
+        margin: auto;
+        width: 300px;
+    }
 }
-
-
-

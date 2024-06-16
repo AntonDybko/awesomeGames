@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { User } from "../../models/User";
-import { RequestWithVerifiedUser } from "../../types/requestWithVerifiedUser";
+import { RequestWithVerifiedUser } from "../../types/RequestWithVerifiedUser";
 import dotenv from "dotenv"
 import validPasswordFormat from "../../helpers/validPasswordFormat"
 import bcrypt from "bcryptjs";
@@ -45,6 +45,7 @@ const usersController = {
         const request = req as RequestWithVerifiedUser;
         const userToUpdate = req.body;
         console.log(req.body)
+
         if(req.body.password) {
             if(!validPasswordFormat(req.body.password)){
                 return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
@@ -56,11 +57,9 @@ const usersController = {
                 ]});
             }
         }
+
         console.log("user update request passed successfully", userToUpdate)
-        /*const user = await User.findOne(
-            { _id: request.user._id },
-        );
-        console.log(user)*/
+
         const user = await User.findOneAndUpdate(
             { _id: request.user._id },
             { ...userToUpdate },
@@ -73,13 +72,13 @@ const usersController = {
     changePassword: async (req: Request, res: Response) => {
         console.log('change password request')
         const request = req as RequestWithVerifiedUser;
-        const userToUpdate = req.body;
         console.log(req.body)
+        //const userToConfirm = await User.findById(request.user._id);
+        
         if(req.body.newPassword !== req.body.matchingNewPassword){
             console.log("not match")
             return res.status(400).json({ message: 'Validation failed', details: "Password didn't match"});
-        }
-        else if(!validPasswordFormat(req.body.newPassword)){
+        }else if(!validPasswordFormat(req.body.newPassword)){
             console.log("wrong format")
             return res.status(400).json({ message: 'Validation failed', details: "Wrong password format.", "criteria": [
                 "Contains at least one lowercase letter.",
@@ -90,6 +89,7 @@ const usersController = {
             ]});
         }
         const encryptedPass = bcrypt.hashSync(req.body.newPassword, bcrypt.genSaltSync(10));
+
 
         const user = await User.findOneAndUpdate(
             { _id: request.user._id },

@@ -19,7 +19,7 @@ type BoardProps = {
     //onChangeBreakThrough: () => void;
     hasOpponent: boolean;
     room: string | null;
-    socket: Socket;
+    socket: Socket | null;
     playerSide: Labels | undefined;
     lightPlayer: PlayerModel;
     darkPlayer: PlayerModel;
@@ -39,11 +39,11 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
             onChangePlayer();
 
             if(playerSide === Labels.Light) {
-                socket.emit('attackDark', JSON.stringify(
+                socket?.emit('attackDark', JSON.stringify(
                     { attackedCellKey: cell.key, room: room, playerName: auth.username}
                 ));
             }else if (playerSide === Labels.Dark){
-                socket.emit('attackLight', JSON.stringify(
+                socket?.emit('attackLight', JSON.stringify(
                     { attackedCellKey: cell.key, room: room, playerName: auth.username }
                 ));
             }
@@ -71,15 +71,15 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
                 //
                 if(attackedCell.ship !== null && attackedCell.ship.destroyed === false) {
                     attackedCell.attack()
-                    socket.emit(event, JSON.stringify({ ship: true, attackedCellKey, room}))
+                    socket?.emit(event, JSON.stringify({ ship: true, attackedCellKey, room}))
                     const bt = increasedBreaktThrough(currentPlayer, lightPlayer, darkPlayer)
-                    socket.emit('reqTurn', JSON.stringify(
+                    socket?.emit('reqTurn', JSON.stringify(
                         { lk: bt.light, dk: bt.dark, room}
                     ));
                 }else if (attackedCell.ship === null){
                     attackedCell.attack()
-                    socket.emit(event, JSON.stringify({ ship: false, attackedCellKey, room}))
-                    socket.emit('reqTurn', JSON.stringify(
+                    socket?.emit(event, JSON.stringify({ ship: false, attackedCellKey, room}))
+                    socket?.emit('reqTurn', JSON.stringify(
                         { lk: lightPlayer.breakthrough, dk: darkPlayer.breakthrough, room}
                     ));
                 }
@@ -99,23 +99,23 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
         }
 
         if(playerSide === Labels.Light) {
-            socket.on('receiveAttackLight', OnReceiveAttack);
-            socket.on('receiveResponseToAttackDark', OnReceiveReponseToAttack);
+            socket?.on('receiveAttackLight', OnReceiveAttack);
+            socket?.on('receiveResponseToAttackDark', OnReceiveReponseToAttack);
         }else if (playerSide === Labels.Dark) {
-            socket.on('receiveAttackDark', OnReceiveAttack);
-            socket.on('receiveResponseToAttackLight', OnReceiveReponseToAttack);
+            socket?.on('receiveAttackDark', OnReceiveAttack);
+            socket?.on('receiveResponseToAttackLight', OnReceiveReponseToAttack);
         }
 
         return () => {
             if(playerSide === Labels.Light) {
-                socket.off('receiveAttackLight', OnReceiveAttack);
-                socket.off('receiveReponseToAttackDark', OnReceiveReponseToAttack);
+                socket?.off('receiveAttackLight', OnReceiveAttack);
+                socket?.off('receiveReponseToAttackDark', OnReceiveReponseToAttack);
             }else if (playerSide === Labels.Dark) {
-                socket.off('receiveAttackDark', OnReceiveAttack);
-                socket.off('receiveReponseToAttackLight', OnReceiveReponseToAttack);
+                socket?.off('receiveAttackDark', OnReceiveAttack);
+                socket?.off('receiveReponseToAttackLight', OnReceiveReponseToAttack);
             }
         }
-    }, [board, step])
+    }, [board, step, socket])
 
 
     useEffect(() => {
@@ -129,8 +129,7 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
 
             onSetTimer(60)
             if(id === BoardId.player && currentPlayer.label !== playerSide) {
-                console.log("steeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeep: ", step)
-                socket.emit('startTimer', JSON.stringify({ room, playerName: auth.username, step }));
+                socket?.emit('startTimer', JSON.stringify({ room, playerName: auth.username, step }));
 
                 onChangePlayer();
                 updateBoard();
@@ -140,20 +139,15 @@ export const Board = ({id, board, onSetBoard, currentPlayer, onChangePlayer, has
 
         }
 
-        /*const OnTimerOut =() => {
-            console.log("lost: ", room, playerSide)
-            socket.emit('playerLost', JSON.stringify({room, lostPlayerSide: playerSide}));
-        }*/
-
-        socket.on('playerTurn', OnPlayerTurn)
-        //socket.on('timerOut', OnTimerOut)
+        socket?.on('playerTurn', OnPlayerTurn)
+        //socket?.on('timerOut', OnTimerOut)
 
         return () => {
-            socket.off('playerTurn', OnPlayerTurn);
-            //socket.off('timerOut', OnTimerOut)
+            socket?.off('playerTurn', OnPlayerTurn);
+            //socket?.off('timerOut', OnTimerOut)
         };
 
-    }, [room, board, step])
+    }, [room, board, step, socket])
 
     return (
         <div>

@@ -26,8 +26,12 @@ const Profile: React.FC = () => {
     const [ticTacToeRank, setTicTacToeRank] = useState<TicTacToeRank>();
     const [mastermindRank, setMastermindRank] = useState<MastermindRank>();
     const [profileImage, setProfileImage] = useState<string | undefined>("")
+    const pattern = /http:\/\/localhost:3000\/profile\/([^\/]+)/;
 
-    const profileName = auth.username;
+    const match = window.location.href.match(pattern);
+    const profileName = match ? match[1] : null;
+    console.log(profileName);
+    //const profileName = auth.username;
     
     const navigate = useNavigate();
 
@@ -69,20 +73,25 @@ const Profile: React.FC = () => {
         <div className="profile-page">
             <div className="profile-container">
                 <div>
-                    <Link to={`editProfileImage`} state={{ auth }}><EditIcon className="edit-icon"/></Link>
+                    {auth.username === profileName ?
+                        <span>
+                            <Link to={`editProfileImage`} state={{ auth }}><EditIcon className="edit-icon"/></Link> 
+                            <Routes>
+                                <Route path={"editProfileImage"} element={
+                                    <div>
+                                        <EditProfileImage setProfileImage={setProfileImage}/>
+                                    </div>
+                                }/>
+                            </Routes>
+                        </span> :
+                        ''
+                    }
                     { profileImage ?
                         <img src={profileImage } className="profile-image" alt="profile"/> :
                         (user.picture_url ? 
                         <img src={user.picture_url } className="profile-image" alt="profile"/> :
                         <img src={defaultProfileImage} className="profile-image" alt="profile"/>)
                     }
-                    <Routes>
-                        <Route path={"editProfileImage"} element={
-                            <div>
-                                <EditProfileImage setProfileImage={setProfileImage}/>
-                            </div>
-                        }/>
-                    </Routes>
                 </div>
                 <div className="profile-name">
                     {profileName}
@@ -92,7 +101,19 @@ const Profile: React.FC = () => {
                     <span >{user.email}</span>
                 </div>
                 <div>
-                    <Link to={`editBirthday`} state={{ auth }}><EditIcon className="edit-icon"/></Link>
+                    {auth.username === profileName ?
+                        <span>
+                            <Link to={`editBirthday`} state={{ auth }}><EditIcon className="edit-icon"/></Link>
+                            <Routes>
+                                <Route path={"editBirthday"} element={
+                                    <div>
+                                        <EditBirthday/>
+                                    </div>
+                                }/>
+                            </Routes>
+                        </span> :
+                        ''
+                    }
                     <span>Birthday: </span>
                     <span className="birthday-container">
                         {user.birthday ? (
@@ -101,23 +122,21 @@ const Profile: React.FC = () => {
                             </div>
                         ) : 'undefined'}
                     </span>
-                    <Routes>
-                        <Route path={"editBirthday"} element={
-                            <div>
-                                <EditBirthday/>
-                            </div>
-                        }/>
-                    </Routes>
                 </div>
                 <div>
-                    <Link to={`changePassword`} state={{ auth }}><EditIcon className="edit-icon"/>Change Password</Link>
-                    <Routes>
-                        <Route path={"changePassword"} element={
-                            <div>
-                                <ChangePassword/>
-                            </div>
-                        }/>
-                    </Routes>
+                    {auth.username === profileName ?
+                        <span>
+                            <Link to={`changePassword`} state={{ auth }}><EditIcon className="edit-icon"/>Change Password</Link>
+                            <Routes>
+                                <Route path={"changePassword"} element={
+                                    <div>
+                                        <ChangePassword/>
+                                    </div>
+                                }/>
+                            </Routes>
+                        </span> :
+                        ''
+                    }
                 </div>
             </div>
             <div className="ranking-container">
