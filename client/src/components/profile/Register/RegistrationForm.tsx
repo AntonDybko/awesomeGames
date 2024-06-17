@@ -1,4 +1,4 @@
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikHelpers } from "formik";
 import StatusProps from "interfaces/Status";
 import { Status } from '../Login/Login'
 import useAuth from "hooks/useAuth";
@@ -21,12 +21,40 @@ interface RegistrationFormProps {
 }
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({response, setResponse, setStatus}) => {
-    
     const { setAuth } = useAuth();
 
-    const handleRegister = async (values: FormValues) => {
+    const checkUnique = async (field: string, value: string) => {
+        try {
+            await axios.get(`/users/check-${field}`, { params: { [field]: value } });
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    const handleRegister = async (values: FormValues, actions: FormikHelpers<FormValues>) => {
         setStatus("pending");
-        setResponse({ ...response, pending: 'Just a moment...'})
+        setResponse({ ...response, pending: 'Just a moment...'});
+
+        const isUsernameUnique = await checkUnique('username', values.username);
+        const isEmailUnique = await checkUnique('email', values.email);
+
+        if (!isUsernameUnique) {
+            setStatus("rejected");
+            setResponse({ ...response, rejected: "Username is already taken" });
+            actions.setFieldError("username", "Username is already taken");
+            actions.setSubmitting(false);
+            return;
+        }
+
+        if (!isEmailUnique) {
+            setStatus("rejected");
+            setResponse({ ...response, rejected: "Email is already taken" });
+            actions.setFieldError("email", "Email is already taken");
+            actions.setSubmitting(false);
+            return;
+        }
+
         try {
             const res = await axios.post("/users/register", values, {
                 headers: { "Content-Type": "application/json" },
@@ -41,11 +69,13 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({response, setRespons
                   token: res.data.accessToken,
                   ...res.data.user,
                 });
-              }, 1500);
+            }, 1500);
             
+            actions.resetForm();
         } catch (e: any) {
             setStatus("rejected");
             setResponse({ ...response, rejected: "An error occurred" });
+            actions.setSubmitting(false);
         }
     }
 
@@ -58,7 +88,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({response, setRespons
                 email: ""
             }}
             validationSchema={registrationSchema}
-            onSubmit={(values: FormValues) => { handleRegister(values); }}>
+            onSubmit={handleRegister}>
             {(formik) => (
                 <Form className="form">
                 <div>
