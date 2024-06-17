@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import "./Statki.scss";
+import "./Battleship.scss";
 import { Board } from "./board/Board";
 import BoardModel from "../../models/statki/BoardModel";
 import { Labels } from "models/statki/Labels";
@@ -269,8 +269,12 @@ function Statki ({socket}: StatkiProps) {
 
     return (
         <div className="statki">
-            <div>Room: {room}</div>
-            <div>Side: {playerSide}</div>
+            {!isRanked ? 
+                    <div>Room: {room}</div> : ''
+            }
+            {!isRanked ? 
+                    <div>Side: {playerSide}</div> : ''
+            }
             <div>
                 User: {userNameRef.current}
             </div>
@@ -318,12 +322,12 @@ function Statki ({socket}: StatkiProps) {
                         </div>
                     ) : null}
                     <br />
-                    <h2 className="leftside">Player</h2>
-                    <h2 className="rightside">Oponent</h2>
+                    <h2 className="leftside">You</h2>
+                    <h2 className="rightside">Opponent</h2>
                     <br />
                     <div className="box">
                         <div className="player">
-                            Current player: {currentPlayer.label === playerSide ? "Player" : "Oponent"}
+                            Current player: {currentPlayer.label === playerSide ? "You" : "Opponent"}
                         </div>
                         {hasOpponent ? <div className="timer">{timer}</div> : ""}
                     </div>

@@ -467,7 +467,7 @@ describe('user', () => {
         })
 
         describe('given user with access token but invalid password', () => {
-            it('should return a 400', async () => {
+            it('should return a 200', async () => {
                 const editedUser = {
                     username: 'JohnSmith',
                     newPassword: 'P99!',
