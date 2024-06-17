@@ -14,44 +14,17 @@ const createField = <T>(initialValue: T): FieldProps<T> => ({
 const usernameToCheck = createField<string>("");
 const emailToCheck = createField<string>("");
 
-const createValidationTest = (
-  endpoint: string,
-  field: FieldProps<string>
-) => async (value: string | undefined): Promise<boolean> => {
-  if (value && value !== field.value) {
-    try {
-      if (endpoint === "/users/check-username") {
-        await axios.get(endpoint, { params: { username: value } });
-      } else {
-        await axios.get(endpoint, { params: { email: value } });
-      }
-      
-
-      field.value = value;
-      field.isValid = true;
-      return true;
-    } catch (error) {
-      field.value = value;
-      field.isValid = false;
-      return false;
-    }
-  }
-
-  return field.isValid;
-};
 
 
 const registrationSchema = yup.object().shape({
   username: yup
     .string()
     .min(4, "Username must contain at least 4 characters")
-    .required("Username is required")
-    .test("check-unique-username", "Username is already taken", createValidationTest("/users/check-username", usernameToCheck)),
+    .required("Username is required"),
   email: yup
     .string()
     .email("Please enter a valid email")
-    .required("Email is required")
-    .test("check-unique-email", "Email is already taken", createValidationTest("/users/check-email", emailToCheck)),
+    .required("Email is required"),
   password: yup
     .string()
     .matches(
