@@ -1,19 +1,4 @@
 import * as yup from "yup";
-import axios from "axios-config/axios";
-
-interface FieldProps<T> {
-  value: T | undefined;
-  isValid: boolean;
-}
-
-const createField = <T>(initialValue: T): FieldProps<T> => ({
-  value: initialValue,
-  isValid: true,
-});
-
-const usernameToCheck = createField<string>("");
-const emailToCheck = createField<string>("");
-
 
 
 const registrationSchema = yup.object().shape({
