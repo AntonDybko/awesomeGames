@@ -167,26 +167,28 @@ const socketManager = (io: Server) => {
         socket.on("reqRestart", (data) => {
             const room = JSON.parse(data).room;
 
-            const players = Object.keys(rooms[room].players);
-            const randomIndex = Math.round(Math.random()); // 0 lub 1
-            const randomPlayer = rooms[room].players[players[randomIndex]].playerId;
+            if(room !== undefined && rooms[room] !== undefined){
+                const players = Object.keys(rooms[room].players);
+                const randomIndex = Math.round(Math.random()); // 0 lub 1
+                const randomPlayer = rooms[room].players[players[randomIndex]].playerId;
 
-            io.to(room).emit("restart", { firstPlayer: randomPlayer });
+                io.to(room).emit("restart", { firstPlayer: randomPlayer });
+            }
         });
 
         socket.on("playerLost", (data) => {
-            const { room, lostPlayerSide, isRanked } = JSON.parse(data);
+            const { room, lostPlayerSide, isRanked, gamename } = JSON.parse(data);
 
             if (isRanked) {
                 const winnerName = Object.keys(rooms[room].players).filter((player) => player !== lostPlayerSide)[0];
 
                 const toDo = async () => {
-                    const loserRanking = await getFirstScore(lostPlayerSide, "battleships");
-                    const winnerRanking = await getFirstScore(winnerName, "battleships");
+                    const loserRanking = await getFirstScore(lostPlayerSide, gamename);
+                    const winnerRanking = await getFirstScore(winnerName, gamename);
                     const newRating = rating.getNextRatings(winnerRanking, loserRanking, 1);
 
-                    updateFirstScore(winnerName, "battleships", newRating.nextPlayerARating);
-                    updateFirstScore(lostPlayerSide, "battleships", newRating.nextPlayerBRating);
+                    updateFirstScore(winnerName, gamename, newRating.nextPlayerARating);
+                    updateFirstScore(lostPlayerSide, gamename, newRating.nextPlayerBRating);
                 };
                 toDo();
             }

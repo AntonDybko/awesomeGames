@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
@@ -17,12 +17,13 @@ type SocketProps =  {
 
 const TicTacToe: React.FC<SocketProps> = ({socket}) => {
     const { auth } = useAuth();
+    const gamename = "tictactoe";
     const [game, setGame] = useState<string[]>(Array(9).fill(""));
     const [turnNumber, setTurnNumber] = useState<number>(0);
     const [myTurn, setMyTurn] = useState<boolean>(true);
     const [winner, setWinner] = useState<boolean>(false);
-    const [xo, setXO] = useState<"X" | "O">("X");
-    const [player, setPlayer] = useState<string>("");
+    const [xo, setXO] = useState<"X" | "O" | undefined>(undefined);
+    const [player, setPlayer] = useState<string | undefined>("");
     const [hasOpponent, setHasOpponent] = useState<boolean>(false);
     const [share, setShare] = useState<boolean>(false);
     const [turnData, setTurnData] = useState<boolean>(false);
@@ -37,9 +38,34 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
     const uid = new ShortUniqueId({ length: 10 });
     const navigate = useNavigate();
 
+    //refs
+    const hasOpponentRef = useRef<boolean>(false);
+    const userNameRef = useRef<string | undefined>(undefined);
+    const winnerRef = useRef<boolean>(false);
+    const xoRef = useRef<"X" | "O" | undefined>(undefined)
+
+    useEffect(() => {
+        userNameRef.current = auth.username;
+    }, [auth.username]);
+
+    useEffect(() => {
+        hasOpponentRef.current = hasOpponent;
+    }, [hasOpponent]);
+
+    useEffect(() => {
+        winnerRef.current = winner;
+    }, [winner]);
+
+    useEffect(() => {
+        xoRef.current = xo;
+    }, [xo]);
+
+    //end of refs
+
     const turn = (index: number) => {
+        console.log(xoRef.current)
         if (!game[index] && !winner && myTurn && hasOpponent) {
-            socket?.emit("reqTurn", JSON.stringify({ index, value: xo, room }));
+            socket?.emit("reqTurn", JSON.stringify({ index, value: xoRef.current, room }));
         }
     };
 
@@ -71,17 +97,17 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
         combinations.forEach((c) => {
             if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
                 setWinner(true);
-                if (player === xo && isRanked) {
+                if (player === xoRef.current && isRanked) {
                     console.log("Win - emitting event!");
-                    socket?.emit("winner", room, auth.username, "tictactoe");
+                    socket?.emit("winner", room, auth.username, gamename);
                 }
             }
         });
 
         if (turnNumber === 0) {
-            setMyTurn(xo === "X" ? true : false);
+            setMyTurn(xoRef.current === "X" ? true : false);
         }
-    }, [game, turnNumber, xo, socket]);
+    }, [game, turnNumber, socket]);
 
     useEffect(() => {
         socket?.on("playerTurn", (json: any) => {
@@ -97,6 +123,7 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
             setShare(false);
 
             if (data.firstPlayer === socket?.id) {
+                setXO("X");
                 setMyTurn(true);
             } else {
                 setMyTurn(false);
@@ -109,6 +136,7 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
 
             if (data.firstPlayer === socket?.id) {
                 setMyTurn(true);
+                setXO("X");
             } else {
                 setMyTurn(false);
                 setXO("O");
@@ -124,7 +152,7 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
             console.log("ranked");
             socket?.emit("matchmaking", {
                 playerName: auth.username,
-                game: "tictactoe",
+                game: gamename,
             });
         } else {
             if (paramsRoom) {
@@ -143,20 +171,44 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
                     JSON.stringify({
                         room: newRoomName,
                         playerName: auth.username,
-                        game: "tictactoe",
+                        game: gamename,
                     })
                 );
                 setRoom(newRoomName);
             }
         }
+
+        socket?.on("oponentLost", (data: string) => {
+            const { lostPlayerSide } = JSON.parse(data);
+            setWinner(true);
+            console.log("who lost: ",  lostPlayerSide, userNameRef.current)
+            if (lostPlayerSide === userNameRef.current) {
+                if(xoRef.current === "X") setPlayer("O");
+                else setPlayer("X")
+            }else {
+                setPlayer(xoRef.current);
+            }
+        });
     }, [socket]);
 
     useEffect(() => {
-        if (room) {
-            return () => {
+        // socket?.on("opponentUserName", (data: string) => {
+        //     const { opponent } = JSON.parse(data);
+        //     setOpponent(opponent);
+        // });
+
+        return () => {
+            if (
+                room !== undefined &&
+                hasOpponentRef.current &&
+                winnerRef.current === false &&
+                userNameRef.current !== undefined
+            ) {
+                socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked, gamename }));
+            } else {
                 socket?.emit("leave", { room: room });
-            };
-        }
+            }
+        };
     }, [room, socket]);
 
     useEffect(() => {
@@ -192,6 +244,8 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
         [0, 4, 8],
         [2, 4, 6],
     ];
+
+
 
     return (
         <div>
