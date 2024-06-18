@@ -198,7 +198,7 @@ type BoardProps = {
       return () => {
         socket?.off("playerTurn", OnPlayerTurn);
       };
-    }, [room, board]);
+    }, [room, board, step]);
   
     return (
       <div>

@@ -345,8 +345,11 @@ function Statki({ socket }: StatkiProps) {
                                 </div>
                             ) : null}
                             <br />
-                            <h2 className="leftside">You</h2>
-                            <h2 className="rightside">Opponent</h2>
+                            <div className="playerTitles">
+                                <h2 className="leftSide">You</h2>
+                                <div></div>
+                                <h2 className="rightSide">Opponent</h2>
+                            </div>
                             <br />
                             <div className="box">
                                 <div className="player">
