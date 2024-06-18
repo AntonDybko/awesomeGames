@@ -24,6 +24,7 @@ type BattleshipProps = {
 
 function Battleship({ socket }: BattleshipProps) {
     const { auth } = useAuth();
+    const gamename = "battleships";
     const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
     const [oponentBoard, setOponentBoard] = useState<BoardModel>(new BoardModel(true));
     const [winner, setWinner] = useState<string | undefined>(undefined);
@@ -216,7 +217,7 @@ function Battleship({ socket }: BattleshipProps) {
                 winnerRef.current === undefined &&
                 userNameRef.current !== undefined
             ) {
-                socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked }));
+                socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked, gamename }));
             } else {
                 socket?.emit("leave", { room: room });
             }
@@ -225,7 +226,7 @@ function Battleship({ socket }: BattleshipProps) {
 
     useEffect(() => {
         const OnTimerOut = () => {
-            socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username, isRanked }));
+            socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: auth.username, isRanked, gamename }));
         };
         if (room !== null && playerSide !== undefined && !winner) {
             socket?.on("timerOut", OnTimerOut);
@@ -272,7 +273,7 @@ function Battleship({ socket }: BattleshipProps) {
     }, [timer, hasOpponent]);
 
     const giveUp = () => {
-        socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked }));
+        socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked, gamename }));
     };
 
     return (
