@@ -11,195 +11,180 @@ import { BoardId } from "models/statki/BoardId";
 import AuthProps from "interfaces/Auth";
 
 type BoardProps = {
-  id: string;
-  board: BoardModel;
-  onSetBoard: (board: BoardModel) => void;
-  currentPlayer: PlayerModel;
-  onChangePlayer: () => void;
-  hasOpponent: boolean;
-  room: string | null;
-  socket: Socket | null;
-  playerSide: Labels | undefined;
-  lightPlayer: PlayerModel;
-  darkPlayer: PlayerModel;
-  onChangeLightPlayerBreakThrough: (x: number) => void;
-  onChangeDarkPlayerBreakThrough: (x: number) => void;
-  auth: AuthProps;
-  onSetTimer: (x: number) => void;
-  onIncrementStep: () => void;
-  step: number;
+    id: string;
+    board: BoardModel;
+    onSetBoard: (board: BoardModel) => void;
+    currentPlayer: PlayerModel;
+    onChangePlayer: () => void;
+    hasOpponent: boolean;
+    room: string | null;
+    socket: Socket | null;
+    playerSide: Labels | undefined;
+    lightPlayer: PlayerModel;
+    darkPlayer: PlayerModel;
+    turnReady: Boolean;
+    onChangeLightPlayerBreakThrough: (x: number) => void;
+    onChangeDarkPlayerBreakThrough: (x: number) => void;
+    onChangeTurnReady: (x: boolean) => void;
+    auth: AuthProps;
+    onSetTimer: (x: number) => void;
+    onIncrementStep: () => void;
+    step: number;
 };
 
 export const Board = ({
-  id,
-  board,
-  onSetBoard,
-  currentPlayer,
-  onChangePlayer,
-  hasOpponent,
-  room,
-  socket,
-  playerSide,
-  lightPlayer,
-  darkPlayer,
-  onChangeLightPlayerBreakThrough,
-  onChangeDarkPlayerBreakThrough,
-  auth,
-  onSetTimer,
-  onIncrementStep,
-  step,
+    id,
+    board,
+    onSetBoard,
+    currentPlayer,
+    onChangePlayer,
+    hasOpponent,
+    room,
+    socket,
+    playerSide,
+    lightPlayer,
+    darkPlayer,
+    turnReady,
+    onChangeLightPlayerBreakThrough,
+    onChangeDarkPlayerBreakThrough,
+    onChangeTurnReady,
+    auth,
+    onSetTimer,
+    onIncrementStep,
+    step,
 }: BoardProps): ReactElement => {
-  const handleCellClick = (cell: CellModel) => {
-    if (
-      playerSide === currentPlayer.label &&
-      hasOpponent &&
-      cell.hidden === true
-    ) {
-      onChangePlayer();
+    const handleCellClick = (cell: CellModel) => {
+        if (playerSide === currentPlayer.label && hasOpponent && cell.hidden === true && turnReady) {
+            onChangeTurnReady(false);
+            onChangePlayer();
 
-      if (playerSide === Labels.Light) {
-        socket?.emit(
-          "attackDark",
-          JSON.stringify({
-            attackedCellKey: cell.key,
-            room: room,
-            playerName: auth.username,
-          })
-        );
-      } else if (playerSide === Labels.Dark) {
-        socket?.emit(
-          "attackLight",
-          JSON.stringify({
-            attackedCellKey: cell.key,
-            room: room,
-            playerName: auth.username,
-          })
-        );
-      }
-    }
-  };
-
-  const updateBoard = () => {
-    const updatedBoard = board.updateBoard();
-    onSetBoard(updatedBoard);
-  };
-
-  useEffect(() => {
-    const OnReceiveAttack = (json: string) => {
-      if (id === BoardId.player) {
-        onIncrementStep();
-
-        let event = "";
-        if (playerSide === Labels.Light) event = "responseToAttackLight";
-        else if (playerSide === Labels.Dark) event = "responseToAttackDark";
-
-        const { attackedCellKey, room } = JSON.parse(json);
-        const [x, y] = splitKey(attackedCellKey);
-        const attackedCell = board.getCell(x, y);
-        //
-        if (
-          attackedCell.ship !== null &&
-          attackedCell.ship.destroyed === false
-        ) {
-          attackedCell.attack();
-          socket?.emit(
-            event,
-            JSON.stringify({ ship: true, attackedCellKey, room })
-          );
-          const bt = increasedBreaktThrough(
-            currentPlayer,
-            lightPlayer,
-            darkPlayer
-          );
-          socket?.emit(
-            "reqTurn",
-            JSON.stringify({ lk: bt.light, dk: bt.dark, room })
-          );
-        } else if (attackedCell.ship === null) {
-          attackedCell.attack();
-          socket?.emit(
-            event,
-            JSON.stringify({ ship: false, attackedCellKey, room })
-          );
-          socket?.emit(
-            "reqTurn",
-            JSON.stringify({
-              lk: lightPlayer.breakthrough,
-              dk: darkPlayer.breakthrough,
-              room,
-            })
-          );
+            if (playerSide === Labels.Light) {
+                socket?.emit(
+                    "attackDark",
+                    JSON.stringify({
+                        attackedCellKey: cell.key,
+                        room: room,
+                        playerName: auth.username,
+                    })
+                );
+            } else if (playerSide === Labels.Dark) {
+                socket?.emit(
+                    "attackLight",
+                    JSON.stringify({
+                        attackedCellKey: cell.key,
+                        room: room,
+                        playerName: auth.username,
+                    })
+                );
+            }
         }
-      }
-    };
-    const OnReceiveReponseToAttack = (json: string) => {
-      if (id === BoardId.oponent) {
-        onIncrementStep();
-
-        const { ship, attackedCellKey, room } = JSON.parse(json);
-        const [x, y] = splitKey(attackedCellKey);
-        const attackedCell = board.getCell(x, y);
-        attackedCell.attack(ship);
-      }
     };
 
-    if (playerSide === Labels.Light) {
-      socket?.on("receiveAttackLight", OnReceiveAttack);
-      socket?.on("receiveResponseToAttackDark", OnReceiveReponseToAttack);
-    } else if (playerSide === Labels.Dark) {
-      socket?.on("receiveAttackDark", OnReceiveAttack);
-      socket?.on("receiveResponseToAttackLight", OnReceiveReponseToAttack);
-    }
-
-    return () => {
-      if (playerSide === Labels.Light) {
-        socket?.off("receiveAttackLight", OnReceiveAttack);
-        socket?.off("receiveReponseToAttackDark", OnReceiveReponseToAttack);
-      } else if (playerSide === Labels.Dark) {
-        socket?.off("receiveAttackDark", OnReceiveAttack);
-        socket?.off("receiveReponseToAttackLight", OnReceiveReponseToAttack);
-      }
-    };
-  }, [board, step, socket]);
-
-  useEffect(() => {
-    const OnPlayerTurn = (json: string): void => {
-      const req = JSON.parse(json);
-      onChangeLightPlayerBreakThrough(req.lk);
-      onChangeDarkPlayerBreakThrough(req.dk);
-
-      onSetTimer(60);
-      if (id === BoardId.player && currentPlayer.label !== playerSide) {
-        socket?.emit(
-          "startTimer",
-          JSON.stringify({ room, playerName: auth.username, step })
-        );
-
-        onChangePlayer();
-        updateBoard();
-      } else if (id === BoardId.player && currentPlayer.label === playerSide) {
-        updateBoard();
-      }
+    const updateBoard = () => {
+        const updatedBoard = board.updateBoard();
+        onSetBoard(updatedBoard);
     };
 
-    socket?.on("playerTurn", OnPlayerTurn);
+    useEffect(() => {
+        const OnReceiveAttack = (json: string) => {
+            if (id === BoardId.player) {
+                onIncrementStep();
 
-    return () => {
-      socket?.off("playerTurn", OnPlayerTurn);
-    };
-  }, [room, board, step, socket]);
+                let event = "";
+                if (playerSide === Labels.Light) event = "responseToAttackLight";
+                else if (playerSide === Labels.Dark) event = "responseToAttackDark";
 
-  return (
-    <div>
-      <div className={mergeClasses("board", id)}>
-        {board.cells.map((row, rowIndex) => (
-          <Fragment key={rowIndex}>
-            {row.map((cell, cellIndex) => (
-              <Cell cell={cell} key={cell.key} onCellClick={handleCellClick} />
-            ))}
-          </Fragment>
-        ))}
-      </div>
-    </div>
-  );
+                const { attackedCellKey, room } = JSON.parse(json);
+                const [x, y] = splitKey(attackedCellKey);
+                const attackedCell = board.getCell(x, y);
+                //
+                if (attackedCell.ship !== null && attackedCell.ship.destroyed === false) {
+                    attackedCell.attack();
+                    socket?.emit(event, JSON.stringify({ ship: true, attackedCellKey, room }));
+                    const bt = increasedBreaktThrough(currentPlayer, lightPlayer, darkPlayer);
+                    socket?.emit("reqTurn", JSON.stringify({ lk: bt.light, dk: bt.dark, room }));
+                } else if (attackedCell.ship === null) {
+                    attackedCell.attack();
+                    socket?.emit(event, JSON.stringify({ ship: false, attackedCellKey, room }));
+                    socket?.emit(
+                        "reqTurn",
+                        JSON.stringify({
+                            lk: lightPlayer.breakthrough,
+                            dk: darkPlayer.breakthrough,
+                            room,
+                        })
+                    );
+                }
+            }
+        };
+        const OnReceiveReponseToAttack = (json: string) => {
+            if (id === BoardId.oponent) {
+                onIncrementStep();
+
+                const { ship, attackedCellKey, room } = JSON.parse(json);
+                const [x, y] = splitKey(attackedCellKey);
+                const attackedCell = board.getCell(x, y);
+                attackedCell.attack(ship);
+            }
+        };
+
+        if (playerSide === Labels.Light) {
+            socket?.on("receiveAttackLight", OnReceiveAttack);
+            socket?.on("receiveResponseToAttackDark", OnReceiveReponseToAttack);
+        } else if (playerSide === Labels.Dark) {
+            socket?.on("receiveAttackDark", OnReceiveAttack);
+            socket?.on("receiveResponseToAttackLight", OnReceiveReponseToAttack);
+        }
+
+        return () => {
+            if (playerSide === Labels.Light) {
+                socket?.off("receiveAttackLight", OnReceiveAttack);
+                socket?.off("receiveReponseToAttackDark", OnReceiveReponseToAttack);
+            } else if (playerSide === Labels.Dark) {
+                socket?.off("receiveAttackDark", OnReceiveAttack);
+                socket?.off("receiveReponseToAttackLight", OnReceiveReponseToAttack);
+            }
+        };
+    }, [board, step, socket]);
+
+    useEffect(() => {
+        const OnPlayerTurn = (json: string): void => {
+            const req = JSON.parse(json);
+            onChangeLightPlayerBreakThrough(req.lk);
+            onChangeDarkPlayerBreakThrough(req.dk);
+
+            console.log(req.lk, req.dk);
+
+            onSetTimer(60);
+            if (id === BoardId.player && currentPlayer.label !== playerSide) {
+                socket?.emit("startTimer", JSON.stringify({ room, playerName: auth.username, step }));
+
+                onChangePlayer();
+                updateBoard();
+            } else if (id === BoardId.player && currentPlayer.label === playerSide) {
+                updateBoard();
+            }
+            onChangeTurnReady(true);
+        };
+
+        socket?.on("playerTurn", OnPlayerTurn);
+
+        return () => {
+            socket?.off("playerTurn", OnPlayerTurn);
+        };
+    }, [room, board, step, socket]);
+
+    return (
+        <div>
+            <div className={mergeClasses("board", id)}>
+                {board.cells.map((row, rowIndex) => (
+                    <Fragment key={rowIndex}>
+                        {row.map((cell, cellIndex) => (
+                            <Cell cell={cell} key={cell.key} onCellClick={handleCellClick} />
+                        ))}
+                    </Fragment>
+                ))}
+            </div>
+        </div>
+    );
 };

@@ -19,9 +19,9 @@ interface LocationState {
 
 type StatkiProps = {
     socket: Socket | null;
-}
+};
 
-function Statki ({socket}: StatkiProps) {
+function Statki({ socket }: StatkiProps) {
     const { auth } = useAuth();
     const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
     const [oponentBoard, setOponentBoard] = useState<BoardModel>(new BoardModel(true));
@@ -36,6 +36,7 @@ function Statki ({socket}: StatkiProps) {
     const [timer, setTimer] = useState<number>(60);
     const [step, setStep] = useState<number>(0);
     const [opponent, setOpponent] = useState<string | undefined>(undefined);
+    const [turnReady, setTurnReady] = useState<Boolean>(true);
 
     const location = useLocation();
     const state = location.state as LocationState;
@@ -52,11 +53,9 @@ function Statki ({socket}: StatkiProps) {
     const winnerRef = useRef<string | undefined>(undefined);
     const opponentRef = useRef<string | undefined>(undefined);
 
-
     useEffect(() => {
         userNameRef.current = auth.username;
     }, [auth.username]);
-
 
     useEffect(() => {
         hasOpponentRef.current = hasOpponent;
@@ -86,6 +85,10 @@ function Statki ({socket}: StatkiProps) {
 
     const changeDarkPlayerBreakThrough = (x: number) => {
         setDarkPlayer(new PlayerModel(Labels.Dark, x));
+    };
+
+    const changeTurnReady = (x: boolean) => {
+        setTurnReady(x);
     };
 
     useEffect(() => {
@@ -193,7 +196,6 @@ function Statki ({socket}: StatkiProps) {
         setCurrentPlayer(lightPlayer);
 
         return () => {
-
             socket?.off("observerJoined", onObserverJoined);
             socket?.off("wrongRoom", onWrongRoom);
             socket?.off("oponentLost", onOponentLost);
@@ -210,7 +212,7 @@ function Statki ({socket}: StatkiProps) {
             ) {
                 socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked }));
             } else {
-                socket?.emit("leave", { room: room  });
+                socket?.emit("leave", { room: room });
             }
         };
     }, [socket, room]);
@@ -269,21 +271,11 @@ function Statki ({socket}: StatkiProps) {
 
     return (
         <div className="statki">
-            {!isRanked ? 
-                    <div>Room: {room}</div> : ''
-            }
-            {!isRanked ? 
-                    <div>Side: {playerSide}</div> : ''
-            }
-            <div>
-                User: {userNameRef.current}
-            </div>
-            <div>
-                Opponent: {opponentRef.current}
-            </div>
-            <div>
-                Winner: {winnerRef.current}
-            </div>
+            {!isRanked ? <div>Room: {room}</div> : ""}
+            {!isRanked ? <div>Side: {playerSide}</div> : ""}
+            <div>User: {userNameRef.current}</div>
+            <div>Opponent: {opponentRef.current}</div>
+            <div>Winner: {winnerRef.current}</div>
             {status === Status.WrongRoom ? (
                 <h1>This room does not exist</h1>
             ) : playerSide === Labels.Neutral ? (
@@ -305,13 +297,15 @@ function Statki ({socket}: StatkiProps) {
                     ) : (
                         <div>
                             <div>'Waiting for opponent...'</div>
-                            {!isRanked ? 
+                            {!isRanked ? (
                                 <div>
                                     <button className="btn" onClick={() => setShare(!share)}>
                                         Share
                                     </button>
-                                </div> : ''
-                            }
+                                </div>
+                            ) : (
+                                ""
+                            )}
                         </div>
                     )}
                     {share ? (
@@ -346,8 +340,10 @@ function Statki ({socket}: StatkiProps) {
                             socket={socket}
                             lightPlayer={lightPlayer}
                             darkPlayer={darkPlayer}
+                            turnReady={turnReady}
                             onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                             onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                            onChangeTurnReady={changeTurnReady}
                             auth={auth}
                             onSetTimer={setTimer}
                             onIncrementStep={incrementStep}
@@ -365,8 +361,10 @@ function Statki ({socket}: StatkiProps) {
                             socket={socket}
                             lightPlayer={lightPlayer}
                             darkPlayer={darkPlayer}
+                            turnReady={turnReady}
                             onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                             onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                            onChangeTurnReady={changeTurnReady}
                             auth={auth}
                             onSetTimer={setTimer}
                             onIncrementStep={incrementStep}
