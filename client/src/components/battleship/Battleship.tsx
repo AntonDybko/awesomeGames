@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import "./Battleship.scss";
 import { Board } from "./board/Board";
-import BoardModel from "../../models/statki/BoardModel";
-import { Labels } from "models/statki/Labels";
-import { PlayerModel } from "models/statki/PlayerModel";
+import BoardModel from "../../models/battleship/BoardModel";
+import { Labels } from "models/battleship/Labels";
+import { PlayerModel } from "models/battleship/PlayerModel";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
 import { initBoard } from "utils/utils";
-import { BoardId } from "models/statki/BoardId";
-import { Status } from "models/statki/Status";
+import { BoardId } from "models/battleship/BoardId";
+import { Status } from "models/battleship/Status";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
@@ -38,7 +38,6 @@ function Statki({ socket }: StatkiProps) {
     const [timer, setTimer] = useState<number>(60);
     const [step, setStep] = useState<number>(0);
     const [opponent, setOpponent] = useState<string | undefined>(undefined);
-    const [turnReady, setTurnReady] = useState<Boolean>(true);
 
     const location = useLocation();
     const state = location.state as LocationState;
@@ -88,10 +87,6 @@ function Statki({ socket }: StatkiProps) {
 
     const changeDarkPlayerBreakThrough = (x: number) => {
         setDarkPlayer(new PlayerModel(Labels.Dark, x));
-    };
-
-    const changeTurnReady = (x: boolean) => {
-        setTurnReady(x);
     };
 
     const cancelMatchmaking = () => {
@@ -355,10 +350,8 @@ function Statki({ socket }: StatkiProps) {
                                     socket={socket}
                                     lightPlayer={lightPlayer}
                                     darkPlayer={darkPlayer}
-                                    turnReady={turnReady}
                                     onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                                     onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                                    onChangeTurnReady={changeTurnReady}
                                     auth={auth}
                                     onSetTimer={setTimer}
                                     onIncrementStep={incrementStep}
@@ -376,10 +369,8 @@ function Statki({ socket }: StatkiProps) {
                                     socket={socket}
                                     lightPlayer={lightPlayer}
                                     darkPlayer={darkPlayer}
-                                    turnReady={turnReady}
                                     onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
                                     onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                                    onChangeTurnReady={changeTurnReady}
                                     auth={auth}
                                     onSetTimer={setTimer}
                                     onIncrementStep={incrementStep}
