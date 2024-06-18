@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import "./Battleship.scss";
 import { Board } from "./board/Board";
-import BoardModel from "../../models/battleship/BoardModel";
-import { Labels } from "models/battleship/Labels";
-import { PlayerModel } from "models/battleship/PlayerModel";
+import BoardModel from "../../models/statki/BoardModel";
+import { Labels } from "models/statki/Labels";
+import { PlayerModel } from "models/statki/PlayerModel";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router-dom";
 import { initBoard } from "utils/utils";
-import { BoardId } from "models/battleship/BoardId";
-import { Status } from "models/battleship/Status";
+import { BoardId } from "models/statki/BoardId";
+import { Status } from "models/statki/Status";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
@@ -18,11 +18,11 @@ interface LocationState {
     isRanked?: boolean;
 }
 
-type BattleshipProps = {
+type StatkiProps = {
     socket: Socket | null;
 };
 
-function Battleship({ socket }: BattleshipProps) {
+function Statki({ socket }: StatkiProps) {
     const { auth } = useAuth();
     const gamename = "battleships";
     const [board, setBoard] = useState<BoardModel>(new BoardModel(false));
@@ -397,4 +397,4 @@ function Battleship({ socket }: BattleshipProps) {
     );
 }
 
-export default Battleship;
+export default Statki;

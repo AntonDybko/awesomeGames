@@ -1,7 +1,7 @@
-import BoardModel from "models/battleship/BoardModel";
-import { Labels } from "models/battleship/Labels";
-import CellModel from '../models/battleship/CellModel'
-import { PlayerModel } from "models/battleship/PlayerModel";
+import BoardModel from "models/statki/BoardModel";
+import { Labels } from "models/statki/Labels";
+import CellModel from '../models/statki/CellModel'
+import { PlayerModel } from "models/statki/PlayerModel";
 
 const mergeClasses = (...rest: string[]): string => {
     return rest.join(' ');
