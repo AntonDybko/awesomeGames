@@ -4,6 +4,7 @@ import Games from 'components/games/Games';
 import Ranking from 'components/ranking/Ranking';
 import Profile from 'components/profile/Profile';
 import Mastermind from 'components/mastermind/Mastermind';
+import TicTacToePage from 'components/tictactoe-page/TicTacToePage';
 import TicTacToe from 'components/tictactoe/TicTacToe';
 import SessionPersistence from "components/other/SessionPersistence";
 import RequireAuth from "components/other/RequireAuth";
@@ -23,7 +24,8 @@ export const Routing: React.FC<RoutingProps> = ({socket}) => {
           <Route path="/games" element={<Games />} />
           <Route path="/games/mastermind" element={<Mastermind />} />
           <Route path="/games/statki" element={<Statki socket={socket}/>} />
-          <Route path="/games/tictactoe" element={<TicTacToe socket={socket}/>} />
+          <Route path="/games/tictactoe" element={<TicTacToePage socket={socket}/>} />
+          <Route path="/games/tictactoe/:id" element={<TicTacToe socket={socket}/>} />
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/profile/:userId/*" element={<Profile />} />
         </Route>

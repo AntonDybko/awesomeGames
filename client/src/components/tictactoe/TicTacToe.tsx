@@ -5,6 +5,7 @@ import { Socket } from "socket.io-client";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
+import './TicTacToe.scss';
 
 interface LocationState {
     isRanked?: boolean;
@@ -57,7 +58,6 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
         setMyTurn(false);
 
         if (firstPlayer === socket?.id) {
-            console.log("to ja");
             setMyTurn(true);
             setXO("X");
         } else {
@@ -67,7 +67,6 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
     };
 
     useEffect(() => {
-        console.log("Hello from the Effect!!!");
 
         combinations.forEach((c) => {
             if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
@@ -98,7 +97,6 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
             setShare(false);
 
             if (data.firstPlayer === socket?.id) {
-                console.log("to ja");
                 setMyTurn(true);
             } else {
                 setMyTurn(false);
@@ -110,13 +108,11 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
             setRoom(data.room);
 
             if (data.firstPlayer === socket?.id) {
-                console.log("to ja");
                 setMyTurn(true);
             } else {
                 setMyTurn(false);
                 setXO("O");
             }
-            console.log("matchfound");
             setHasOpponent(true);
         });
 

@@ -5,7 +5,11 @@ import initGames from "./helpers/dbHelp/initGames";
 
 mongoose.set("strictQuery", false);
 
-const mongoConnectionURL = `mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
+let mongoConnectionURL = process.env.NODE_ENV === "production"
+    ? dbConfig.uri
+    : `mongodb://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
+
+
 
 mongoose
     .connect(mongoConnectionURL, {
