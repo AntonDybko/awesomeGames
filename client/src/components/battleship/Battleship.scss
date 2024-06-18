@@ -16,14 +16,20 @@
         }
     }
 
-    .leftside {
-        left: 15%;
-        position: absolute;
-    }
+    .playerTitles {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        .leftSide {
+            display: flex;
+            justify-self: center;
+            margin-left: 75px;
+        }
 
-    .rightside {
-        left: 75%;
-        position: absolute;
+        .rightSide {
+            display: flex;
+            justify-self: center;
+            margin-right: 75px;
+        }
     }
 
     .timer {
@@ -34,6 +40,7 @@
 
     .chat {
         margin: auto;
-        width: 300px;
+        width: 320px;
+        margin-bottom: 5px;
     }
 }

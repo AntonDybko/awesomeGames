@@ -5,6 +5,7 @@ export class Room {
     players: { [playerName: string]: Player } = {};
     rating: number;
     game: string;
+    lock: boolean = false;
 
     constructor(g: string, r: number = NaN) {
         // this.step = s;

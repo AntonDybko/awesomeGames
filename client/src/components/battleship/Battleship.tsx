@@ -13,6 +13,7 @@ import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
 import { Socket } from "socket.io-client";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 
 interface LocationState {
     isRanked?: boolean;
@@ -54,6 +55,11 @@ function Statki({ socket }: StatkiProps) {
     const userNameRef = useRef<string | undefined>(undefined);
     const winnerRef = useRef<string | undefined>(undefined);
     const opponentRef = useRef<string | undefined>(undefined);
+    const stepRef = useRef<number>(0)
+
+    useEffect(() => {
+        stepRef.current = step;
+    }, [step]);
 
     useEffect(() => {
         userNameRef.current = auth.username;
@@ -256,6 +262,19 @@ function Statki({ socket }: StatkiProps) {
     }, [room, socket]);
 
     useEffect(() => {
+        const onTimeOut = () => {
+            changePlayer();
+            toast.error(`Wait`);
+        }
+
+        socket?.on("timeout", onTimeOut)
+
+        return () => {
+            socket?.off("timeout", onTimeOut)
+        }
+    }, [socket])
+
+    useEffect(() => {
         if (hasOpponent) {
             const timeout = setTimeout(() => {
                 setTimer(timer - 1);
@@ -326,8 +345,11 @@ function Statki({ socket }: StatkiProps) {
                                 </div>
                             ) : null}
                             <br />
-                            <h2 className="leftside">You</h2>
-                            <h2 className="rightside">Opponent</h2>
+                            <div className="playerTitles">
+                                <h2 className="leftSide">You</h2>
+                                <div></div>
+                                <h2 className="rightSide">Opponent</h2>
+                            </div>
                             <br />
                             <div className="box">
                                 <div className="player">
@@ -354,8 +376,10 @@ function Statki({ socket }: StatkiProps) {
                                     onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                                     auth={auth}
                                     onSetTimer={setTimer}
-                                    onIncrementStep={incrementStep}
-                                    step={step}
+                                    //onIncrementStep={incrementStep}
+                                    // step={step}
+                                    onIncrementStep={setStep}
+                                    step={stepRef}
                                 />
                                 <Board
                                     id={BoardId.oponent}
@@ -373,8 +397,10 @@ function Statki({ socket }: StatkiProps) {
                                     onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                                     auth={auth}
                                     onSetTimer={setTimer}
-                                    onIncrementStep={incrementStep}
-                                    step={step}
+                                    // onIncrementStep={incrementStep}
+                                    // step={step}
+                                    onIncrementStep={setStep}
+                                    step={stepRef}
                                 />
                             </div>
                             <div className="chat">
@@ -384,6 +410,19 @@ function Statki({ socket }: StatkiProps) {
                     )}
                 </div>
             )}
+            <ToastContainer
+                            position="top-center"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="light"
+                            transition={Bounce}
+                        />
         </div>
     );
 }
