@@ -27,7 +27,7 @@ const Games = () => {
         <Card
           title="Battleships"
           description="Prepare for a naval showdown as you deploy your fleet and engage in a battle of wits."
-          linkTo="/games/statki"
+          linkTo="/games/battleship"
           buttonText="Multiplayer"
           IconComponent={DirectionsBoatIcon}
         />

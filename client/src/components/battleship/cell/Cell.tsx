@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import './Cell.scss';
 import { mergeClasses } from '../../../utils/utils';
-import CellModel from 'models/statki/CellModel';
+import CellModel from 'models/battleship/CellModel';
 
 type CellProps = {
     cell: CellModel;

@@ -1,13 +1,13 @@
 import { Fragment, ReactElement, useEffect } from "react";
 import "./Board.scss";
 import { Cell } from "../cell/Cell";
-import BoardModel from "models/statki/BoardModel";
-import CellModel from "models/statki/CellModel";
-import { PlayerModel } from "models/statki/PlayerModel";
+import BoardModel from "models/battleship/BoardModel";
+import CellModel from "models/battleship/CellModel";
+import { PlayerModel } from "models/battleship/PlayerModel";
 import { Socket } from "socket.io-client";
 import { increasedBreaktThrough, mergeClasses, splitKey } from "utils/utils";
-import { Labels } from "models/statki/Labels";
-import { BoardId } from "models/statki/BoardId";
+import { Labels } from "models/battleship/Labels";
+import { BoardId } from "models/battleship/BoardId";
 import AuthProps from "interfaces/Auth";
 
 type BoardProps = {
@@ -145,7 +145,7 @@ export const Board = ({
                 socket?.off("receiveReponseToAttackLight", OnReceiveReponseToAttack);
             }
         };
-    }, [board, step, socket]);
+    }, [board, step/*, socket*/]);
 
     useEffect(() => {
         const OnPlayerTurn = (json: string): void => {
