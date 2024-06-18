@@ -5,6 +5,7 @@ import BoardModel from "../../models/battleship/BoardModel";
 import { Labels } from "models/battleship/Labels";
 import { PlayerModel } from "models/battleship/PlayerModel";
 import { useLocation } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { initBoard } from "utils/utils";
 import { BoardId } from "models/battleship/BoardId";
 import { Status } from "models/battleship/Status";
@@ -46,6 +47,7 @@ function Battleship({ socket }: BattleshipProps) {
     const [room, setRoom] = useState(paramsRoom);
 
     const uid = new ShortUniqueId({ length: 10 });
+    const navigate = useNavigate();
 
     //refs
     const hasOpponentRef = useRef(false);
@@ -89,6 +91,10 @@ function Battleship({ socket }: BattleshipProps) {
 
     const changeTurnReady = (x: boolean) => {
         setTurnReady(x);
+    };
+
+    const cancelMatchmaking = () => {
+        navigate("/games");
     };
 
     useEffect(() => {
@@ -270,110 +276,120 @@ function Battleship({ socket }: BattleshipProps) {
     };
 
     return (
-        <div className="statki">
-            {!isRanked ? <div>Room: {room}</div> : ""}
-            {!isRanked ? <div>Side: {playerSide}</div> : ""}
-            <div>User: {userNameRef.current}</div>
-            <div>Opponent: {opponentRef.current}</div>
-            <div>Winner: {winnerRef.current}</div>
-            {status === Status.WrongRoom ? (
-                <h1>This room does not exist</h1>
-            ) : playerSide === Labels.Neutral ? (
-                <h1>This game does not provide viewer mod.</h1>
-            ) : winnerRef.current !== undefined ? (
-                <h1>{winnerRef.current} wins!</h1>
-            ) : (
+        <div>
+            {isRanked && !hasOpponent ? (
                 <div>
-                    {hasOpponent ? (
-                        playerSide !== undefined && room !== undefined ? (
-                            <div>
-                                <button className="btn" onClick={() => giveUp()}>
-                                    Give Up
-                                </button>
-                            </div>
-                        ) : (
-                            ""
-                        )
+                    <div>Searching for worthy opponent...</div>
+                    <button onClick={cancelMatchmaking}>Cancel</button>
+                </div>
+            ) : (
+                <div className="statki">
+                    {!isRanked ? <div>Room: {room}</div> : ""}
+                    {!isRanked ? <div>Side: {playerSide}</div> : ""}
+                    <div>User: {userNameRef.current}</div>
+                    <div>Opponent: {opponentRef.current}</div>
+                    <div>Winner: {winnerRef.current}</div>
+                    {status === Status.WrongRoom ? (
+                        <h1>This room does not exist</h1>
+                    ) : playerSide === Labels.Neutral ? (
+                        <h1>This game does not provide viewer mod.</h1>
+                    ) : winnerRef.current !== undefined ? (
+                        <h1>{winnerRef.current} wins!</h1>
                     ) : (
                         <div>
-                            <div>'Waiting for opponent...'</div>
-                            {!isRanked ? (
-                                <div>
-                                    <button className="btn" onClick={() => setShare(!share)}>
-                                        Share
-                                    </button>
-                                </div>
+                            {hasOpponent ? (
+                                playerSide !== undefined && room !== undefined ? (
+                                    <div>
+                                        <button className="btn" onClick={() => giveUp()}>
+                                            Give Up
+                                        </button>
+                                    </div>
+                                ) : (
+                                    ""
+                                )
                             ) : (
-                                ""
+                                <div>
+                                    <div>'Waiting for opponent...'</div>
+                                    {!isRanked ? (
+                                        <div>
+                                            <button className="btn" onClick={() => setShare(!share)}>
+                                                Share
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        ""
+                                    )}
+                                </div>
                             )}
+                            {share ? (
+                                <div>
+                                    <br />
+                                    <br />
+                                    Share link:{" "}
+                                    <input type="text" value={`${window.location.href}?room=${room}`} readOnly />
+                                </div>
+                            ) : null}
+                            <br />
+                            <h2 className="leftside">You</h2>
+                            <h2 className="rightside">Opponent</h2>
+                            <br />
+                            <div className="box">
+                                <div className="player">
+                                    Current player: {currentPlayer.label === playerSide ? "You" : "Opponent"}
+                                </div>
+                                {hasOpponent ? <div className="timer">{timer}</div> : ""}
+                            </div>
+                            <br></br>
+                            <br></br>
+                            <div>
+                                <Board
+                                    id={BoardId.player}
+                                    board={board}
+                                    onSetBoard={setBoard}
+                                    currentPlayer={currentPlayer}
+                                    onChangePlayer={changePlayer}
+                                    hasOpponent={false}
+                                    playerSide={playerSide}
+                                    room={room}
+                                    socket={socket}
+                                    lightPlayer={lightPlayer}
+                                    darkPlayer={darkPlayer}
+                                    turnReady={turnReady}
+                                    onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                                    onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                                    onChangeTurnReady={changeTurnReady}
+                                    auth={auth}
+                                    onSetTimer={setTimer}
+                                    onIncrementStep={incrementStep}
+                                    step={step}
+                                />
+                                <Board
+                                    id={BoardId.oponent}
+                                    board={oponentBoard}
+                                    onSetBoard={setOponentBoard}
+                                    currentPlayer={currentPlayer}
+                                    onChangePlayer={changePlayer}
+                                    hasOpponent={hasOpponent}
+                                    playerSide={playerSide}
+                                    room={room}
+                                    socket={socket}
+                                    lightPlayer={lightPlayer}
+                                    darkPlayer={darkPlayer}
+                                    turnReady={turnReady}
+                                    onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                                    onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                                    onChangeTurnReady={changeTurnReady}
+                                    auth={auth}
+                                    onSetTimer={setTimer}
+                                    onIncrementStep={incrementStep}
+                                    step={step}
+                                />
+                            </div>
+                            <div className="chat">
+                                <Chat room={room} socket={socket}></Chat>
+                            </div>
                         </div>
                     )}
-                    {share ? (
-                        <div>
-                            <br />
-                            <br />
-                            Share link: <input type="text" value={`${window.location.href}?room=${room}`} readOnly />
-                        </div>
-                    ) : null}
-                    <br />
-                    <h2 className="leftside">You</h2>
-                    <h2 className="rightside">Opponent</h2>
-                    <br />
-                    <div className="box">
-                        <div className="player">
-                            Current player: {currentPlayer.label === playerSide ? "You" : "Opponent"}
-                        </div>
-                        {hasOpponent ? <div className="timer">{timer}</div> : ""}
-                    </div>
-                    <br></br>
-                    <br></br>
-                    <div>
-                        <Board
-                            id={BoardId.player}
-                            board={board}
-                            onSetBoard={setBoard}
-                            currentPlayer={currentPlayer}
-                            onChangePlayer={changePlayer}
-                            hasOpponent={false}
-                            playerSide={playerSide}
-                            room={room}
-                            socket={socket}
-                            lightPlayer={lightPlayer}
-                            darkPlayer={darkPlayer}
-                            turnReady={turnReady}
-                            onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
-                            onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                            onChangeTurnReady={changeTurnReady}
-                            auth={auth}
-                            onSetTimer={setTimer}
-                            onIncrementStep={incrementStep}
-                            step={step}
-                        />
-                        <Board
-                            id={BoardId.oponent}
-                            board={oponentBoard}
-                            onSetBoard={setOponentBoard}
-                            currentPlayer={currentPlayer}
-                            onChangePlayer={changePlayer}
-                            hasOpponent={hasOpponent}
-                            playerSide={playerSide}
-                            room={room}
-                            socket={socket}
-                            lightPlayer={lightPlayer}
-                            darkPlayer={darkPlayer}
-                            turnReady={turnReady}
-                            onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
-                            onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                            onChangeTurnReady={changeTurnReady}
-                            auth={auth}
-                            onSetTimer={setTimer}
-                            onIncrementStep={incrementStep}
-                            step={step}
-                        />
-                    </div>
-                    <div className="chat">
-                        <Chat room={room} socket={socket}></Chat>
-                    </div>
                 </div>
             )}
         </div>

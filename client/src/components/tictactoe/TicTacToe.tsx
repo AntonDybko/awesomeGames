@@ -5,17 +5,17 @@ import { Socket } from "socket.io-client";
 import useAuth from "hooks/useAuth";
 import Chat from "components/chat/Chat";
 import ShortUniqueId from "short-unique-id";
-import './TicTacToe.scss';
+import "./TicTacToe.scss";
 
 interface LocationState {
     isRanked?: boolean;
 }
 
-type SocketProps =  {
-    socket: Socket | null
-}
+type SocketProps = {
+    socket: Socket | null;
+};
 
-const TicTacToe: React.FC<SocketProps> = ({socket}) => {
+const TicTacToe: React.FC<SocketProps> = ({ socket }) => {
     const { auth } = useAuth();
     const [game, setGame] = useState<string[]>(Array(9).fill(""));
     const [turnNumber, setTurnNumber] = useState<number>(0);
@@ -67,7 +67,6 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
     };
 
     useEffect(() => {
-
         combinations.forEach((c) => {
             if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
                 setWinner(true);
@@ -203,7 +202,6 @@ const TicTacToe: React.FC<SocketProps> = ({socket}) => {
             ) : (
                 <div className="container">
                     <div className="game">
-                        {isRanked ? <p>This is ranked game</p> : <p>This is normal game</p>}
                         <div>Room: {room}</div>
 
                         {!isRanked ? (
