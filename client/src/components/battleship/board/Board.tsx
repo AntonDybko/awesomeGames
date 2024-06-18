@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, useEffect } from "react";
+import { Dispatch, Fragment, MutableRefObject, ReactElement, SetStateAction, useEffect } from "react";
 import "./Board.scss";
 import { Cell } from "../cell/Cell";
 import BoardModel from "models/battleship/BoardModel";
@@ -26,8 +26,10 @@ type BoardProps = {
     onChangeDarkPlayerBreakThrough: (x: number) => void;
     auth: AuthProps;
     onSetTimer: (x: number) => void;
-    onIncrementStep: () => void;
-    step: number;
+    //onIncrementStep: () => void;
+    // step: number;
+    onIncrementStep: Dispatch<SetStateAction<number>>;
+    step: MutableRefObject<number>
   };
   
   export const Board = ({
@@ -87,7 +89,8 @@ type BoardProps = {
     useEffect(() => {
       const OnReceiveAttack = (json: string) => {
         if (id === BoardId.player) {
-          onIncrementStep();
+          //onIncrementStep();
+          onIncrementStep(step.current + 1);
   
           let event = "";
           if (playerSide === Labels.Light) event = "responseToAttackLight";
@@ -134,33 +137,41 @@ type BoardProps = {
       };
       const OnReceiveReponseToAttack = (json: string) => {
         if (id === BoardId.oponent) {
-          onIncrementStep();
+          //onIncrementStep();
+          onIncrementStep(step.current + 1);
   
           const { ship, attackedCellKey, room } = JSON.parse(json);
           const [x, y] = splitKey(attackedCellKey);
           const attackedCell = board.getCell(x, y);
           attackedCell.attack(ship);
+
+          console.log("attack cell")
+          socket?.emit("unlock-room", room) //here
         }
       };
   
       if (playerSide === Labels.Light) {
+        console.log('Registering listeners for Light');
         socket?.on("receiveAttackLight", OnReceiveAttack);
         socket?.on("receiveResponseToAttackDark", OnReceiveReponseToAttack);
       } else if (playerSide === Labels.Dark) {
+        console.log('Registering listeners for Dark');
         socket?.on("receiveAttackDark", OnReceiveAttack);
         socket?.on("receiveResponseToAttackLight", OnReceiveReponseToAttack);
       }
   
       return () => {
         if (playerSide === Labels.Light) {
+          console.log('Cleaning up listeners for Light');
           socket?.off("receiveAttackLight", OnReceiveAttack);
           socket?.off("receiveReponseToAttackDark", OnReceiveReponseToAttack);
         } else if (playerSide === Labels.Dark) {
+          console.log('Cleaning up listeners for Dark');
           socket?.off("receiveAttackDark", OnReceiveAttack);
           socket?.off("receiveReponseToAttackLight", OnReceiveReponseToAttack);
         }
       };
-    }, [board, step]);
+    }, [board, id]);
   
     useEffect(() => {
       const OnPlayerTurn = (json: string): void => {
@@ -172,7 +183,7 @@ type BoardProps = {
         if (id === BoardId.player && currentPlayer.label !== playerSide) {
           socket?.emit(
             "startTimer",
-            JSON.stringify({ room, playerName: auth.username, step })
+            JSON.stringify({ room, playerName: auth.username, step: step.current })
           );
   
           onChangePlayer();
@@ -187,7 +198,7 @@ type BoardProps = {
       return () => {
         socket?.off("playerTurn", OnPlayerTurn);
       };
-    }, [room, board, step]);
+    }, [room, board]);
   
     return (
       <div>
