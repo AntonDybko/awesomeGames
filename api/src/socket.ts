@@ -15,7 +15,6 @@ const socketManager = (io: Server) => {
     const rooms: { [name: string]: Room } = {};
 
     io.on("connection", (socket) => {
-        console.log(socket.id, " connected")
         socket.on("reqTurn", (data) => {
             const room = JSON.parse(data).room;
             io.to(room).emit("playerTurn", data);
@@ -76,21 +75,20 @@ const socketManager = (io: Server) => {
         });
 
         socket.on("unlock-room", (room) => {
-            console.log(room, " unlocked")
-            rooms[room].lock = false;
+            if(rooms[room] !== undefined){
+                rooms[room].lock = false;
+            }
         })
 
         socket.on("attackLight", (data) => {
             const { attackedCellKey, room, playerName } = JSON.parse(data); 
 
-            //console.log(rooms[room].lock )
-            if(rooms[room].lock === false){ //here
+            if(rooms[room].lock === false){ 
                 rooms[room].lock = true;
                 rooms[room].players[playerName].status = Status.WaitingForOponentMove;
 
                 rooms[room].step += 1;
 
-                console.log("sendReceiveAttackLightEvent")
                 io.to(room).emit("receiveAttackLight", data);
             }else{
                 socket.emit("timeout")
@@ -103,13 +101,11 @@ const socketManager = (io: Server) => {
         socket.on("attackDark", (data) => {
             const { attackedCellKey, room, playerName } = JSON.parse(data); //playerName
 
-            //console.log(rooms[room].lock )
             if(rooms[room].lock === false){ //here
                 rooms[room].players[playerName].status = Status.WaitingForOponentMove;
 
                 rooms[room].step += 1;
 
-                console.log("sendReceiveAttackDarkEvent")
                 io.to(room).emit("receiveAttackDark", data);
             }else{
                 socket.emit("timeout")
@@ -127,7 +123,6 @@ const socketManager = (io: Server) => {
                 rooms[room].players[playerName].status = Status.WaitingForMove;
 
                 setTimeout(() => {
-                    console.log(rooms[room]?.step, step)
                     if (
                         rooms[room] !== undefined &&
                         rooms[room].players[playerName].status === Status.WaitingForMove &&
@@ -228,7 +223,6 @@ const socketManager = (io: Server) => {
         });
 
         socket.on("disconnect", () => {
-            console.log(socket.id, " disconnected")
             socket.disconnect();
         });
     });

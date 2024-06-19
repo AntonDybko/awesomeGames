@@ -22,14 +22,12 @@ export default class CellModel {
     }
 
     attack(destroyedShip?: boolean) {
-        console.log('attack!')
         if(this.hidden) this.hidden = false;
         if(this.ship !== null) this.ship.destroyed = true;
         else if (destroyedShip){
             this.addShip(destroyedShip)
         }
         else {
-            console.log('miss!')
             if(!this.miss) this.miss = true;
         }
     }

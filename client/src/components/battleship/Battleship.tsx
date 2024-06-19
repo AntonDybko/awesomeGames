@@ -384,8 +384,6 @@ function Statki({ socket }: StatkiProps) {
                     onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                     auth={auth}
                     onSetTimer={setTimer}
-                    //onIncrementStep={incrementStep}
-                    // step={step}
                     onIncrementStep={setStep}
                     step={stepRef}
                 />
@@ -405,8 +403,6 @@ function Statki({ socket }: StatkiProps) {
                     onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
                     auth={auth}
                     onSetTimer={setTimer}
-                    // onIncrementStep={incrementStep}
-                    // step={step}
                     onIncrementStep={setStep}
                     step={stepRef}
                 />

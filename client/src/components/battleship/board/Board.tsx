@@ -145,33 +145,28 @@ type BoardProps = {
           const attackedCell = board.getCell(x, y);
           attackedCell.attack(ship);
 
-          console.log("attack cell")
           socket?.emit("unlock-room", room) //here
         }
       };
   
       if (playerSide === Labels.Light) {
-        console.log('Registering listeners for Light');
         socket?.on("receiveAttackLight", OnReceiveAttack);
         socket?.on("receiveResponseToAttackDark", OnReceiveReponseToAttack);
       } else if (playerSide === Labels.Dark) {
-        console.log('Registering listeners for Dark');
         socket?.on("receiveAttackDark", OnReceiveAttack);
         socket?.on("receiveResponseToAttackLight", OnReceiveReponseToAttack);
       }
   
       return () => {
         if (playerSide === Labels.Light) {
-          console.log('Cleaning up listeners for Light');
           socket?.off("receiveAttackLight", OnReceiveAttack);
           socket?.off("receiveReponseToAttackDark", OnReceiveReponseToAttack);
         } else if (playerSide === Labels.Dark) {
-          console.log('Cleaning up listeners for Dark');
           socket?.off("receiveAttackDark", OnReceiveAttack);
           socket?.off("receiveReponseToAttackLight", OnReceiveReponseToAttack);
         }
       };
-    }, [board, id]);
+    }, [board]);
   
     useEffect(() => {
       const OnPlayerTurn = (json: string): void => {

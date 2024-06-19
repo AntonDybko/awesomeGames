@@ -21,7 +21,6 @@ export default class BoardModel {
             }
             this.cells.push(row);
         }
-        console.log(this.cells.length, ':', this.cells[0].length)
     }
 
     addShips() {

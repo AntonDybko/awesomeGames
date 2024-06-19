@@ -106,7 +106,6 @@ const createBoard = (): number[][] => {
                     str += "O"
                 }
             })
-            console.log(str)
         })
     }
 
