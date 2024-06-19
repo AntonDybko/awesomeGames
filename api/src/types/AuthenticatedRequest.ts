@@ -1,5 +1,4 @@
 import { Request } from "express";
-//import { DecodedUser } from "./DecodedUser";
 import { DecodedUser } from "./DecodedUser";
 
 export interface AuthenticatedRequest extends Request {
