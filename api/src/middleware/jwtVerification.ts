@@ -17,7 +17,7 @@ const verifyJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction,
     jwt.verify(
         token,
         accessSecret as Secret,
-        (err, decodedUser: any) => {
+        (err: any, decodedUser: any) => {
             if (err) return res.sendStatus(403); //invalid token
             req.user = decodedUser;
             return next();
@@ -47,7 +47,7 @@ const verifySocket = (req: AuthenticatedRequest, res: Response, next: NextFuncti
     jwt.verify(
         token, 
         accessSecret as Secret, 
-        (err, decodedUser: any) => {
+        (err: any, decodedUser: any) => {
             if (err) {
                 return next(new Error("invalid token"));
             }
@@ -71,7 +71,7 @@ const verifyUser = (req: AuthenticatedRequest, res: Response, next: NextFunction
     jwt.verify(
         token,
         accessSecret as Secret,
-        (err, decodedUser: any) => {
+        (err: any, decodedUser: any) => {
             if (err) return res.sendStatus(403); //invalid token
             req.user = decodedUser;
             if(request.user._id === decodedUser._id) return next();
