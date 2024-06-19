@@ -63,7 +63,6 @@ const TicTacToe: React.FC<SocketProps> = ({ socket }) => {
     //end of refs
 
     const turn = (index: number) => {
-        console.log(xoRef.current)
         if (!game[index] && !winner && myTurn && hasOpponent) {
             socket?.emit("reqTurn", JSON.stringify({ index, value: xoRef.current, room }));
         }
@@ -97,7 +96,6 @@ const TicTacToe: React.FC<SocketProps> = ({ socket }) => {
             if (game[c[0]] === game[c[1]] && game[c[0]] === game[c[2]] && game[c[0]] !== "") {
                 setWinner(true);
                 if (player === xoRef.current && isRanked) {
-                    console.log("Win - emitting event!");
                     socket?.emit("winner", room, auth.username, gamename);
                 }
             }
@@ -148,7 +146,6 @@ const TicTacToe: React.FC<SocketProps> = ({ socket }) => {
         });
 
         if (isRanked) {
-            console.log("ranked");
             socket?.emit("matchmaking", {
                 playerName: auth.username,
                 game: gamename,
@@ -180,7 +177,6 @@ const TicTacToe: React.FC<SocketProps> = ({ socket }) => {
         socket?.on("oponentLost", (data: string) => {
             const { lostPlayerSide } = JSON.parse(data);
             setWinner(true);
-            console.log("who lost: ",  lostPlayerSide, userNameRef.current)
             if (lostPlayerSide === userNameRef.current) {
                 if(xoRef.current === "X") setPlayer("O");
                 else setPlayer("X")
