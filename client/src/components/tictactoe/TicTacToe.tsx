@@ -199,8 +199,10 @@ const TicTacToe: React.FC<SocketProps> = ({ socket }) => {
                 winnerRef.current === false &&
                 userNameRef.current !== undefined
             ) {
+                socket?.emit('chatMessage', { room, username: auth.username, content: 'has left the room' });
                 socket?.emit("playerLost", JSON.stringify({ room, lostPlayerSide: userNameRef.current, isRanked, gamename }));
             } else {
+                socket?.emit('chatMessage', { room, username: auth.username, content: 'has left the room' });
                 socket?.emit("leave", { room: room });
             }
         };

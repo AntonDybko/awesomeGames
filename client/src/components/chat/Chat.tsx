@@ -48,7 +48,7 @@ const Chat: React.FC<Props> = ({ room, socket }) => {
                 <div className='messages'>
                     {messages.map((message, index) => (
                     <div key={index} className='message'>
-                        <strong>{message.username}: </strong> {message.content}
+                        <strong>{message.username}{message.content === 'has left the room' ? "" : ":"} </strong> {message.content}
                     </div>
                     ))}
                     <div ref={messagesEndRef} />
