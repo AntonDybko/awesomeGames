@@ -20,7 +20,7 @@ app.use(express.json({limit: '50mb'}));
 app.use("/users", users);
 app.use("/games", games);
 app.use("/ranking", rankings);
-app.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).send('Route not Found');
 });
 
