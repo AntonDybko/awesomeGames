@@ -746,7 +746,7 @@ function extractRefreshToken(cookies: string): string | null {
 }
 
 function signJwt() {
-    const jwtSecret = process.env.ACCESS_TOKEN_SECRET || 'AccessTokenSecret';
+    const jwtSecret = process.env.ACCESS_TOKEN_SECRET || 'testSecret';
     const accessToken = jwt.sign(
         { _id: new mongoose.Types.ObjectId().toString(), username: "" },
         jwtSecret as Secret,

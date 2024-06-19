@@ -5,7 +5,7 @@ import { RequestWithVerifiedUser } from "../types/RequestWithVerifiedUser";
 
 const verifyJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction,) => {
     const authHeader = req.headers["authorization"];
-    const accessSecret = process.env.ACCESS_TOKEN_SECRET;
+    const accessSecret = process.env.ACCESS_TOKEN_SECRET || "testSecret";
 
     if (!authHeader) return res.sendStatus(401);
 
@@ -26,7 +26,7 @@ const verifyJWT = (req: AuthenticatedRequest, res: Response, next: NextFunction,
 };
 const verifySocket = (req: AuthenticatedRequest, res: Response, next: NextFunction,) => {
     const isHandshake = req._query.sid === undefined;
-    const accessSecret = process.env.ACCESS_TOKEN_SECRET;
+    const accessSecret = process.env.ACCESS_TOKEN_SECRET || "testSecret";
 
     if (!isHandshake) {
         return next();
@@ -58,7 +58,7 @@ const verifySocket = (req: AuthenticatedRequest, res: Response, next: NextFuncti
 };
 const verifyUser = (req: AuthenticatedRequest, res: Response, next: NextFunction,) => {
     const authHeader = req.headers["authorization"];
-    const accessSecret = process.env.ACCESS_TOKEN_SECRET;
+    const accessSecret = process.env.ACCESS_TOKEN_SECRET || "testSecret";
     const request = req as RequestWithVerifiedUser;
 
     if (!authHeader) return res.sendStatus(401);

@@ -11,8 +11,8 @@ dotenv.config();
 const authController  = {
     handleLogin: async (req: Request, res: Response) => {
 
-        const accessSecret = process.env.ACCESS_TOKEN_SECRET;
-        const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
+        const accessSecret = process.env.ACCESS_TOKEN_SECRET || "testSecret";
+        const refreshSecret = process.env.REFRESH_TOKEN_SECRET || "testSecret";
 
         const {emailOrUsername, password} = req.body;
         //find user in db
@@ -81,8 +81,8 @@ const authController  = {
         res.sendStatus(204);
     },
     handleRegister: async (req: Request, res: Response) => {
-        const jwtSecret = process.env.ACCESS_TOKEN_SECRET || 'AccessTokenSecret';
-        const refreshSecret = process.env.REFRESH_TOKEN_SECRET || 'RefreshTokenSecret';
+        const jwtSecret = process.env.ACCESS_TOKEN_SECRET || 'testSecret';
+        const refreshSecret = process.env.REFRESH_TOKEN_SECRET || 'testSecret';
         const {email, password, username} = req.body;
 
         try {
@@ -148,8 +148,8 @@ const authController  = {
     handleRefreshToken: async (req: Request, res: Response) => {
         const cookies = req.cookies;
 
-        const refreshSecret = process.env.REFRESH_TOKEN_SECRET;
-        const accessSecret = process.env.ACCESS_TOKEN_SECRET;
+        const refreshSecret = process.env.REFRESH_TOKEN_SECRET || "testSecret";
+        const accessSecret = process.env.ACCESS_TOKEN_SECRET || "testSecret";
 
         if (!cookies?.refreshToken) {
             return res.sendStatus(401);
