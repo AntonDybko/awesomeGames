@@ -8,10 +8,11 @@ import useAuth from 'hooks/useAuth';
 const App: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const { auth } = useAuth();
+  const URL: string = process.env.REACT_APP_API_URL as string || "http://localhost:5000";
 
   useEffect(() => {
     if(auth?.token){
-      const newSocket = io("http://localhost:5000", {
+      const newSocket = io(URL, {
         extraHeaders: {
           Authorization: `Bearer ${auth.token}`,}
       });

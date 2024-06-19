@@ -3,7 +3,7 @@ import axios from 'axios-config/axios';
 import './Mastermind.scss';
 import useAuth from "hooks/useAuth";
 
-const apiUrl = "http://localhost:5000";
+const apiUrl: string = process.env.REACT_APP_API_URL as string || "http://localhost:5000";
 
 const Mastermind: React.FC = () => {
   const { auth } = useAuth();
