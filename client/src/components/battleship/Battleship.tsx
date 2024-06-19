@@ -359,50 +359,6 @@ function Statki({ socket }: StatkiProps) {
                             </div>
                             <br></br>
                             <br></br>
-                            <div>
-                                <Board
-                                    id={BoardId.player}
-                                    board={board}
-                                    onSetBoard={setBoard}
-                                    currentPlayer={currentPlayer}
-                                    onChangePlayer={changePlayer}
-                                    hasOpponent={false}
-                                    playerSide={playerSide}
-                                    room={room}
-                                    socket={socket}
-                                    lightPlayer={lightPlayer}
-                                    darkPlayer={darkPlayer}
-                                    onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
-                                    onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                                    auth={auth}
-                                    onSetTimer={setTimer}
-                                    //onIncrementStep={incrementStep}
-                                    // step={step}
-                                    onIncrementStep={setStep}
-                                    step={stepRef}
-                                />
-                                <Board
-                                    id={BoardId.oponent}
-                                    board={oponentBoard}
-                                    onSetBoard={setOponentBoard}
-                                    currentPlayer={currentPlayer}
-                                    onChangePlayer={changePlayer}
-                                    hasOpponent={hasOpponent}
-                                    playerSide={playerSide}
-                                    room={room}
-                                    socket={socket}
-                                    lightPlayer={lightPlayer}
-                                    darkPlayer={darkPlayer}
-                                    onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
-                                    onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
-                                    auth={auth}
-                                    onSetTimer={setTimer}
-                                    // onIncrementStep={incrementStep}
-                                    // step={step}
-                                    onIncrementStep={setStep}
-                                    step={stepRef}
-                                />
-                            </div>
                             <div className="chat">
                                 <Chat room={room} socket={socket}></Chat>
                             </div>
@@ -410,6 +366,51 @@ function Statki({ socket }: StatkiProps) {
                     )}
                 </div>
             )}
+            {!winner ? (
+            <div>
+                <Board
+                    id={BoardId.player}
+                    board={board}
+                    onSetBoard={setBoard}
+                    currentPlayer={currentPlayer}
+                    onChangePlayer={changePlayer}
+                    hasOpponent={false}
+                    playerSide={playerSide}
+                    room={room}
+                    socket={socket}
+                    lightPlayer={lightPlayer}
+                    darkPlayer={darkPlayer}
+                    onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                    onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                    auth={auth}
+                    onSetTimer={setTimer}
+                    //onIncrementStep={incrementStep}
+                    // step={step}
+                    onIncrementStep={setStep}
+                    step={stepRef}
+                />
+                <Board
+                    id={BoardId.oponent}
+                    board={oponentBoard}
+                    onSetBoard={setOponentBoard}
+                    currentPlayer={currentPlayer}
+                    onChangePlayer={changePlayer}
+                    hasOpponent={hasOpponent}
+                    playerSide={playerSide}
+                    room={room}
+                    socket={socket}
+                    lightPlayer={lightPlayer}
+                    darkPlayer={darkPlayer}
+                    onChangeLightPlayerBreakThrough={changeLightPlayerBreakThrough}
+                    onChangeDarkPlayerBreakThrough={changeDarkPlayerBreakThrough}
+                    auth={auth}
+                    onSetTimer={setTimer}
+                    // onIncrementStep={incrementStep}
+                    // step={step}
+                    onIncrementStep={setStep}
+                    step={stepRef}
+                />
+            </div>) : ''}
             <ToastContainer
                             position="top-center"
                             autoClose={5000}
