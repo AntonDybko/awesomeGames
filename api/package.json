@@ -2,7 +2,8 @@
   "name": "api",
   "version": "1.0.0",
   "description": "api",
-  "main": "index.js",
+  "main": "dist/index",
+  "types": "dist/index",
   "scripts": {
     "build": "tsc -p .",
     "start": "ts-node src/index.ts",
