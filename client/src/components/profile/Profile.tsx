@@ -26,7 +26,12 @@ const Profile: React.FC = () => {
     const [battleshipRank, setBattleshipRank] = useState<Ranking>();
     const [profileImage, setProfileImage] = useState<string | undefined>("")
     const [birthday, setBirthday] = useState<Date | undefined>(undefined);
-    const pattern = /http:\/\/localhost:3000\/profile\/([^\/]+)/;
+    let pattern = /http:\/\/localhost:3000\/profile\/([^\/]+)/;
+
+    if (process.env.REACT_APP_API_URL) {
+        const apiUrl = process.env.REACT_APP_API_URL.replace(/\//g, '\\/');
+        pattern = new RegExp(`http:\\/\\/${apiUrl}\\/profile\\/([^\\/]+)`);
+      }
 
     const birthdayRef = useRef<Date | undefined>(user.birthday);
     useEffect(() => {
