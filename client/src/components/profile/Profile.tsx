@@ -30,7 +30,7 @@ const Profile: React.FC = () => {
 
     if (process.env.REACT_APP_API_URL) {
         const apiUrl = process.env.REACT_APP_API_URL.replace(/\//g, '\\/');
-        pattern = new RegExp(`http:\\/\\/${apiUrl}\\/profile\\/([^\\/]+)`);
+        pattern = new RegExp(`${apiUrl}\\/profile\\/([^\\/]+)`);
       }
 
     const birthdayRef = useRef<Date | undefined>(user.birthday);
