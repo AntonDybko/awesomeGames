@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axios from 'axios-config/axios'
 import UserProps from '../../interfaces/User'
-import { useNavigate, Route, Link, Routes } from "react-router-dom";
+import { useNavigate, Route, Link, Routes, useParams } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import './Profile.scss';
 import defaultProfileImage from '../../images/defaultProfileImage.png';
@@ -18,7 +18,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 type Ranking = number;
 
 
-const Profile: React.FC = () => {
+const Profile: React.FC = (props) => {
     const [user, setUser] = useState({} as UserProps);
     const { auth } = useAuth();
     const [ticTacToeRank, setTicTacToeRank] = useState<Ranking>();
@@ -26,13 +26,7 @@ const Profile: React.FC = () => {
     const [battleshipRank, setBattleshipRank] = useState<Ranking>();
     const [profileImage, setProfileImage] = useState<string | undefined>("")
     const [birthday, setBirthday] = useState<Date | undefined>(undefined);
-    let pattern = /http:\/\/localhost:3000\/profile\/([^\/]+)/;
-
-    if (process.env.REACT_APP_API_URL) {
-        const apiUrl = process.env.REACT_APP_API_URL.replace(/\//g, '\\/');
-        pattern = new RegExp(`${apiUrl}\\/profile\\/([^\\/]+)`);
-        console.log('apiUrl: ' + apiUrl)
-      }
+    const { userId } = useParams()
 
     const birthdayRef = useRef<Date | undefined>(user.birthday);
     useEffect(() => {
@@ -42,13 +36,7 @@ const Profile: React.FC = () => {
         setBirthday(user.birthday);
     }, [user.birthday]);
     
-
-    console.log('windowlocationhref: ' + window.location.href)
-    const match = window.location.href.match(pattern);
-    console.log('match: ' + match)
-    console.log('pattern: ' + pattern)
-    const profileName = match ? match[1] : null;
-    
+    const profileName = userId;
     const navigate = useNavigate();
 
 
