@@ -31,6 +31,7 @@ const Profile: React.FC = () => {
     if (process.env.REACT_APP_API_URL) {
         const apiUrl = process.env.REACT_APP_API_URL.replace(/\//g, '\\/');
         pattern = new RegExp(`${apiUrl}\\/profile\\/([^\\/]+)`);
+        console.log('apiUrl: ' + apiUrl)
       }
 
     const birthdayRef = useRef<Date | undefined>(user.birthday);
@@ -42,7 +43,10 @@ const Profile: React.FC = () => {
     }, [user.birthday]);
     
 
+    console.log('windowlocationhref: ' + window.location.href)
     const match = window.location.href.match(pattern);
+    console.log('match: ' + match)
+    console.log('pattern: ' + pattern)
     const profileName = match ? match[1] : null;
     
     const navigate = useNavigate();
